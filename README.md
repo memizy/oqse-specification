@@ -21,15 +21,12 @@
 
 ## 💡 What is OQSE?
 
-Traditional flashcard formats (like `.apkg` from Anki) are often rigid, focusing solely on isolated Question/Answer pairs. 
+**OQSE** is built with a focus on **Data-View Separation**. Unlike legacy formats that bake styling directly into the data, OQSE treates educational content as structured, semantic objects. This approach ensures maximum readability, easy JSON-based editing, and a predictable rendering pipeline for developers.
 
-**OQSE** is built differently. It is designed for heavy university-level studying (Medicine, Mathematics, Law) and introduces the concept of **Contextual Learning**. It supports not just standard flashcards, but continuous readable **Notes** integrated with a "Traffic Light" Spaced Repetition system.
-
-### Key Capabilities
-* 📖 **Continuous Context:** Mix standard flashcards with readable paragraphs of text.
-* 🚦 **Self-Assessed Notes:** Use `hidden content` and self-reflection (Red/Yellow/Green) directly on reading blocks.
-* 🧩 **Extensible:** Native support for rendering Markdown, LaTeX (Math), and embedding custom HTML/JS Plugins.
-* 🌍 **Portable & Local-First:** Plain JSON files that can be easily parsed, shared via CDN, and stored locally in OPFS/IndexedDB.
+* **🏗️ Semantic Structure:** Clear separation between metadata, global assets, and study items.
+* **🖼️ Unified Asset Pipeline:** Media (Images, Audio, Video) is decoupled from text using a unique `<asset:key />` syntax, preventing Markdown/HTML collisions.
+* **🧬 Rich Content support:** Native support for GFM (GitHub Flavored Markdown) and LaTeX, processed through a standardized 4-step rendering pipeline (Tokenize → Render → Sanitize → Detokenize).
+* **🌍 Portable & Local-First:** Plain JSON files designed for easy versioning in Git, distribution via CDN, and high-performance local storage (OPFS/IndexedDB).
 
 ---
 
@@ -51,17 +48,22 @@ Here is a real-world snippet of an `.oqse.json` file. Notice how it seamlessly m
     "language": "en",
     "subject": "Computer Science",
     "description": "A comprehensive study set covering the full spectrum of data handling.",
-    "tags": ["Computer Science", "Data Formats"],
-    "estimatedTime": 120
+    "assets": {
+      "format_icon": {
+        "type": "image",
+        "value": "https://cdn.example.com/icons/json.png",
+        "altText": "JSON Logo"
+      }
+    }
   },
   "items": [
     {
       "id": "019aa702-0001-789a-bcde-f01234567801",
       "type": "note",
       "tags": ["Data Modeling", "Concepts"],
-      "text": "### Data Modeling Levels\nWhen designing data structures, we distinguish between three levels:\n* **Conceptual:** What is the data about?\n* **Logical:** How is the data structured using given technology/format?\n* **Physical:** How do the files look like in storage?",
-      "hidden_content": "Rule of thumb: Conceptual is format-agnostic, Logical depends on the paradigm, Physical depends on the storage engine.",
-      "allow_traffic_light": true
+      "title": "Data Modeling Levels",
+      "content": "When designing data structures, we distinguish between three levels:\n* **Conceptual:** What is the data about?\n* **Logical:** How is the data structured?\n* **Physical:** How do the files look like? <asset:format_icon />",
+      "hiddenContent": "Note: Conceptual is format-agnostic, Logical depends on the paradigm, Physical depends on the storage engine."
     },
     {
       "id": "019aa702-0004-789a-bcde-f01234567804",
