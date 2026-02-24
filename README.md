@@ -24,7 +24,7 @@
 **OQSE** is built with a focus on **Data-View Separation**. Unlike legacy formats that bake styling directly into the data, OQSE treates educational content as structured, semantic objects. This approach ensures maximum readability, easy JSON-based editing, and a predictable rendering pipeline for developers.
 
 * **🏗️ Semantic Structure:** Clear separation between metadata, global assets, and study items.
-* **🖼️ Unified Asset Pipeline:** Media (Images, Audio, Video) is decoupled from text using a unique `<asset:key />` syntax, preventing Markdown/HTML collisions.
+* **🖼️ Unified Asset Pipeline:** Media (Images, Audio, Video, 3D models) is decoupled from text using a unique `<asset:key />` syntax, preventing Markdown/HTML collisions.
 * **🧬 Rich Content support:** Native support for GFM (GitHub Flavored Markdown) and LaTeX, processed through a standardized 4-step rendering pipeline (Tokenize → Render → Sanitize → Detokenize).
 * **🌍 Portable & Local-First:** Plain JSON files designed for easy versioning in Git, distribution via CDN, and high-performance local storage (OPFS/IndexedDB).
 
