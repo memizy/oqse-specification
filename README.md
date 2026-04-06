@@ -1,7 +1,7 @@
 <div align="center">
 
 # 📜 OQSE Specification
-**Open Question Set Exchange Format**
+**Open Quiz and Study Exchange Format**
 
 ![Version](https://img.shields.io/badge/Version-0.1.0--draft-orange?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
