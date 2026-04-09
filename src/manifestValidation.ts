@@ -1,6 +1,6 @@
-/**
+﻿/**
  * @file manifestValidation.ts
- * @description Zod validation schemas for the OQSE Application Manifest (§2.1.1).
+ * @description Zod validation schemas for the OQSE Application Manifest (┬ž2.1.1).
  *
  * Mirrors every type defined in `manifest.ts` and exposes helper functions for
  * validating manifest objects received from plugins, presets, or remote sources.
@@ -10,6 +10,15 @@
  */
 
 import { z } from 'zod';
+import type {
+  FeatureFlag,
+  ManifestAssets,
+  ManifestCapabilities,
+  OQSEAction,
+  OQSEManifest,
+  OQSEQuestionDensity,
+  OQSEStudyMode,
+} from './manifest';
 import { FeatureProfileSchema } from './oqseValidation';
 
 // ============================================================================
@@ -17,25 +26,25 @@ import { FeatureProfileSchema } from './oqseValidation';
 // ============================================================================
 
 /** Non-empty plain-text string (no leading/trailing whitespace). */
-const NonEmptyStringSchema = z.string().min(1, 'Hodnota nesmí být prázdná').trim();
+const NonEmptyStringSchema = z.string().min(1, 'Hodnota nesm├ş b├Żt pr├ízdn├í').trim();
 
 /** Absolute URL (http/https). */
 const AbsoluteURLSchema = z
   .string()
-  .url('Musí být platná absolutní URL')
+  .url('Mus├ş b├Żt platn├í absolutn├ş URL')
   .refine((v) => v.startsWith('http://') || v.startsWith('https://'), {
-    message: 'URL musí používat schéma http nebo https',
+    message: 'URL mus├ş pou┼ż├şvat sch├ęma http nebo https',
   });
 
 /** Semver version string in MAJOR.MINOR format (e.g. "1.0", "2.3"). */
 const ManifestVersionSchema = z
   .string()
-  .regex(/^\d+\.\d+$/, 'Verze musí být ve formátu MAJOR.MINOR (např. "1.0")');
+  .regex(/^\d+\.\d+$/, 'Verze mus├ş b├Żt ve form├ítu MAJOR.MINOR (nap┼Ö. "1.0")');
 
 /** Full semver version string MAJOR.MINOR.PATCH (e.g. "1.2.3"). */
 const SemVerSchema = z
   .string()
-  .regex(/^\d+\.\d+\.\d+$/, 'Verze musí být ve formátu MAJOR.MINOR.PATCH (např. "1.2.3")');
+  .regex(/^\d+\.\d+\.\d+$/, 'Verze mus├ş b├Żt ve form├ítu MAJOR.MINOR.PATCH (nap┼Ö. "1.2.3")');
 
 // ============================================================================
 // Actions
@@ -54,7 +63,7 @@ export const OQSEActionSchema = z
     (v) => (OFFICIAL_ACTIONS as ReadonlyArray<string>).includes(v) || v.startsWith('x-'),
     {
       message:
-        'Akce musí být jedna z [render, edit, validate, import, export] nebo mít prefix "x-"',
+        'Akce mus├ş b├Żt jedna z [render, edit, validate, import, export] nebo m├şt prefix "x-"',
     }
   );
 
@@ -72,7 +81,7 @@ export const OQSEQuestionDensitySchema = z.enum(['low', 'medium', 'high']);
 // Feature Flags
 // ============================================================================
 
-/** Official feature keys as defined in §2.1.1 of the OQSE spec. */
+/** Official feature keys as defined in ┬ž2.1.1 of the OQSE spec. */
 const OFFICIAL_FEATURE_KEYS = [
   'math',
   'media',
@@ -97,7 +106,7 @@ export const FeatureFlagSchema = z
     (v) => (OFFICIAL_FEATURE_KEYS as ReadonlyArray<string>).includes(v) || v.startsWith('x-'),
     {
       message:
-        'Funkce musí být jedna z oficiálních klíčů nebo mít prefix "x-"',
+        'Funkce mus├ş b├Żt jedna z ofici├íln├şch kl├ş─Ź┼» nebo m├şt prefix "x-"',
     }
   );
 
@@ -108,12 +117,12 @@ export const FeatureFlagSchema = z
 /** Official item-level extension property keys (or vendor-prefixed). */
 export const ItemPropertyKeySchema = z
   .string()
-  .min(1, 'Klíč vlastnosti položky nesmí být prázdný');
+  .min(1, 'Kl├ş─Ź vlastnosti polo┼żky nesm├ş b├Żt pr├ízdn├Ż');
 
 /** Official meta-level extension property keys (or vendor-prefixed). */
 export const MetaPropertyKeySchema = z
   .string()
-  .min(1, 'Klíč vlastnosti metadat nesmí být prázdný');
+  .min(1, 'Kl├ş─Ź vlastnosti metadat nesm├ş b├Żt pr├ízdn├Ż');
 
 // ============================================================================
 // WildcardOrExplicit pattern
@@ -124,9 +133,9 @@ export const MetaPropertyKeySchema = z
  * `ManifestAssets` and `ManifestCapabilities`.
  *
  * Valid values:
- * - `['*']`  — wildcard, accepts anything
- * - `T[]`    — explicit allow-list
- * - `null`   — feature disabled / not supported
+ * - `['*']`  ÔÇö wildcard, accepts anything
+ * - `T[]`    ÔÇö explicit allow-list
+ * - `null`   ÔÇö feature disabled / not supported
  */
 function wildcardOrExplicit<T extends z.ZodTypeAny>(
   itemSchema: T
@@ -141,24 +150,24 @@ function wildcardOrExplicit<T extends z.ZodTypeAny>(
 /** Any valid image MIME type. */
 export const ImageMimeTypeSchema = z
   .string()
-  .refine((v) => v.startsWith('image/'), { message: 'Musí být platný MIME typ obrázku (image/...)' });
+  .refine((v) => v.startsWith('image/'), { message: 'Mus├ş b├Żt platn├Ż MIME typ obr├ízku (image/...)' });
 
 /** Any valid audio MIME type. */
 export const AudioMimeTypeSchema = z
   .string()
-  .refine((v) => v.startsWith('audio/'), { message: 'Musí být platný MIME typ zvuku (audio/...)' });
+  .refine((v) => v.startsWith('audio/'), { message: 'Mus├ş b├Żt platn├Ż MIME typ zvuku (audio/...)' });
 
 /** Any valid video MIME type. */
 export const VideoMimeTypeSchema = z
   .string()
-  .refine((v) => v.startsWith('video/'), { message: 'Musí být platný MIME typ videa (video/...)' });
+  .refine((v) => v.startsWith('video/'), { message: 'Mus├ş b├Żt platn├Ż MIME typ videa (video/...)' });
 
 /** Any valid 3D model MIME type. */
 export const ModelMimeTypeSchema = z
   .string()
   .refine(
     (v) => v.startsWith('model/') || v === 'application/octet-stream',
-    { message: 'Musí být platný MIME typ 3D modelu (model/... nebo application/octet-stream)' }
+    { message: 'Mus├ş b├Żt platn├Ż MIME typ 3D modelu (model/... nebo application/octet-stream)' }
   );
 
 // ============================================================================
@@ -171,10 +180,10 @@ export const ModelMimeTypeSchema = z
  * within that category are accepted; an array lists explicit MIME types.
  */
 export const ManifestAssetsSchema = z.object({
-  images: wildcardOrExplicit(ImageMimeTypeSchema).optional(),
+  image: wildcardOrExplicit(ImageMimeTypeSchema).optional(),
   audio: wildcardOrExplicit(AudioMimeTypeSchema).optional(),
   video: wildcardOrExplicit(VideoMimeTypeSchema).optional(),
-  models: wildcardOrExplicit(ModelMimeTypeSchema).optional(),
+  model: wildcardOrExplicit(ModelMimeTypeSchema).optional(),
 });
 
 // ============================================================================
@@ -192,7 +201,7 @@ export const ManifestCapabilitiesSchema = FeatureProfileSchema.extend({
    */
   actions: z
     .array(OQSEActionSchema)
-    .min(1, 'Aplikace musí podporovat alespoň jednu akci'),
+    .min(1, 'Aplikace mus├ş podporovat alespo┼ł jednu akci'),
 
   /** Item types supported by this application. Uses `['*']` for all types. */
   types: wildcardOrExplicit(NonEmptyStringSchema).optional(),
@@ -206,25 +215,26 @@ export const ManifestCapabilitiesSchema = FeatureProfileSchema.extend({
 // ============================================================================
 
 /**
- * Full OQSE Application Manifest schema (§2.1.1).
+ * Full OQSE Application Manifest schema (┬ž2.1.1).
  *
  * Validated constraints beyond syntax:
- * - `minOqseVersion` ≤ `maxOqseVersion` when both are present
+ * - `minOqseVersion` ÔëĄ `maxOqseVersion` when both are present
  * - `version` adheres to MAJOR.MINOR format
  * - `capabilities.actions` is non-empty (enforced by inner schema)
  */
 export const OQSEManifestSchema = z
   .object({
-    // ── Identity ──────────────────────────────────────────────────────────
+    $schema: AbsoluteURLSchema.optional(),
+    // ÔöÇÔöÇ Identity ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
     /** Unique reverse-domain identifier, e.g. `com.acme.flashcards`. */
     id: NonEmptyStringSchema.regex(
       /^[a-z0-9-]+(\.[a-z0-9-]+)*$/,
-      'ID musí být ve tvaru reverse-domain (např. "com.acme.app")'
+      'ID mus├ş b├Żt ve tvaru reverse-domain (nap┼Ö. "com.acme.app")'
     ),
 
     /** Human-readable display name of the application. */
-    name: NonEmptyStringSchema.max(100, 'Název nesmí být delší než 100 znaků'),
+    appName: NonEmptyStringSchema.max(100, 'N├ízev nesm├ş b├Żt del┼í├ş ne┼ż 100 znak┼»'),
 
     /**
      * Application version string. Follows MAJOR.MINOR format (manifest version
@@ -232,7 +242,9 @@ export const OQSEManifestSchema = z
      */
     version: ManifestVersionSchema,
 
-    // ── OQSE Compatibility ────────────────────────────────────────────────
+    pluginVersion: SemVerSchema.optional(),
+
+    // ÔöÇÔöÇ OQSE Compatibility ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
     /** Minimum OQSE spec version this application can consume. */
     minOqseVersion: ManifestVersionSchema.optional(),
@@ -240,48 +252,38 @@ export const OQSEManifestSchema = z
     /** Maximum OQSE spec version this application can consume. */
     maxOqseVersion: ManifestVersionSchema.optional(),
 
-    // ── Capabilities ──────────────────────────────────────────────────────
+    // ÔöÇÔöÇ Capabilities ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
     /** Declares all features, item types, and media assets the app handles. */
     capabilities: ManifestCapabilitiesSchema,
 
-    // ── Plugin / Embedding ────────────────────────────────────────────────
+    // ÔöÇÔöÇ Plugin / Embedding ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
-    /** Entry-point URL when the application is embedded as an iframe plugin. */
-    entryPoint: AbsoluteURLSchema.optional(),
+    author: z.string().max(100, 'N├ízev autora nesm├ş b├Żt del┼í├ş ne┼ż 100 znak┼»').optional(),
 
-    /** URL of the application's icon (absolute, ≥ 256×256 recommended). */
-    iconUrl: AbsoluteURLSchema.optional(),
+    authorUrl: AbsoluteURLSchema.optional(),
 
-    // ── Meta ──────────────────────────────────────────────────────────────
+    locales: z.array(NonEmptyStringSchema).optional(),
 
-    /** Short human-readable description (plain text, ≤ 500 chars). */
-    description: z.string().max(500, 'Popis nesmí být delší než 500 znaků').optional(),
+    /** Short human-readable description (plain text, ÔëĄ 500 chars). */
+    description: z.string().max(500, 'Popis nesm├ş b├Żt del┼í├ş ne┼ż 500 znak┼»').optional(),
 
-    /** Homepage, repository, or documentation URL. */
-    homepageUrl: AbsoluteURLSchema.optional(),
-
-    /** SPDX license identifier (e.g. `MIT`, `Apache-2.0`). */
-    license: z.string().optional(),
-
-    /** Publisher / vendor name. */
-    vendor: z.string().max(100, 'Název vydavatele nesmí být delší než 100 znaků').optional(),
-
-    /** Full semver version of the application binary (informational). */
-    appVersion: SemVerSchema.optional(),
+    emoji: z.string().optional(),
 
     /** Optional tags for discoverability in a plugin catalog. */
     tags: z.array(NonEmptyStringSchema).optional(),
 
     /** Preferred study mode for sets generated/consumed by this app. */
-    preferredStudyMode: OQSEStudyModeSchema.optional(),
+    studyMode: OQSEStudyModeSchema.optional(),
 
     /** Preferred question density for sessions run by this app. */
-    preferredQuestionDensity: OQSEQuestionDensitySchema.optional(),
+    questionDensity: OQSEQuestionDensitySchema.optional(),
+
+    appSpecific: z.record(z.string(), z.unknown()).optional(),
   })
   .refine(
     (data) => {
-      // Validate minOqseVersion ≤ maxOqseVersion when both are present
+      // Validate minOqseVersion ÔëĄ maxOqseVersion when both are present
       if (!data.minOqseVersion || !data.maxOqseVersion) return true;
 
       const minParts = data.minOqseVersion.split('.');
@@ -295,7 +297,7 @@ export const OQSEManifestSchema = z
       return minMinor <= maxMinor;
     },
     {
-      message: 'minOqseVersion nesmí být vyšší než maxOqseVersion',
+      message: 'minOqseVersion nesm├ş b├Żt vy┼í┼í├ş ne┼ż maxOqseVersion',
       path: ['minOqseVersion'],
     }
   );
@@ -318,7 +320,7 @@ export const OQSEManifestSchema = z
  * ```
  */
 export function validateManifest(data: unknown): OQSEManifest {
-  return OQSEManifestSchema.parse(data);
+  return OQSEManifestSchema.parse(data) as OQSEManifest;
 }
 
 /**
@@ -352,8 +354,8 @@ export function safeValidateManifest(
  * @example
  * ```ts
  * console.error(formatManifestErrors(result.error));
- * // → "id: ID musí být ve tvaru reverse-domain..."
- * // → "capabilities.actions: Aplikace musí podporovat alespoň jednu akci"
+ * // Ôćĺ "id: ID mus├ş b├Żt ve tvaru reverse-domain..."
+ * // Ôćĺ "capabilities.actions: Aplikace mus├ş podporovat alespo┼ł jednu akci"
  * ```
  */
 export function formatManifestErrors(error: z.ZodError): string {
@@ -368,23 +370,35 @@ export function formatManifestErrors(error: z.ZodError): string {
 /**
  * Checks whether a plain object looks like an OQSE Manifest (duck-typing).
  *
- * This is a fast pre-check — use `validateManifest` for full validation.
+ * This is a fast pre-check ÔÇö use `validateManifest` for full validation.
  *
  * @param data - Any value.
  * @returns `true` if `data` has the minimum required shape.
  */
-export function isOQSEManifest(data: unknown): data is OQSEManifest {
+export function isValidOQSEManifest(data: unknown): data is OQSEManifest {
   return OQSEManifestSchema.safeParse(data).success;
 }
 
 // ============================================================================
-// Inferred TypeScript Types
+// Schema Type Contracts
 // ============================================================================
 
-export type OQSEManifest = z.infer<typeof OQSEManifestSchema>;
-export type ManifestCapabilities = z.infer<typeof ManifestCapabilitiesSchema>;
-export type ManifestAssets = z.infer<typeof ManifestAssetsSchema>;
-export type OQSEAction = z.infer<typeof OQSEActionSchema>;
-export type OQSEStudyMode = z.infer<typeof OQSEStudyModeSchema>;
-export type OQSEQuestionDensity = z.infer<typeof OQSEQuestionDensitySchema>;
-export type FeatureFlag = z.infer<typeof FeatureFlagSchema>;
+const manifestSchemaContracts: {
+  OQSEActionSchema: z.ZodType<OQSEAction>;
+  OQSEStudyModeSchema: z.ZodType<OQSEStudyMode>;
+  OQSEQuestionDensitySchema: z.ZodType<OQSEQuestionDensity>;
+  FeatureFlagSchema: z.ZodType<FeatureFlag>;
+  ManifestAssetsSchema: z.ZodType<ManifestAssets>;
+  ManifestCapabilitiesSchema: z.ZodType<ManifestCapabilities>;
+  OQSEManifestSchema: z.ZodType<OQSEManifest>;
+} = {
+  OQSEActionSchema: OQSEActionSchema as unknown as z.ZodType<OQSEAction>,
+  OQSEStudyModeSchema,
+  OQSEQuestionDensitySchema,
+  FeatureFlagSchema: FeatureFlagSchema as unknown as z.ZodType<FeatureFlag>,
+  ManifestAssetsSchema: ManifestAssetsSchema as unknown as z.ZodType<ManifestAssets>,
+  ManifestCapabilitiesSchema: ManifestCapabilitiesSchema as unknown as z.ZodType<ManifestCapabilities>,
+  OQSEManifestSchema: OQSEManifestSchema as unknown as z.ZodType<OQSEManifest>,
+};
+
+void manifestSchemaContracts;

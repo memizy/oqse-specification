@@ -2,12 +2,16 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri"
+    },
     "id": {
       "type": "string",
       "minLength": 1,
       "pattern": "^[a-z0-9-]+(\\.[a-z0-9-]+)*$"
     },
-    "name": {
+    "appName": {
       "type": "string",
       "minLength": 1,
       "maxLength": 100
@@ -15,6 +19,10 @@
     "version": {
       "type": "string",
       "pattern": "^\\d+\\.\\d+$"
+    },
+    "pluginVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
     },
     "minOqseVersion": {
       "type": "string",
@@ -88,7 +96,7 @@
         "assets": {
           "type": "object",
           "properties": {
-            "images": {
+            "image": {
               "anyOf": [
                 {
                   "type": "array",
@@ -154,7 +162,7 @@
                 }
               ]
             },
-            "models": {
+            "model": {
               "anyOf": [
                 {
                   "type": "array",
@@ -185,32 +193,27 @@
       ],
       "additionalProperties": false
     },
-    "entryPoint": {
+    "author": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "authorUrl": {
       "type": "string",
       "format": "uri"
     },
-    "iconUrl": {
-      "type": "string",
-      "format": "uri"
+    "locales": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
     "description": {
       "type": "string",
       "maxLength": 500
     },
-    "homepageUrl": {
-      "type": "string",
-      "format": "uri"
-    },
-    "license": {
+    "emoji": {
       "type": "string"
-    },
-    "vendor": {
-      "type": "string",
-      "maxLength": 100
-    },
-    "appVersion": {
-      "type": "string",
-      "pattern": "^\\d+\\.\\d+\\.\\d+$"
     },
     "tags": {
       "type": "array",
@@ -219,7 +222,7 @@
         "minLength": 1
       }
     },
-    "preferredStudyMode": {
+    "studyMode": {
       "type": "string",
       "enum": [
         "game",
@@ -227,18 +230,25 @@
         "drill"
       ]
     },
-    "preferredQuestionDensity": {
+    "questionDensity": {
       "type": "string",
       "enum": [
         "low",
         "medium",
         "high"
       ]
+    },
+    "appSpecific": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
     }
   },
   "required": [
     "id",
-    "name",
+    "appName",
     "version",
     "capabilities"
   ],

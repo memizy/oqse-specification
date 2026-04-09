@@ -1,0 +1,66 @@
+import { z } from 'zod';
+import type {
+	LastAnswerObject,
+	OQSEPFile,
+	ProgressMeta,
+	ProgressRecord,
+	StatsObject,
+} from './progress';
+import { ISO8601DateTimeSchema, UUIDSchema } from './oqseValidation';
+
+export const StatsObjectSchema: z.ZodType<StatsObject> = z
+	.object({
+		attempts: z.number().int().nonnegative(),
+		incorrect: z.number().int().nonnegative(),
+		streak: z.number().int().nonnegative(),
+	})
+	.refine((data) => data.incorrect <= data.attempts, {
+		message: 'incorrect nesmí být vyšší než attempts',
+		path: ['incorrect'],
+	});
+
+export const LastAnswerObjectSchema: z.ZodType<LastAnswerObject> = z
+	.object({
+		isCorrect: z.boolean(),
+		confidence: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]).optional(),
+		answeredAt: ISO8601DateTimeSchema,
+		timeSpent: z.number().int().nonnegative().optional(),
+		hintsUsed: z.number().int().nonnegative().optional(),
+		isSkipped: z.boolean().optional(),
+	})
+	.refine((data) => !data.isSkipped || data.isCorrect === false, {
+		message: 'Pokud je isSkipped=true, isCorrect má být false',
+		path: ['isCorrect'],
+	});
+
+export const ProgressRecordSchema: z.ZodType<ProgressRecord> = z.object({
+	bucket: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
+	nextReviewAt: ISO8601DateTimeSchema.optional(),
+	stats: StatsObjectSchema,
+	lastAnswer: LastAnswerObjectSchema.optional(),
+	appSpecific: z.record(z.string(), z.unknown()).optional(),
+});
+
+export const ProgressMetaSchema: z.ZodType<ProgressMeta> = z.object({
+	setId: UUIDSchema,
+	exportedAt: ISO8601DateTimeSchema,
+	algorithm: z
+		.string()
+		.regex(/^[a-z0-9-]+$/, 'algorithm musí mít formát lowercase alphanumeric s pomlčkami')
+		.optional(),
+});
+
+export const OQSEPFileSchema: z.ZodType<OQSEPFile> = z.object({
+	$schema: z.string().url().optional(),
+	version: z.string().regex(/^\d+\.\d+$/, 'Verze musí být ve formátu MAJOR.MINOR'),
+	meta: ProgressMetaSchema,
+	records: z.record(UUIDSchema, ProgressRecordSchema),
+});
+
+export function validateOQSEPFile(data: unknown): OQSEPFile {
+	return OQSEPFileSchema.parse(data);
+}
+
+export function safeValidateOQSEPFile(data: unknown): ReturnType<typeof OQSEPFileSchema.safeParse> {
+	return OQSEPFileSchema.safeParse(data);
+}

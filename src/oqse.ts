@@ -9,35 +9,6 @@
  */
 
 // ============================================================================
-// UUID Utilities
-// ============================================================================
-
-/**
- * UUID string type (UUIDv4 or UUIDv7).
- * Generator MUST use UUIDv7, Parser MUST accept both v4 and v7.
- */
-export type UUID = string;
-
-/**
- * Validates UUID format (8-4-4-4-12 hex characters).
- * Accepts both UUIDv4 and UUIDv7.
- */
-export function isValidUUID(id: string): boolean {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  return uuidRegex.test(id);
-}
-
-/**
- * Generates a new UUIDv7 (time-ordered).
- * Uses crypto.randomUUID() with polyfill for UUIDv7 if needed.
- */
-export function generateUUID(): UUID {
-  // For now, use UUIDv4 until UUIDv7 is widely supported
-  // TODO: Implement proper UUIDv7 generation
-  return crypto.randomUUID();
-}
-
-// ============================================================================
 // BCP 47 Language Code
 // ============================================================================
 
@@ -374,7 +345,7 @@ export interface TranslationObject {
   lang: LanguageCode;
   
   /** Unique UUID (meta.id) of translated set */
-  id: UUID;
+  id: string;
   
   /** Name of translated set */
   title: string;
@@ -388,7 +359,7 @@ export interface TranslationObject {
  */
 export interface LinkedSetObject {
   /** UUID of OQSE set being referenced */
-  id: UUID;
+  id: string;
   
   /** Name of referenced set */
   title: string;
@@ -475,7 +446,7 @@ export interface MathSettings {
  */
 export interface OQSEMeta {
   /** Unique UUID of the set */
-  id: UUID;
+  id: string;
 
   /** 
    * Origin UUID of the creator.
@@ -581,7 +552,7 @@ export interface OQSEMeta {
  */
 export interface BaseItem {
   /** Unique UUID of the item */
-  id: UUID;
+  id: string;
   
   /** Item type (discriminator for union) */
   type: string;
@@ -617,10 +588,10 @@ export interface BaseItem {
   sources?: SourceReference[];
   
   /** Array of IDs of related items in this set */
-  relatedItems?: UUID[];
+  relatedItems?: string[];
   
   /** Array of IDs of items that should logically precede this item */
-  dependencyItems?: UUID[];
+  dependencyItems?: string[];
   
   /** Advanced data for adaptive learning and psychometrics */
   pedagogy?: Pedagogy;
