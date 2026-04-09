@@ -1,12 +1,12 @@
 /**
- * OQSE v1.0 — Application Manifest Type Definitions
+ * OQSE v0.1 - Application Manifest Type Definitions
  * (Open Quiz & Study Exchange)
  *
- * Type-safe TypeScript definitions for the OQSE Application Manifest (\u00a72).
+ * Type-safe TypeScript definitions for the OQSE Application Manifest (Section 2).
  * Every application that interacts with OQSE data MUST declare its capabilities
  * via this manifest format.
  *
- * @see /docs/specs/open-study-exchange-v1-en.md#2-capability-based-interoperability--application-manifest
+ * @see /SPECIFICATION.md#21-the-application-manifest
  */
 
 import type { FeatureProfile } from './oqse';
@@ -15,17 +15,17 @@ import type { FeatureProfile } from './oqse';
 export type { FeatureProfile } from './oqse';
 
 // ============================================================================
-// Action Registry  \u00a72.1.3
+// Action Registry  Section 2.1.3
 // ============================================================================
 
 /**
- * Official actions from the OQSE Action Registry (\u00a72.1.3).
+ * Official actions from the OQSE Action Registry (Section 2.1.3).
  *
- * - `render`   \u2014 Player/learning mode: displays items interactively.
- * - `edit`     \u2014 Authoring mode: creates/modifies item content.
- * - `validate` \u2014 Verification mode: checks structural/logical correctness.
- * - `import`   \u2014 Data ingestion: parses OQSE data into an internal system.
- * - `export`   \u2014 Data generation: serializes internal data into OQSE format.
+ * - `render`   - Player/learning mode: displays items interactively.
+ * - `edit`     - Authoring mode: creates/modifies item content.
+ * - `validate` - Verification mode: checks structural/logical correctness.
+ * - `import`   - Data ingestion: parses OQSE data into an internal system.
+ * - `export`   - Data generation: serializes internal data into OQSE format.
  */
 export type OfficialAction = 'render' | 'edit' | 'validate' | 'import' | 'export';
 
@@ -41,15 +41,15 @@ export type CustomAction = `x-${string}`;
 export type OQSEAction = OfficialAction | CustomAction;
 
 // ============================================================================
-// Study Mode & Question Density  \u00a72.1.1
+// Study Mode & Question Density  Section 2.1.1
 // ============================================================================
 
 /**
  * Primary experience type of an application.
  *
- * - `"game"`  \u2014 Entertainment-first; gameplay mechanics take priority.
- * - `"fun"`   \u2014 Balanced blend of interactivity and learning.
- * - `"drill"` \u2014 Maximally focused, distraction-free repetition.
+ * - `"game"`  - Entertainment-first; gameplay mechanics take priority.
+ * - `"fun"`   - Balanced blend of interactivity and learning.
+ * - `"drill"` - Maximally focused, distraction-free repetition.
  *
  * If absent, no assumption is made.
  */
@@ -58,9 +58,9 @@ export type OQSEStudyMode = 'game' | 'fun' | 'drill';
 /**
  * Ratio of quiz items relative to non-question game elements.
  *
- * - `"low"`    \u2014 Questions appear rarely; gameplay dominates.
- * - `"medium"` \u2014 Questions and gameplay are roughly balanced.
- * - `"high"`   \u2014 Nearly every interaction is a question.
+ * - `"low"`    - Questions appear rarely; gameplay dominates.
+ * - `"medium"` - Questions and gameplay are roughly balanced.
+ * - `"high"`   - Nearly every interaction is a question.
  *
  * If `studyMode` is `"drill"`, hosts SHOULD treat this as `"high"` regardless.
  * If absent, no assumption is made.
@@ -68,11 +68,11 @@ export type OQSEStudyMode = 'game' | 'fun' | 'drill';
 export type OQSEQuestionDensity = 'low' | 'medium' | 'high';
 
 // ============================================================================
-// Official Feature Registry  \u00a72.2
+// Official Feature Registry  Section 2.2
 // ============================================================================
 
 /**
- * All officially recognized feature keys from the OQSE Feature Registry (\u00a72.2).
+ * All officially recognized feature keys from the OQSE Feature Registry (Section 2.2).
  *
  * Features are declared in `capabilities.features` (Manifest) and in
  * `meta.requirements.features` (Study Set) to signal support/requirement.
@@ -112,11 +112,11 @@ export type CustomFeatureKey = `x-${string}`;
 export type FeatureFlag = OfficialFeatureKey | CustomFeatureKey;
 
 // ============================================================================
-// Item Property Registry  \u00a72.2
+// Item Property Registry  Section 2.2
 // ============================================================================
 
 /**
- * Official item-level property keys from the OQSE itemProperties registry (\u00a72.2).
+ * Official item-level property keys from the OQSE itemProperties registry (Section 2.2).
  *
  * Declared in `capabilities.itemProperties` (app support) and
  * `meta.requirements.itemProperties` (set requirement).
@@ -144,11 +144,11 @@ export type CustomItemProperty = `x-${string}`;
 export type ItemPropertyKey = OfficialItemProperty | CustomItemProperty;
 
 // ============================================================================
-// Meta Property Registry  \u00a72.2
+// Meta Property Registry  Section 2.2
 // ============================================================================
 
 /**
- * Official set-level (meta) property keys from the OQSE metaProperties registry (\u00a72.2).
+ * Official set-level (meta) property keys from the OQSE metaProperties registry (Section 2.2).
  *
  * Declared in `capabilities.metaProperties` (app support) and
  * `meta.requirements.metaProperties` (set requirement).
@@ -181,17 +181,17 @@ export type CustomMetaProperty = `x-${string}`;
 export type MetaPropertyKey = OfficialMetaProperty | CustomMetaProperty;
 
 // ============================================================================
-// Wildcard / Null Array Semantics  \u00a72.1.2
+// Wildcard / Null Array Semantics  Section 2.1.2
 // ============================================================================
 
 /**
- * A typed "explicit list" array — lists concrete accepted values.
+ * A typed "explicit list" array - lists concrete accepted values.
  * Used for MIME type arrays in ManifestAssets and for item `types`.
  */
 export type ExplicitArray<T extends string> = T[];
 
 /**
- * A "wildcard" array — the single-element tuple `["*"]` meaning "all accepted."
+ * A "wildcard" array - the single-element tuple `["*"]` meaning "all accepted."
  */
 export type WildcardArray = ['*'];
 
@@ -210,7 +210,7 @@ export type WildcardArray = ['*'];
 export type WildcardOrExplicit<T extends string> = WildcardArray | ExplicitArray<T> | null;
 
 // ============================================================================
-// Manifest Assets Map  \u00a72.1.2
+// Manifest Assets Map  Section 2.1.2
 // ============================================================================
 
 /**
@@ -264,10 +264,10 @@ export type ModelMimeType =
  * Asset support map for the four supported asset categories.
  *
  * Per each category:
- * - `["*"]`             \u2014 Accepts any MIME type in this category.
- * - `["image/png", ...]` \u2014 Only the listed MIME types.
- * - `null` or absent    \u2014 Category not supported.
- * - `[]`                \u2014 Equivalent to `null` (not supported); SHOULD NOT be emitted.
+ * - `["*"]`             - Accepts any MIME type in this category.
+ * - `["image/png", ...]` - Only the listed MIME types.
+ * - `null` or absent    - Category not supported.
+ * - `[]`                - Equivalent to `null` (not supported); SHOULD NOT be emitted.
  *
  * If the entire `assets` object is omitted, the application declares no media support.
  */
@@ -283,7 +283,7 @@ export interface ManifestAssets {
 }
 
 // ============================================================================
-// Manifest Capabilities Object  \u00a72.1.2
+// Manifest Capabilities Object  Section 2.1.2
 // ============================================================================
 
 /**
@@ -293,11 +293,11 @@ export interface ManifestAssets {
  * Declares everything the application can do, what types it handles,
  * what media formats it accepts, and which OQSE features it supports.
  *
- * @see \u00a72.1.2 Capabilities Object (extends FeatureProfile)
+ * @see /SPECIFICATION.md#212-capabilities-object-extends-featureprofile
  */
 export interface ManifestCapabilities extends FeatureProfile {
   /**
-   * Actions the application can perform (REQUIRED, \u22651 value).
+  * Actions the application can perform (REQUIRED, >=1 value).
    * MUST contain at least one value from the Action Registry.
    * Custom actions MUST use the `x-` prefix.
    *
@@ -310,8 +310,8 @@ export interface ManifestCapabilities extends FeatureProfile {
    *
    * - Required (at least one type or `["*"]`) when `actions` includes `render` or `edit`.
    * - MAY be omitted for `validate`, `import`, or `export`-only applications.
-   * - `["*"]` \u2014 supports all item types.
-   * - `[]` / `null` \u2014 equivalent; treated as "no types declared".
+   * - `["*"]` - supports all item types.
+   * - `[]` / `null` - equivalent; treated as "no types declared".
    * - Custom types MUST use the `x-` prefix.
    *
    * @example `["flashcard", "mcq-single", "*"]`
@@ -361,11 +361,11 @@ export interface ManifestCapabilities extends FeatureProfile {
 }
 
 // ============================================================================
-// OQSE Application Manifest (Root Object)  \u00a72.1.1
+// OQSE Application Manifest (Root Object)  Section 2.1.1
 // ============================================================================
 
 /**
- * OQSE Application Manifest (\u00a72.1).
+ * OQSE Application Manifest (Section 2.1).
  *
  * Every application, micro-frontend, or plugin that interacts with OQSE data
  * MUST declare its capabilities using this structure.
@@ -375,13 +375,13 @@ export interface ManifestCapabilities extends FeatureProfile {
  * - Non-HTML application: static `oqse-manifest.json` at the deployment root.
  * - HTTP discovery: `Link: <manifest.json>; rel="oqse-manifest"` header.
  *
- * @see /docs/specs/open-study-exchange-v1-en.md#21-the-application-manifest
+ * @see /SPECIFICATION.md#21-the-application-manifest
  *
  * @example
  * ```json
  * {
- *   "$schema": "https://memizy.com/schemas/oqse-manifest/v1.0.json",
- *   "version": "1.0",
+ *   "$schema": "https://memizy.com/schemas/oqse-manifest/v0.1.json",
+ *   "version": "0.1",
  *   "pluginVersion": "2.1.0",
  *   "id": "https://memizy.com/universal-player",
  *   "appName": "Memizy Universal Player",
@@ -397,16 +397,16 @@ export interface OQSEManifest {
   /**
    * URL reference to the JSON Schema for automatic validation.
    * Recommended but not required.
-   * @example `"https://memizy.com/schemas/oqse-manifest/v1.0.json"`
+   * @example `"https://memizy.com/schemas/oqse-manifest/v0.1.json"`
    */
   $schema?: string;
 
   /**
    * Version of the Application Manifest format (REQUIRED).
-   * MUST follow `"MAJOR.MINOR"` format. The current version is `"1.0"`.
+   * MUST follow `"MAJOR.MINOR"` format. The current version is `"0.1"`.
    * Malformed values MUST cause the host to reject this manifest.
    *
-   * @example `"1.0"`
+   * @example `"0.1"`
    */
   version: string;
 
@@ -424,7 +424,7 @@ export interface OQSEManifest {
    * If malformed, treat as absent and SHOULD warn.
    * MUST be \u2264 `maxOqseVersion` when both are declared.
    *
-   * @example `"1.0"`
+   * @example `"0.1"`
    */
   minOqseVersion?: string;
 
@@ -456,7 +456,7 @@ export interface OQSEManifest {
   /**
    * Human-readable description of what the application does.
    * Displayed in host environments and plugin catalogs.
-   * **Plain Text** — no Markdown or HTML.
+  * **Plain Text** - no Markdown or HTML.
    */
   description?: string;
 
@@ -542,13 +542,13 @@ export interface OQSEManifest {
  * required by both `manifest.version` and `minOqseVersion`/`maxOqseVersion`.
  *
  * @param version - The version string to validate.
- * @returns `true` if valid (e.g., `"1.0"`, `"2.10"`), `false` otherwise.
+ * @returns `true` if valid (e.g., `"0.1"`, `"2.10"`), `false` otherwise.
  *
  * @example
- * isValidManifestVersion("1.0")   // true
+ * isValidManifestVersion("0.1")   // true
  * isValidManifestVersion("2.10")  // true
  * isValidManifestVersion("1.0.0") // false (SemVer, not allowed here)
- * isValidManifestVersion("v1.0")  // false
+ * isValidManifestVersion("v0.1")  // false
  */
 export function isValidManifestVersion(version: string): boolean {
   return /^\d+\.\d+$/.test(version);
@@ -575,7 +575,7 @@ export function isValidSemVer(version: string): boolean {
  * - Positive number if `a > b`
  *
  * @example
- * compareManifestVersions("1.0", "1.10")  // negative (1.0 < 1.10)
+ * compareManifestVersions("0.1", "1.10")  // negative (0.1 < 1.10)
  * compareManifestVersions("2.0", "1.99")  // positive (2.0 > 1.99)
  */
 export function compareManifestVersions(a: string, b: string): number {
@@ -614,7 +614,7 @@ export function isOQSEManifest(value: unknown): value is OQSEManifest {
  * Checks whether an OQSE file's version is within the application's
  * declared min/max OQSE version range.
  *
- * @param fileVersion   - The `version` field of the OQSE study set file (e.g., `"1.0"`).
+ * @param fileVersion   - The `version` field of the OQSE study set file (e.g., `"0.1"`).
  * @param manifest      - The Application Manifest to check against.
  * @returns `true` if the file is compatible, `false` if the host MUST NOT load it.
  */
@@ -631,3 +631,5 @@ export function isVersionCompatible(fileVersion: string, manifest: OQSEManifest)
 
   return true;
 }
+
+

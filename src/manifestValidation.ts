@@ -1,12 +1,12 @@
-﻿/**
+/**
  * @file manifestValidation.ts
- * @description Zod validation schemas for the OQSE Application Manifest (┬ž2.1.1).
+ * @description OQSE v0.1 Zod validation schemas for the OQSE Application Manifest (section 2.1.1).
  *
  * Mirrors every type defined in `manifest.ts` and exposes helper functions for
  * validating manifest objects received from plugins, presets, or remote sources.
  *
- * @see {@link ../../types/manifest.ts} for the corresponding TypeScript type definitions.
- * @see {@link /docs/specs/open-study-exchange-v1.md} for the canonical specification.
+ * @see {@link ./manifest.ts} for the corresponding TypeScript type definitions.
+ * @see {@link /SPECIFICATION.md#211-application-manifest} for the canonical specification.
  */
 
 import { z } from 'zod';
@@ -26,25 +26,25 @@ import { FeatureProfileSchema } from './oqseValidation';
 // ============================================================================
 
 /** Non-empty plain-text string (no leading/trailing whitespace). */
-const NonEmptyStringSchema = z.string().min(1, 'Hodnota nesm├ş b├Żt pr├ízdn├í').trim();
+const NonEmptyStringSchema = z.string().min(1, 'Hodnota nesm+� b+�t pr+�zdn+�').trim();
 
 /** Absolute URL (http/https). */
 const AbsoluteURLSchema = z
   .string()
-  .url('Mus├ş b├Żt platn├í absolutn├ş URL')
+  .url('Mus+� b+�t platn+� absolutn+� URL')
   .refine((v) => v.startsWith('http://') || v.startsWith('https://'), {
-    message: 'URL mus├ş pou┼ż├şvat sch├ęma http nebo https',
+    message: 'URL mus+� pou+�+�vat sch+�ma http nebo https',
   });
 
-/** Semver version string in MAJOR.MINOR format (e.g. "1.0", "2.3"). */
+/** Semver version string in MAJOR.MINOR format (e.g. "0.1", "2.3"). */
 const ManifestVersionSchema = z
   .string()
-  .regex(/^\d+\.\d+$/, 'Verze mus├ş b├Żt ve form├ítu MAJOR.MINOR (nap┼Ö. "1.0")');
+  .regex(/^\d+\.\d+$/, 'Verze mus+� b+�t ve form+�tu MAJOR.MINOR (nap+�. "0.1")');
 
 /** Full semver version string MAJOR.MINOR.PATCH (e.g. "1.2.3"). */
 const SemVerSchema = z
   .string()
-  .regex(/^\d+\.\d+\.\d+$/, 'Verze mus├ş b├Żt ve form├ítu MAJOR.MINOR.PATCH (nap┼Ö. "1.2.3")');
+  .regex(/^\d+\.\d+\.\d+$/, 'Verze mus+� b+�t ve form+�tu MAJOR.MINOR.PATCH (nap+�. "1.2.3")');
 
 // ============================================================================
 // Actions
@@ -63,7 +63,7 @@ export const OQSEActionSchema = z
     (v) => (OFFICIAL_ACTIONS as ReadonlyArray<string>).includes(v) || v.startsWith('x-'),
     {
       message:
-        'Akce mus├ş b├Żt jedna z [render, edit, validate, import, export] nebo m├şt prefix "x-"',
+        'Akce mus+� b+�t jedna z [render, edit, validate, import, export] nebo m+�t prefix "x-"',
     }
   );
 
@@ -81,7 +81,7 @@ export const OQSEQuestionDensitySchema = z.enum(['low', 'medium', 'high']);
 // Feature Flags
 // ============================================================================
 
-/** Official feature keys as defined in ┬ž2.1.1 of the OQSE spec. */
+/** Official feature keys as defined in T�2.1.1 of the OQSE spec. */
 const OFFICIAL_FEATURE_KEYS = [
   'math',
   'media',
@@ -106,7 +106,7 @@ export const FeatureFlagSchema = z
     (v) => (OFFICIAL_FEATURE_KEYS as ReadonlyArray<string>).includes(v) || v.startsWith('x-'),
     {
       message:
-        'Funkce mus├ş b├Żt jedna z ofici├íln├şch kl├ş─Ź┼» nebo m├şt prefix "x-"',
+        'Funkce mus+� b+�t jedna z ofici+�ln+�ch kl+���+� nebo m+�t prefix "x-"',
     }
   );
 
@@ -117,12 +117,12 @@ export const FeatureFlagSchema = z
 /** Official item-level extension property keys (or vendor-prefixed). */
 export const ItemPropertyKeySchema = z
   .string()
-  .min(1, 'Kl├ş─Ź vlastnosti polo┼żky nesm├ş b├Żt pr├ízdn├Ż');
+  .min(1, 'Kl+��� vlastnosti polo+�ky nesm+� b+�t pr+�zdn+�');
 
 /** Official meta-level extension property keys (or vendor-prefixed). */
 export const MetaPropertyKeySchema = z
   .string()
-  .min(1, 'Kl├ş─Ź vlastnosti metadat nesm├ş b├Żt pr├ízdn├Ż');
+  .min(1, 'Kl+��� vlastnosti metadat nesm+� b+�t pr+�zdn+�');
 
 // ============================================================================
 // WildcardOrExplicit pattern
@@ -133,9 +133,9 @@ export const MetaPropertyKeySchema = z
  * `ManifestAssets` and `ManifestCapabilities`.
  *
  * Valid values:
- * - `['*']`  ÔÇö wildcard, accepts anything
- * - `T[]`    ÔÇö explicit allow-list
- * - `null`   ÔÇö feature disabled / not supported
+ * - `['*']`  ��� wildcard, accepts anything
+ * - `T[]`    ��� explicit allow-list
+ * - `null`   ��� feature disabled / not supported
  */
 function wildcardOrExplicit<T extends z.ZodTypeAny>(
   itemSchema: T
@@ -150,24 +150,24 @@ function wildcardOrExplicit<T extends z.ZodTypeAny>(
 /** Any valid image MIME type. */
 export const ImageMimeTypeSchema = z
   .string()
-  .refine((v) => v.startsWith('image/'), { message: 'Mus├ş b├Żt platn├Ż MIME typ obr├ízku (image/...)' });
+  .refine((v) => v.startsWith('image/'), { message: 'Mus+� b+�t platn+� MIME typ obr+�zku (image/...)' });
 
 /** Any valid audio MIME type. */
 export const AudioMimeTypeSchema = z
   .string()
-  .refine((v) => v.startsWith('audio/'), { message: 'Mus├ş b├Żt platn├Ż MIME typ zvuku (audio/...)' });
+  .refine((v) => v.startsWith('audio/'), { message: 'Mus+� b+�t platn+� MIME typ zvuku (audio/...)' });
 
 /** Any valid video MIME type. */
 export const VideoMimeTypeSchema = z
   .string()
-  .refine((v) => v.startsWith('video/'), { message: 'Mus├ş b├Żt platn├Ż MIME typ videa (video/...)' });
+  .refine((v) => v.startsWith('video/'), { message: 'Mus+� b+�t platn+� MIME typ videa (video/...)' });
 
 /** Any valid 3D model MIME type. */
 export const ModelMimeTypeSchema = z
   .string()
   .refine(
     (v) => v.startsWith('model/') || v === 'application/octet-stream',
-    { message: 'Mus├ş b├Żt platn├Ż MIME typ 3D modelu (model/... nebo application/octet-stream)' }
+    { message: 'Mus+� b+�t platn+� MIME typ 3D modelu (model/... nebo application/octet-stream)' }
   );
 
 // ============================================================================
@@ -201,7 +201,7 @@ export const ManifestCapabilitiesSchema = FeatureProfileSchema.extend({
    */
   actions: z
     .array(OQSEActionSchema)
-    .min(1, 'Aplikace mus├ş podporovat alespo┼ł jednu akci'),
+    .min(1, 'Aplikace mus+� podporovat alespo+� jednu akci'),
 
   /** Item types supported by this application. Uses `['*']` for all types. */
   types: wildcardOrExplicit(NonEmptyStringSchema).optional(),
@@ -215,26 +215,27 @@ export const ManifestCapabilitiesSchema = FeatureProfileSchema.extend({
 // ============================================================================
 
 /**
- * Full OQSE Application Manifest schema (┬ž2.1.1).
+ * Full OQSE Application Manifest schema (T�2.1.1).
  *
  * Validated constraints beyond syntax:
- * - `minOqseVersion` ÔëĄ `maxOqseVersion` when both are present
+ * - `minOqseVersion` �� `maxOqseVersion` when both are present
  * - `version` adheres to MAJOR.MINOR format
  * - `capabilities.actions` is non-empty (enforced by inner schema)
  */
 export const OQSEManifestSchema = z
   .object({
+    // Recommended schema URL for draft v0.1: https://memizy.com/schemas/oqse-manifest/v0.1.json
     $schema: AbsoluteURLSchema.optional(),
-    // ÔöÇÔöÇ Identity ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    // ������ Identity ������������������������������������������������������������������������������������������������������������������������������������������������������������������������������
 
     /** Unique reverse-domain identifier, e.g. `com.acme.flashcards`. */
     id: NonEmptyStringSchema.regex(
       /^[a-z0-9-]+(\.[a-z0-9-]+)*$/,
-      'ID mus├ş b├Żt ve tvaru reverse-domain (nap┼Ö. "com.acme.app")'
+      'ID mus+� b+�t ve tvaru reverse-domain (nap+�. "com.acme.app")'
     ),
 
     /** Human-readable display name of the application. */
-    appName: NonEmptyStringSchema.max(100, 'N├ízev nesm├ş b├Żt del┼í├ş ne┼ż 100 znak┼»'),
+    appName: NonEmptyStringSchema.max(100, 'N+�zev nesm+� b+�t del+�+� ne+� 100 znak+�'),
 
     /**
      * Application version string. Follows MAJOR.MINOR format (manifest version
@@ -244,7 +245,7 @@ export const OQSEManifestSchema = z
 
     pluginVersion: SemVerSchema.optional(),
 
-    // ÔöÇÔöÇ OQSE Compatibility ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    // ������ OQSE Compatibility ������������������������������������������������������������������������������������������������������������������������������������������������
 
     /** Minimum OQSE spec version this application can consume. */
     minOqseVersion: ManifestVersionSchema.optional(),
@@ -252,21 +253,21 @@ export const OQSEManifestSchema = z
     /** Maximum OQSE spec version this application can consume. */
     maxOqseVersion: ManifestVersionSchema.optional(),
 
-    // ÔöÇÔöÇ Capabilities ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    // ������ Capabilities ������������������������������������������������������������������������������������������������������������������������������������������������������������������
 
     /** Declares all features, item types, and media assets the app handles. */
     capabilities: ManifestCapabilitiesSchema,
 
-    // ÔöÇÔöÇ Plugin / Embedding ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    // ������ Plugin / Embedding ������������������������������������������������������������������������������������������������������������������������������������������������
 
-    author: z.string().max(100, 'N├ízev autora nesm├ş b├Żt del┼í├ş ne┼ż 100 znak┼»').optional(),
+    author: z.string().max(100, 'N+�zev autora nesm+� b+�t del+�+� ne+� 100 znak+�').optional(),
 
     authorUrl: AbsoluteURLSchema.optional(),
 
     locales: z.array(NonEmptyStringSchema).optional(),
 
-    /** Short human-readable description (plain text, ÔëĄ 500 chars). */
-    description: z.string().max(500, 'Popis nesm├ş b├Żt del┼í├ş ne┼ż 500 znak┼»').optional(),
+    /** Short human-readable description (plain text, �� 500 chars). */
+    description: z.string().max(500, 'Popis nesm+� b+�t del+�+� ne+� 500 znak+�').optional(),
 
     emoji: z.string().optional(),
 
@@ -283,7 +284,7 @@ export const OQSEManifestSchema = z
   })
   .refine(
     (data) => {
-      // Validate minOqseVersion ÔëĄ maxOqseVersion when both are present
+      // Validate minOqseVersion �� maxOqseVersion when both are present
       if (!data.minOqseVersion || !data.maxOqseVersion) return true;
 
       const minParts = data.minOqseVersion.split('.');
@@ -297,7 +298,7 @@ export const OQSEManifestSchema = z
       return minMinor <= maxMinor;
     },
     {
-      message: 'minOqseVersion nesm├ş b├Żt vy┼í┼í├ş ne┼ż maxOqseVersion',
+      message: 'minOqseVersion nesm+� b+�t vy+�+�+� ne+� maxOqseVersion',
       path: ['minOqseVersion'],
     }
   );
@@ -354,8 +355,8 @@ export function safeValidateManifest(
  * @example
  * ```ts
  * console.error(formatManifestErrors(result.error));
- * // Ôćĺ "id: ID mus├ş b├Żt ve tvaru reverse-domain..."
- * // Ôćĺ "capabilities.actions: Aplikace mus├ş podporovat alespo┼ł jednu akci"
+ * // ��� "id: ID mus+� b+�t ve tvaru reverse-domain..."
+ * // ��� "capabilities.actions: Aplikace mus+� podporovat alespo+� jednu akci"
  * ```
  */
 export function formatManifestErrors(error: z.ZodError): string {
@@ -370,7 +371,7 @@ export function formatManifestErrors(error: z.ZodError): string {
 /**
  * Checks whether a plain object looks like an OQSE Manifest (duck-typing).
  *
- * This is a fast pre-check ÔÇö use `validateManifest` for full validation.
+ * This is a fast pre-check ��� use `validateManifest` for full validation.
  *
  * @param data - Any value.
  * @returns `true` if `data` has the minimum required shape.
@@ -402,3 +403,4 @@ const manifestSchemaContracts: {
 };
 
 void manifestSchemaContracts;
+

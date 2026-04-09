@@ -1,4 +1,4 @@
-# OQSE v1.0 Specification (Open Quiz & Study Exchange)
+# OQSE v0.1 Specification (Open Quiz & Study Exchange)
 
 **OQSE** (Open Quiz & Study Exchange) is an open, JSON-based format designed for easy creation, sharing, and importing of study sets. It is designed with emphasis on flexibility, extensibility, semantic interoperability, legal clarity, and backward compatibility.
 
@@ -96,8 +96,8 @@ The root object of an OQSE file consists of 4 keys:
 
 ```json
 {
-  "$schema": "https://memizy.com/schemas/oqse/v1.0.json",
-  "version": "1.0",
+  "$schema": "https://memizy.com/schemas/oqse/v0.1.json",
+  "version": "0.1",
   "meta": { ... },
   "items": [ ... ]
 }
@@ -112,7 +112,7 @@ The root object of an OQSE file consists of 4 keys:
 
 ## 2. Capability-Based Interoperability, Application Manifest & Progress Data
 
-OQSE v1.0 uses a **capability-based negotiation system**. Every application, micro-frontend, or plugin MUST declare exactly what it can do using an **Application Manifest**. Interoperability is achieved by matching the **Requirements** of a study set with the **Capabilities** of the application.
+OQSE v0.1 uses a **capability-based negotiation system**. Every application, micro-frontend, or plugin MUST declare exactly what it can do using an **Application Manifest**. Interoperability is achieved by matching the **Requirements** of a study set with the **Capabilities** of the application.
 
 ### 2.1. The Application Manifest
 
@@ -124,8 +124,8 @@ Applications MUST declare their capabilities in a standardized JSON format. This
 
 ```json
 {
-  "$schema": "https://memizy.com/schemas/oqse-manifest/v1.0.json",
-  "version": "1.0",
+  "$schema": "https://memizy.com/schemas/oqse-manifest/v0.1.json",
+  "version": "0.1",
   "pluginVersion": "2.1.0",
   "minOqseVersion": "1.0",
   "maxOqseVersion": "1.99",
@@ -455,7 +455,7 @@ A minimal but complete OQSEP document with two item records:
 
 ```json
 {
-  "$schema": "https://memizy.com/schemas/oqsep/v1.0.json",
+  "$schema": "https://memizy.com/schemas/oqsep/v0.1.json",
   "version": "0.1",
   "meta": {
     "setId": "019cb880-acf3-7bb1-a717-96bb05e220c1",
@@ -1577,8 +1577,8 @@ This optional object (`item.pedagogy`) serves to store advanced metadata about d
 
 ```json
 {
-  "$schema": "https://memizy.com/schemas/oqse/v1.0.json",
-  "version": "1.0",
+  "$schema": "https://memizy.com/schemas/oqse/v0.1.json",
+  "version": "0.1",
   "meta": {
     "id": "019aa606-cbb5-7b2e-9e61-ac335db1eb4b",
     "title": "Rocket Science Basics 🚀",
@@ -1887,7 +1887,7 @@ To ensure consistency and practical implementability, the specification defines 
 
 ### 9.3. UUID Validation Rules
 
-The standard for OQSE v1.0 is **UUIDv7**. For applications simplification, it is recommended to support only **UUIDv7** (preferred) and **UUIDv4** (fallback).
+The standard for OQSE v0.1 is **UUIDv7**. For applications simplification, it is recommended to support only **UUIDv7** (preferred) and **UUIDv4** (fallback).
 
 **Rules for Applications:**
 1. **Import:** Application MUST accept UUID versions 4 and 7 when loading existing sets. Application MAY accept other versions (1-6), but this is not required.
@@ -2026,8 +2026,8 @@ This order ensures that:
 **Example of correct order:**
 ```json
 {
-  "$schema": "https://memizy.com/schemas/oqse/v1.0.json",
-  "version": "1.0",
+  "$schema": "https://memizy.com/schemas/oqse/v0.1.json",
+  "version": "0.1",
   "meta": { ... },
   "items": [ ... ]
 }
@@ -2287,7 +2287,7 @@ Applications may define custom item types using `x-` prefix (e.g., `x-code-chall
 ### 13.1. JSON Schema
 Official JSON Schema is available at:
 
-[https://memizy.com/schemas/oqse/v1.0.json](https://memizy.com/schemas/oqse/v1.0.json)
+[https://memizy.com/schemas/oqse/v0.1.json](https://memizy.com/schemas/oqse/v0.1.json)
 
 ### 13.2. Recommended Tools
   * **Validators:** Ajv, JSON Schema Validator
@@ -2433,11 +2433,12 @@ OQSE is an open standard. Suggestions for improvements:
 
 -----
 
-**Document Version:** 1.0  
+**Document Version:** 0.1  
 **Last Updated:** November 20, 2025  
 **Documentation License:** CC-BY-SA-4.0
 
 -----
 
-### Version 1.0 (November 20, 2025)
+### Version 0.1 (November 20, 2025)
 #### First version of this specification created
+

@@ -1,11 +1,11 @@
 /**
- * OQSE v1.0 Type Definitions
+ * OQSE v0.1 Type Definitions
  * (Open Quiz & Study Exchange)
  * 
  * Type-safe TypeScript definitions for the OQSE specification.
  * Uses Discriminated Unions to make invalid states unrepresentable.
  * 
- * @see /docs/specs/open-study-exchange-v1-en.md
+ * @see /SPECIFICATION.md
  */
 
 // ============================================================================
@@ -269,7 +269,7 @@ export type TagDefinitionDictionary = Record<string, TagDefinition>;
  * It declares which features, LaTeX packages, and item/meta properties
  * an application supports (in Manifest) or requires (in Study Set).
  *
- * @see /docs/specs/open-study-exchange-v1-en.md#22-feature-profile--official-registry
+ * @see /SPECIFICATION.md#22-feature-profile--official-registry
  */
 export interface FeatureProfile {
   /**
@@ -1395,7 +1395,7 @@ export interface OQSEFile {
   /** URL reference to the JSON Schema specification */
   $schema?: string;
   
-  /** Version of the OQSE specification (e.g., "1.0") */
+  /** Version of the OQSE specification (e.g., "0.1") */
   version: string;
   
   /** Metadata about the entire set */
@@ -1594,3 +1594,4 @@ export function isCoreItem(item: OQSEItem): boolean {
 export function isExtendedItem(item: OQSEItem): boolean {
   return !isCoreItem(item);
 }
+

@@ -1,11 +1,11 @@
-﻿/**
- * OQSE v1.0 Zod Validation Schemas
+/**
+ * OQSE v0.1 Zod Validation Schemas
  * 
  * Runtime validation schemas for OQSE (Open Quiz & Study Exchange) format.
  * Uses Zod for type-safe runtime validation with detailed error messages.
  * 
- * @see /docs/specs/open-study-exchange-v1-en.md
- * @see /src/types/oqse.ts
+ * @see /SPECIFICATION.md
+ * @see /src/oqse.ts
  */
 
 import { z } from 'zod';
@@ -72,51 +72,51 @@ import type {
 /**
  * UUID validation (accepts UUIDv4 and UUIDv7)
  */
-export const UUIDSchema = z.string().uuid({ message: 'Neplatn├Ż form├ít UUID' });
+export const UUIDSchema = z.string().uuid({ message: 'Neplatn+� form+�t UUID' });
 
 /**
  * BCP 47 language code (e.g., "en", "en-US", "cs", "zh-Hans")
  */
-export const LanguageCodeSchema = z.string().min(2, 'K├│d jazyka mus├ş m├şt alespo┼ł 2 znaky').regex(
+export const LanguageCodeSchema = z.string().min(2, 'K+-d jazyka mus+� m+�t alespo+� 2 znaky').regex(
   /^[a-z]{2,3}(-[A-Z][a-z]{3})?(-[A-Z]{2})?$/,
-  'Neplatn├Ż form├ít BCP 47 (nap┼Ö. "cs", "en-US")'
+  'Neplatn+� form+�t BCP 47 (nap+�. "cs", "en-US")'
 );
 
 /**
  * SPDX license identifier
  */
-export const SPDXLicenseSchema = z.string().min(1, 'Identifik├ítor licence nesm├ş b├Żt pr├ízdn├Ż');
+export const SPDXLicenseSchema = z.string().min(1, 'Identifik+�tor licence nesm+� b+�t pr+�zdn+�');
 
 /**
  * ISO 8601 date/time string (RFC 3339 subset)
  */
 export const ISO8601DateTimeSchema = z.string().regex(
   /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?(Z|[+-]\d{2}:\d{2})?)?$/,
-  'Neplatn├Ż form├ít ISO 8601 (nap┼Ö. "2025-11-21T14:30:00Z")'
+  'Neplatn+� form+�t ISO 8601 (nap+�. "2025-11-21T14:30:00Z")'
 );
 
 /**
  * Absolute URL validation
  */
-export const AbsoluteURLSchema = z.string().url({ message: 'Mus├ş b├Żt platn├í absolutn├ş URL adresa' });
+export const AbsoluteURLSchema = z.string().url({ message: 'Mus+� b+�t platn+� absolutn+� URL adresa' });
 
 /**
  * Asset key validation (lowercase alphanumeric with _, -)
  */
 export const AssetKeySchema = z.string().regex(
   /^[a-z0-9_-]+$/,
-  'Kl├ş─Ź assetu mus├ş obsahovat pouze mal├í p├şsmena, ─Ź├şsla, poml─Źky a podtr┼ż├ştka'
+  'Kl+��� assetu mus+� obsahovat pouze mal+� p+�smena, ��+�sla, poml��ky a podtr+�+�tka'
 );
 
 /**
  * Plain text (non-empty string)
  */
-export const PlainTextSchema = z.string().min(1, 'Text nesm├ş b├Żt pr├ízdn├Ż');
+export const PlainTextSchema = z.string().min(1, 'Text nesm+� b+�t pr+�zdn+�');
 
 /**
  * Rich content (Markdown, LaTeX, Media Tags)
  */
-export const RichContentSchema = z.string().min(1, 'Obsah nesm├ş b├Żt pr├ízdn├Ż');
+export const RichContentSchema = z.string().min(1, 'Obsah nesm+� b+�t pr+�zdn+�');
 
 /**
  * Optional rich content
@@ -132,7 +132,7 @@ export const OptionalRichContentSchema = z.string().optional();
  */
 export const SubtitleTrackSchema = z.object({
   lang: LanguageCodeSchema,
-  value: z.string().min(1, 'URI titulk┼» nesm├ş b├Żt pr├ízdn├ę'),
+  value: z.string().min(1, 'URI titulk+� nesm+� b+�t pr+�zdn+�'),
   label: z.string().optional(),
   kind: z.enum(['captions', 'subtitles', 'descriptions']).optional(),
 });
@@ -142,7 +142,7 @@ export const SubtitleTrackSchema = z.object({
  */
 export const MediaObjectSchema = z.object({
   type: z.enum(['image', 'audio', 'video', 'model']),
-  value: z.string().min(1, 'URI m├ędia nesm├ş b├Żt pr├ízdn├ę'),
+  value: z.string().min(1, 'URI m+�dia nesm+� b+�t pr+�zdn+�'),
   mimeType: z.string().optional(),
   altText: z.string().optional(),
   transcript: RichContentSchema.optional(),
@@ -165,7 +165,7 @@ export const MediaObjectSchema = z.object({
     return true;
   },
   {
-    message: 'Po─Ź├íte─Źn├ş ─Źas mus├ş b├Żt men┼í├ş ne┼ż koncov├Ż ─Źas',
+    message: 'Po��+�te��n+� ��as mus+� b+�t men+�+� ne+� koncov+� ��as',
     path: ['end'],
   }
 ).refine(
@@ -177,7 +177,7 @@ export const MediaObjectSchema = z.object({
     return true;
   },
   {
-    message: 'Obr├ízky mus├ş m├şt definovan├Ż alternativn├ş text (altText) pro p┼Ö├şstupnost',
+    message: 'Obr+�zky mus+� m+�t definovan+� alternativn+� text (altText) pro p+�+�stupnost',
     path: ['altText'],
   }
 );
@@ -194,7 +194,7 @@ export const AssetDictionarySchema = z.record(AssetKeySchema, MediaObjectSchema)
 export const PersonObjectSchema = z.object({
   name: PlainTextSchema,
   role: z.string().optional(),
-  email: z.string().email('Neplatn├Ż form├ít e-mailov├ę adresy').optional(),
+  email: z.string().email('Neplatn+� form+�t e-mailov+� adresy').optional(),
   url: AbsoluteURLSchema.optional(),
 });
 
@@ -240,7 +240,7 @@ export const SourceMaterialSchema = z.object({
     return true;
   },
   {
-    message: 'Pro typy url, pdf, video, audio a image mus├ş b├Żt value platn├í URL adresa',
+    message: 'Pro typy url, pdf, video, audio a image mus+� b+�t value platn+� URL adresa',
     path: ['value'],
   }
 );
@@ -256,7 +256,7 @@ export const SourceReferenceSchema = z.object({
 // ============================================================================
 
 export const TagDefinitionSchema = z.object({
-  wikidataId: z.string().regex(/^Q\d+$/, 'Wikidata ID mus├ş m├şt form├ít Q n├ísledovan├ę ─Ź├şslem').optional(),
+  wikidataId: z.string().regex(/^Q\d+$/, 'Wikidata ID mus+� m+�t form+�t Q n+�sledovan+� ��+�slem').optional(),
   description: z.string().optional(),
 });
 
@@ -272,14 +272,14 @@ export const TagDefinitionDictionarySchema = z.record(z.string(), TagDefinitionS
  * All arrays accept official values from the registry or custom `x-` prefixed keys.
  */
 export const FeatureProfileSchema = z.object({
-  features: z.array(z.string().min(1, 'Kl├ş─Ź funkce nesm├ş b├Żt pr├ízdn├Ż')).optional(),
-  latexPackages: z.array(z.string().min(1, 'N├ízev bal├ş─Źku nesm├ş b├Żt pr├ízdn├Ż')).optional(),
-  itemProperties: z.array(z.string().min(1, 'Kl├ş─Ź vlastnosti nesm├ş b├Żt pr├ízdn├Ż')).optional(),
-  metaProperties: z.array(z.string().min(1, 'Kl├ş─Ź vlastnosti nesm├ş b├Żt pr├ízdn├Ż')).optional(),
+  features: z.array(z.string().min(1, 'Kl+��� funkce nesm+� b+�t pr+�zdn+�')).optional(),
+  latexPackages: z.array(z.string().min(1, 'N+�zev bal+���ku nesm+� b+�t pr+�zdn+�')).optional(),
+  itemProperties: z.array(z.string().min(1, 'Kl+��� vlastnosti nesm+� b+�t pr+�zdn+�')).optional(),
+  metaProperties: z.array(z.string().min(1, 'Kl+��� vlastnosti nesm+� b+�t pr+�zdn+�')).optional(),
 });
 
 // ============================================================================
-// Feature Requirements (legacy ÔÇö kept for backward-compat with requiredFeatures)
+// Feature Requirements (legacy ��� kept for backward-compat with requiredFeatures)
 // ============================================================================
 
 export const FeatureTypeSchema = z.enum(['official', 'experimental', 'proprietary']);
@@ -307,7 +307,7 @@ export const FeatureRequirementSchema = z.object({
     return true;
   },
   {
-    message: 'Propriet├írn├ş funkce mus├ş m├şt definovan├Ż vendor (nap┼Ö. "memizy.com")',
+    message: 'Propriet+�rn+� funkce mus+� m+�t definovan+� vendor (nap+�. "memizy.com")',
     path: ['vendor'],
   }
 );
@@ -348,11 +348,11 @@ export const PedagogySchema = z.object({
   bloomLevel: BloomLevelSchema.optional(),
   irtDifficulty: z.number().optional(),
   irtDiscrimination: z.number().optional(),
-  irtGuessing: z.number().min(0).max(1, 'IRT guessing mus├ş b├Żt mezi 0 a 1').optional(),
+  irtGuessing: z.number().min(0).max(1, 'IRT guessing mus+� b+�t mezi 0 a 1').optional(),
   avgTime: z.number().positive().optional(),
   cognitiveLoad: CognitiveLoadSchema.optional(),
   partialCredit: z.boolean().optional(),
-  penaltyPerWrong: z.number().min(0).max(1, 'Penalizace mus├ş b├Żt mezi 0 a 1').optional(),
+  penaltyPerWrong: z.number().min(0).max(1, 'Penalizace mus+� b+�t mezi 0 a 1').optional(),
 });
 
 // ============================================================================
@@ -373,8 +373,8 @@ export const MathSettingsSchema = z.object({
 export const OQSEMetaSchema = z.object({
   id: UUIDSchema,
   language: LanguageCodeSchema,
-  title: PlainTextSchema.max(500, 'Titulek nesm├ş b├Żt del┼í├ş ne┼ż 500 znak┼»'),
-  description: RichContentSchema.max(5000, 'Popis nesm├ş b├Żt del┼í├ş ne┼ż 5000 znak┼»').optional(),
+  title: PlainTextSchema.max(500, 'Titulek nesm+� b+�t del+�+� ne+� 500 znak+�'),
+  description: RichContentSchema.max(5000, 'Popis nesm+� b+�t del+�+� ne+� 5000 znak+�').optional(),
   thumbnail: AssetKeySchema.optional(),
   assets: AssetDictionarySchema.optional(),
   ageMin: z.number().int().nonnegative().optional(),
@@ -407,7 +407,7 @@ export const OQSEMetaSchema = z.object({
     return true;
   },
   {
-    message: 'Minim├íln├ş v─Ťk (ageMin) mus├ş b├Żt men┼í├ş nebo roven maxim├íln├şmu v─Ťku (ageMax)',
+    message: 'Minim+�ln+� v��k (ageMin) mus+� b+�t men+�+� nebo roven maxim+�ln+�mu v��ku (ageMax)',
     path: ['ageMax'],
   }
 ).refine(
@@ -418,7 +418,7 @@ export const OQSEMetaSchema = z.object({
     return created <= updated;
   },
   {
-    message: 'Datum vytvo┼Öen├ş (createdAt) mus├ş b├Żt p┼Öed nebo stejn├ę jako datum aktualizace (updatedAt)',
+    message: 'Datum vytvo+�en+� (createdAt) mus+� b+�t p+�ed nebo stejn+� jako datum aktualizace (updatedAt)',
     path: ['updatedAt'],
   }
 );
@@ -433,10 +433,10 @@ export const BaseItemSchema = z.object({
   assets: AssetDictionarySchema.optional(),
   lang: LanguageCodeSchema.optional(),
   tags: z.array(PlainTextSchema).optional(),
-  difficulty: z.number().int().min(1, 'Obt├ş┼żnost mus├ş b├Żt minim├íln─Ť 1').max(5, 'Obt├ş┼żnost mus├ş b├Żt maxim├íln─Ť 5').optional(),
-  timeLimit: z.number().positive('─îasov├Ż limit mus├ş b├Żt kladn├ę ─Ź├şslo').optional(),
-  hints: z.array(RichContentSchema.max(2000, 'N├ípov─Ťda nesm├ş b├Żt del┼í├ş ne┼ż 2000 znak┼»')).max(20, 'Maxim├íln─Ť 20 n├ípov─Ťd na polo┼żku').optional(),
-  explanation: RichContentSchema.max(10000, 'Vysv─Ťtlen├ş nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»').optional(),
+  difficulty: z.number().int().min(1, 'Obt+�+�nost mus+� b+�t minim+�ln�� 1').max(5, 'Obt+�+�nost mus+� b+�t maxim+�ln�� 5').optional(),
+  timeLimit: z.number().positive('��asov+� limit mus+� b+�t kladn+� ��+�slo').optional(),
+  hints: z.array(RichContentSchema.max(2000, 'N+�pov��da nesm+� b+�t del+�+� ne+� 2000 znak+�')).max(20, 'Maxim+�ln�� 20 n+�pov��d na polo+�ku').optional(),
+  explanation: RichContentSchema.max(10000, 'Vysv��tlen+� nesm+� b+�t del+�+� ne+� 10000 znak+�').optional(),
   incorrectFeedback: RichContentSchema.optional(),
   sources: z.array(SourceReferenceSchema).optional(),
   relatedItems: z.array(UUIDSchema).optional(),
@@ -454,12 +454,12 @@ export const BaseItemSchema = z.object({
  * Select blank object for fill-in-select
  */
 export const SelectBlankObjectSchema = z.object({
-  options: z.array(RichContentSchema).min(1, 'Mus├ş b├Żt alespo┼ł 1 mo┼żnost'),
+  options: z.array(RichContentSchema).min(1, 'Mus+� b+�t alespo+� 1 mo+�nost'),
   correctIndex: z.number().int().nonnegative(),
 }).refine(
   (data) => data.correctIndex < data.options.length,
   {
-    message: 'Index spr├ívn├ę odpov─Ťdi odkazuje na neexistuj├şc├ş mo┼żnost',
+    message: 'Index spr+�vn+� odpov��di odkazuje na neexistuj+�c+� mo+�nost',
     path: ['correctIndex'],
   }
 );
@@ -470,18 +470,18 @@ export const SelectBlankObjectSchema = z.object({
 export const RectHotspotSchema = z.object({
   type: z.literal('rect'),
   label: z.string().optional(),
-  x: z.number().min(0).max(100, 'X mus├ş b├Żt v rozmez├ş 0-100%'),
-  y: z.number().min(0).max(100, 'Y mus├ş b├Żt v rozmez├ş 0-100%'),
-  width: z.number().min(0).max(100, '┼á├ş┼Öka mus├ş b├Żt v rozmez├ş 0-100%'),
-  height: z.number().min(0).max(100, 'V├Ż┼íka mus├ş b├Żt v rozmez├ş 0-100%'),
+  x: z.number().min(0).max(100, 'X mus+� b+�t v rozmez+� 0-100%'),
+  y: z.number().min(0).max(100, 'Y mus+� b+�t v rozmez+� 0-100%'),
+  width: z.number().min(0).max(100, '+�+�+�ka mus+� b+�t v rozmez+� 0-100%'),
+  height: z.number().min(0).max(100, 'V+�+�ka mus+� b+�t v rozmez+� 0-100%'),
 });
 
 export const CircleHotspotSchema = z.object({
   type: z.literal('circle'),
   label: z.string().optional(),
-  x: z.number().min(0).max(100, 'X mus├ş b├Żt v rozmez├ş 0-100%'),
-  y: z.number().min(0).max(100, 'Y mus├ş b├Żt v rozmez├ş 0-100%'),
-  radius: z.number().min(0).max(100, 'Polom─Ťr mus├ş b├Żt v rozmez├ş 0-100%'),
+  x: z.number().min(0).max(100, 'X mus+� b+�t v rozmez+� 0-100%'),
+  y: z.number().min(0).max(100, 'Y mus+� b+�t v rozmez+� 0-100%'),
+  radius: z.number().min(0).max(100, 'Polom��r mus+� b+�t v rozmez+� 0-100%'),
 });
 
 export const PolygonHotspotSchema = z.object({
@@ -492,11 +492,11 @@ export const PolygonHotspotSchema = z.object({
       x: z.number().min(0).max(100),
       y: z.number().min(0).max(100),
     })
-  ).min(3, 'Polygon mus├ş m├şt alespo┼ł 3 body'),
+  ).min(3, 'Polygon mus+� m+�t alespo+� 3 body'),
 });
 
 /**
- * Mesh hotspot ÔÇö references a named node/mesh in a 3D glTF scene.
+ * Mesh hotspot ��� references a named node/mesh in a 3D glTF scene.
  * Used exclusively in `pin-on-model` items.
  */
 export const MeshHotspotSchema = z.object({
@@ -564,19 +564,19 @@ export const DiagramZoneSchema = z.union([
  */
 export const RubricCriterionSchema = z.object({
   label: PlainTextSchema,
-  percentage: z.number().min(0, 'Procenta mus├ş b├Żt nez├íporn├í').max(100, 'Procenta nesm├ş p┼Öes├íhnout 100'),
+  percentage: z.number().min(0, 'Procenta mus+� b+�t nez+�porn+�').max(100, 'Procenta nesm+� p+�es+�hnout 100'),
   description: z.string().optional(),
 });
 
 export const RubricSchema = z.object({
-  criteria: z.array(RubricCriterionSchema).min(1, 'Rubrika mus├ş m├şt alespo┼ł 1 krit├ęrium'),
+  criteria: z.array(RubricCriterionSchema).min(1, 'Rubrika mus+� m+�t alespo+� 1 krit+�rium'),
 }).refine(
   (data) => {
     const sum = data.criteria.reduce((acc, c) => acc + c.percentage, 0);
     return sum > 0;
   },
   {
-    message: 'Sou─Źet procent v┼íech krit├ęri├ş mus├ş b├Żt v─Ťt┼í├ş ne┼ż 0',
+    message: 'Sou��et procent v+�ech krit+�ri+� mus+� b+�t v��t+�+� ne+� 0',
     path: ['criteria'],
   }
 );
@@ -590,7 +590,7 @@ export const NumericRangeSchema = z.object({
 }).refine(
   (data) => data.min <= data.max,
   {
-    message: 'Minim├íln├ş hodnota mus├ş b├Żt men┼í├ş nebo rovna maxim├íln├ş hodnot─Ť',
+    message: 'Minim+�ln+� hodnota mus+� b+�t men+�+� nebo rovna maxim+�ln+� hodnot��',
     path: ['max'],
   }
 );
@@ -605,7 +605,7 @@ export const NumericRangeSchema = z.object({
 export const NoteItemSchema = BaseItemSchema.extend({
   type: z.literal('note'),
   title: z.string().optional(),
-  content: RichContentSchema.max(10000, 'Obsah nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
+  content: RichContentSchema.max(10000, 'Obsah nesm+� b+�t del+�+� ne+� 10000 znak+�'),
 });
 
 /**
@@ -613,8 +613,8 @@ export const NoteItemSchema = BaseItemSchema.extend({
  */
 export const FlashcardItemSchema = BaseItemSchema.extend({
   type: z.literal('flashcard'),
-  front: RichContentSchema.max(10000, 'P┼Öedn├ş strana nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
-  back: RichContentSchema.max(10000, 'Zadn├ş strana nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
+  front: RichContentSchema.max(10000, 'P+�edn+� strana nesm+� b+�t del+�+� ne+� 10000 znak+�'),
+  back: RichContentSchema.max(10000, 'Zadn+� strana nesm+� b+�t del+�+� ne+� 10000 znak+�'),
 });
 
 /**
@@ -622,7 +622,7 @@ export const FlashcardItemSchema = BaseItemSchema.extend({
  */
 export const TrueFalseItemSchema = BaseItemSchema.extend({
   type: z.literal('true-false'),
-  question: RichContentSchema.max(10000, 'Ot├ízka nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
+  question: RichContentSchema.max(10000, 'Ot+�zka nesm+� b+�t del+�+� ne+� 10000 znak+�'),
   answer: z.boolean(),
 });
 
@@ -631,15 +631,15 @@ export const TrueFalseItemSchema = BaseItemSchema.extend({
  */
 export const MCQSingleItemSchema = BaseItemSchema.extend({
   type: z.literal('mcq-single'),
-  question: RichContentSchema.max(10000, 'Ot├ízka nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
-  options: z.array(RichContentSchema.max(2000, 'Mo┼żnost nesm├ş b├Żt del┼í├ş ne┼ż 2000 znak┼»')).min(2, 'Ot├ízka mus├ş m├şt alespo┼ł 2 mo┼żnosti').max(100, 'Maxim├íln─Ť 100 mo┼żnost├ş'),
+  question: RichContentSchema.max(10000, 'Ot+�zka nesm+� b+�t del+�+� ne+� 10000 znak+�'),
+  options: z.array(RichContentSchema.max(2000, 'Mo+�nost nesm+� b+�t del+�+� ne+� 2000 znak+�')).min(2, 'Ot+�zka mus+� m+�t alespo+� 2 mo+�nosti').max(100, 'Maxim+�ln�� 100 mo+�nost+�'),
   correctIndex: z.number().int().nonnegative(),
   shuffleOptions: z.boolean().optional(),
   optionExplanations: z.array(z.union([RichContentSchema, z.null()])).optional(),
 }).refine(
   (data) => data.correctIndex < data.options.length,
   {
-    message: 'Index spr├ívn├ę odpov─Ťdi odkazuje na neexistuj├şc├ş mo┼żnost',
+    message: 'Index spr+�vn+� odpov��di odkazuje na neexistuj+�c+� mo+�nost',
     path: ['correctIndex'],
   }
 ).refine(
@@ -650,7 +650,7 @@ export const MCQSingleItemSchema = BaseItemSchema.extend({
     return true;
   },
   {
-    message: 'Po─Źet vysv─Ťtlen├ş mo┼żnost├ş mus├ş b├Żt stejn├Ż jako po─Źet mo┼żnost├ş',
+    message: 'Po��et vysv��tlen+� mo+�nost+� mus+� b+�t stejn+� jako po��et mo+�nost+�',
     path: ['optionExplanations'],
   }
 );
@@ -660,9 +660,9 @@ export const MCQSingleItemSchema = BaseItemSchema.extend({
  */
 export const MCQMultiItemSchema = BaseItemSchema.extend({
   type: z.literal('mcq-multi'),
-  question: RichContentSchema.max(10000, 'Ot├ízka nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
-  options: z.array(RichContentSchema.max(2000, 'Mo┼żnost nesm├ş b├Żt del┼í├ş ne┼ż 2000 znak┼»')).min(2, 'Ot├ízka mus├ş m├şt alespo┼ł 2 mo┼żnosti').max(100, 'Maxim├íln─Ť 100 mo┼żnost├ş'),
-  correctIndices: z.array(z.number().int().nonnegative()).min(1, 'Mus├ş b├Żt alespo┼ł 1 spr├ívn├í odpov─Ť─Ć'),
+  question: RichContentSchema.max(10000, 'Ot+�zka nesm+� b+�t del+�+� ne+� 10000 znak+�'),
+  options: z.array(RichContentSchema.max(2000, 'Mo+�nost nesm+� b+�t del+�+� ne+� 2000 znak+�')).min(2, 'Ot+�zka mus+� m+�t alespo+� 2 mo+�nosti').max(100, 'Maxim+�ln�� 100 mo+�nost+�'),
+  correctIndices: z.array(z.number().int().nonnegative()).min(1, 'Mus+� b+�t alespo+� 1 spr+�vn+� odpov����'),
   minSelections: z.number().int().positive().optional(),
   maxSelections: z.number().int().positive().optional(),
   shuffleOptions: z.boolean().optional(),
@@ -673,7 +673,7 @@ export const MCQMultiItemSchema = BaseItemSchema.extend({
     return data.correctIndices.every(idx => idx < data.options.length);
   },
   {
-    message: 'N─Ťkter├Ż z index┼» spr├ívn├Żch odpov─Ťd├ş odkazuje na neexistuj├şc├ş mo┼żnost',
+    message: 'N��kter+� z index+� spr+�vn+�ch odpov��d+� odkazuje na neexistuj+�c+� mo+�nost',
     path: ['correctIndices'],
   }
 ).refine(
@@ -683,7 +683,7 @@ export const MCQMultiItemSchema = BaseItemSchema.extend({
     return unique.size === data.correctIndices.length;
   },
   {
-    message: 'Indexy spr├ívn├Żch odpov─Ťd├ş obsahuj├ş duplicity',
+    message: 'Indexy spr+�vn+�ch odpov��d+� obsahuj+� duplicity',
     path: ['correctIndices'],
   }
 ).refine(
@@ -694,7 +694,7 @@ export const MCQMultiItemSchema = BaseItemSchema.extend({
     return true;
   },
   {
-    message: 'Minim├íln├ş po─Źet v├Żb─Ťr┼» mus├ş b├Żt men┼í├ş nebo roven maxim├íln├şmu po─Źtu',
+    message: 'Minim+�ln+� po��et v+�b��r+� mus+� b+�t men+�+� nebo roven maxim+�ln+�mu po��tu',
     path: ['maxSelections'],
   }
 ).refine(
@@ -705,7 +705,7 @@ export const MCQMultiItemSchema = BaseItemSchema.extend({
     return true;
   },
   {
-    message: 'Maxim├íln├ş po─Źet v├Żb─Ťr┼» nesm├ş p┼Öes├íhnout po─Źet mo┼żnost├ş',
+    message: 'Maxim+�ln+� po��et v+�b��r+� nesm+� p+�es+�hnout po��et mo+�nost+�',
     path: ['maxSelections'],
   }
 ).refine(
@@ -716,7 +716,7 @@ export const MCQMultiItemSchema = BaseItemSchema.extend({
     return true;
   },
   {
-    message: 'Po─Źet vysv─Ťtlen├ş mo┼żnost├ş mus├ş b├Żt stejn├Ż jako po─Źet mo┼żnost├ş',
+    message: 'Po��et vysv��tlen+� mo+�nost+� mus+� b+�t stejn+� jako po��et mo+�nost+�',
     path: ['optionExplanations'],
   }
 );
@@ -726,8 +726,8 @@ export const MCQMultiItemSchema = BaseItemSchema.extend({
  */
 export const ShortAnswerItemSchema = BaseItemSchema.extend({
   type: z.literal('short-answer'),
-  question: RichContentSchema.max(10000, 'Ot├ízka nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
-  answers: z.array(PlainTextSchema).min(1, 'Mus├ş b├Żt alespo┼ł 1 spr├ívn├í odpov─Ť─Ć'),
+  question: RichContentSchema.max(10000, 'Ot+�zka nesm+� b+�t del+�+� ne+� 10000 znak+�'),
+  answers: z.array(PlainTextSchema).min(1, 'Mus+� b+�t alespo+� 1 spr+�vn+� odpov����'),
   caseSensitive: z.boolean().optional(),
   trimWhitespace: z.boolean().optional(),
   acceptPartial: z.boolean().optional(),
@@ -740,14 +740,14 @@ export const ShortAnswerItemSchema = BaseItemSchema.extend({
 export const FillInBlanksItemSchema = BaseItemSchema.extend({
   type: z.literal('fill-in-blanks'),
   question: OptionalRichContentSchema,
-  text: RichContentSchema.max(10000, 'Text nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
-  blanks: z.record(z.string(), z.array(PlainTextSchema).min(1, 'Ka┼żd├í mezera mus├ş m├şt alespo┼ł 1 spr├ívnou odpov─Ť─Ć')),
+  text: RichContentSchema.max(10000, 'Text nesm+� b+�t del+�+� ne+� 10000 znak+�'),
+  blanks: z.record(z.string(), z.array(PlainTextSchema).min(1, 'Ka+�d+� mezera mus+� m+�t alespo+� 1 spr+�vnou odpov����')),
   caseSensitive: z.boolean().optional(),
   trimWhitespace: z.boolean().optional(),
 }).refine(
   (data) => Object.keys(data.blanks).length > 0,
   {
-    message: 'Text mus├ş obsahovat alespo┼ł 1 mezeru k dopln─Ťn├ş',
+    message: 'Text mus+� obsahovat alespo+� 1 mezeru k dopln��n+�',
     path: ['blanks'],
   }
 ).refine(
@@ -781,7 +781,7 @@ export const FillInBlanksItemSchema = BaseItemSchema.extend({
     return true;
   },
   {
-    message: 'V┼íechny tokeny v textu mus├ş m├şt definici v blanks a v┼íechny definice mus├ş b├Żt pou┼żity v textu',
+    message: 'V+�echny tokeny v textu mus+� m+�t definici v blanks a v+�echny definice mus+� b+�t pou+�ity v textu',
     path: ['blanks'],
   }
 );
@@ -792,12 +792,12 @@ export const FillInBlanksItemSchema = BaseItemSchema.extend({
 export const FillInSelectItemSchema = BaseItemSchema.extend({
   type: z.literal('fill-in-select'),
   question: OptionalRichContentSchema,
-  text: RichContentSchema.max(10000, 'Text nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
+  text: RichContentSchema.max(10000, 'Text nesm+� b+�t del+�+� ne+� 10000 znak+�'),
   blanks: z.record(z.string(), SelectBlankObjectSchema),
 }).refine(
   (data) => Object.keys(data.blanks).length > 0,
   {
-    message: 'Text mus├ş obsahovat alespo┼ł 1 mezeru k v├Żb─Ťru',
+    message: 'Text mus+� obsahovat alespo+� 1 mezeru k v+�b��ru',
     path: ['blanks'],
   }
 ).refine(
@@ -829,7 +829,7 @@ export const FillInSelectItemSchema = BaseItemSchema.extend({
     return true;
   },
   {
-    message: 'V┼íechny tokeny v textu mus├ş m├şt definici v blanks a v┼íechny definice mus├ş b├Żt pou┼żity v textu',
+    message: 'V+�echny tokeny v textu mus+� m+�t definici v blanks a v+�echny definice mus+� b+�t pou+�ity v textu',
     path: ['blanks'],
   }
 );
@@ -840,12 +840,12 @@ export const FillInSelectItemSchema = BaseItemSchema.extend({
 export const MatchPairsItemSchema = BaseItemSchema.extend({
   type: z.literal('match-pairs'),
   question: OptionalRichContentSchema,
-  prompts: z.array(RichContentSchema).min(2, 'Mus├ş b├Żt alespo┼ł 2 p├íry k p┼Öi┼Öazen├ş'),
-  matches: z.array(RichContentSchema).min(2, 'Mus├ş b├Żt alespo┼ł 2 p├íry k p┼Öi┼Öazen├ş'),
+  prompts: z.array(RichContentSchema).min(2, 'Mus+� b+�t alespo+� 2 p+�ry k p+�i+�azen+�'),
+  matches: z.array(RichContentSchema).min(2, 'Mus+� b+�t alespo+� 2 p+�ry k p+�i+�azen+�'),
 }).refine(
   (data) => data.prompts.length === data.matches.length,
   {
-    message: 'Po─Źet ot├ízek (prompts) mus├ş b├Żt stejn├Ż jako po─Źet odpov─Ťd├ş (matches)',
+    message: 'Po��et ot+�zek (prompts) mus+� b+�t stejn+� jako po��et odpov��d+� (matches)',
     path: ['matches'],
   }
 );
@@ -856,9 +856,9 @@ export const MatchPairsItemSchema = BaseItemSchema.extend({
 export const MatchComplexItemSchema = BaseItemSchema.extend({
   type: z.literal('match-complex'),
   question: OptionalRichContentSchema,
-  leftItems: z.array(RichContentSchema).min(1, 'Mus├ş b├Żt alespo┼ł 1 polo┼żka vlevo'),
-  rightItems: z.array(RichContentSchema).min(1, 'Mus├ş b├Żt alespo┼ł 1 polo┼żka vpravo'),
-  connections: z.array(z.tuple([z.number().int().nonnegative(), z.number().int().nonnegative()])).min(1, 'Mus├ş b├Żt alespo┼ł 1 propojen├ş'),
+  leftItems: z.array(RichContentSchema).min(1, 'Mus+� b+�t alespo+� 1 polo+�ka vlevo'),
+  rightItems: z.array(RichContentSchema).min(1, 'Mus+� b+�t alespo+� 1 polo+�ka vpravo'),
+  connections: z.array(z.tuple([z.number().int().nonnegative(), z.number().int().nonnegative()])).min(1, 'Mus+� b+�t alespo+� 1 propojen+�'),
   minCorrect: z.number().int().positive().optional(),
 }).refine(
   (data) => {
@@ -868,7 +868,7 @@ export const MatchComplexItemSchema = BaseItemSchema.extend({
     );
   },
   {
-    message: 'N─Ťkter├ę propojen├ş odkazuje na neexistuj├şc├ş polo┼żku',
+    message: 'N��kter+� propojen+� odkazuje na neexistuj+�c+� polo+�ku',
     path: ['connections'],
   }
 ).refine(
@@ -878,7 +878,7 @@ export const MatchComplexItemSchema = BaseItemSchema.extend({
     return connectionSet.size === data.connections.length;
   },
   {
-    message: 'Propojen├ş obsahuj├ş duplicity',
+    message: 'Propojen+� obsahuj+� duplicity',
     path: ['connections'],
   }
 ).refine(
@@ -889,7 +889,7 @@ export const MatchComplexItemSchema = BaseItemSchema.extend({
     return true;
   },
   {
-    message: 'Minim├íln├ş po─Źet spr├ívn├Żch odpov─Ťd├ş nesm├ş p┼Öes├íhnout celkov├Ż po─Źet propojen├ş',
+    message: 'Minim+�ln+� po��et spr+�vn+�ch odpov��d+� nesm+� p+�es+�hnout celkov+� po��et propojen+�',
     path: ['minCorrect'],
   }
 );
@@ -899,8 +899,8 @@ export const MatchComplexItemSchema = BaseItemSchema.extend({
  */
 export const SortItemsItemSchema = BaseItemSchema.extend({
   type: z.literal('sort-items'),
-  question: RichContentSchema.max(10000, 'Ot├ízka nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
-  items: z.array(RichContentSchema).min(2, 'Mus├ş b├Żt alespo┼ł 2 polo┼żky k se┼Öazen├ş'),
+  question: RichContentSchema.max(10000, 'Ot+�zka nesm+� b+�t del+�+� ne+� 10000 znak+�'),
+  items: z.array(RichContentSchema).min(2, 'Mus+� b+�t alespo+� 2 polo+�ky k se+�azen+�'),
 });
 
 /**
@@ -908,23 +908,23 @@ export const SortItemsItemSchema = BaseItemSchema.extend({
  */
 export const SliderItemSchema = BaseItemSchema.extend({
   type: z.literal('slider'),
-  question: RichContentSchema.max(10000, 'Ot├ízka nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
+  question: RichContentSchema.max(10000, 'Ot+�zka nesm+� b+�t del+�+� ne+� 10000 znak+�'),
   min: z.number(),
   max: z.number(),
-  step: z.number().positive('Krok mus├ş b├Żt kladn├ę ─Ź├şslo'),
+  step: z.number().positive('Krok mus+� b+�t kladn+� ��+�slo'),
   correctAnswer: z.number(),
-  tolerance: z.number().nonnegative('Tolerance mus├ş b├Żt nez├íporn├í'),
+  tolerance: z.number().nonnegative('Tolerance mus+� b+�t nez+�porn+�'),
   unit: z.string().optional(),
 }).refine(
   (data) => data.min < data.max,
   {
-    message: 'Minim├íln├ş hodnota mus├ş b├Żt men┼í├ş ne┼ż maxim├íln├ş hodnota',
+    message: 'Minim+�ln+� hodnota mus+� b+�t men+�+� ne+� maxim+�ln+� hodnota',
     path: ['max'],
   }
 ).refine(
   (data) => data.correctAnswer >= data.min && data.correctAnswer <= data.max,
   {
-    message: 'Spr├ívn├í odpov─Ť─Ć mus├ş b├Żt v rozmez├ş min-max',
+    message: 'Spr+�vn+� odpov���� mus+� b+�t v rozmez+� min-max',
     path: ['correctAnswer'],
   }
 ).refine(
@@ -934,13 +934,13 @@ export const SliderItemSchema = BaseItemSchema.extend({
     return Math.abs(steps - Math.round(steps)) < 0.0001;
   },
   {
-    message: 'Spr├ívn├í odpov─Ť─Ć mus├ş b├Żt dosa┼żiteln├í pomoc├ş definovan├ęho kroku',
+    message: 'Spr+�vn+� odpov���� mus+� b+�t dosa+�iteln+� pomoc+� definovan+�ho kroku',
     path: ['correctAnswer'],
   }
 ).refine(
   (data) => data.tolerance <= (data.max - data.min) / 2,
   {
-    message: 'Tolerance nesm├ş b├Żt v─Ťt┼í├ş ne┼ż polovina rozsahu hodnot',
+    message: 'Tolerance nesm+� b+�t v��t+�+� ne+� polovina rozsahu hodnot',
     path: ['tolerance'],
   }
 );
@@ -950,9 +950,9 @@ export const SliderItemSchema = BaseItemSchema.extend({
  */
 export const PinOnImageItemSchema = BaseItemSchema.extend({
   type: z.literal('pin-on-image'),
-  question: RichContentSchema.max(10000, 'Ot├ízka nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
+  question: RichContentSchema.max(10000, 'Ot+�zka nesm+� b+�t del+�+� ne+� 10000 znak+�'),
   targetAsset: AssetKeySchema,
-  hotspots: z.array(HotspotObjectSchema).min(1, 'Mus├ş b├Żt alespo┼ł 1 hotspot'),
+  hotspots: z.array(HotspotObjectSchema).min(1, 'Mus+� b+�t alespo+� 1 hotspot'),
   multipleCorrect: z.boolean().optional(),
   minCorrect: z.number().int().positive().optional(),
 }).refine(
@@ -963,7 +963,7 @@ export const PinOnImageItemSchema = BaseItemSchema.extend({
     return true;
   },
   {
-    message: 'Minim├íln├ş po─Źet spr├ívn├Żch odpov─Ťd├ş nesm├ş p┼Öes├íhnout po─Źet hotspot┼»',
+    message: 'Minim+�ln+� po��et spr+�vn+�ch odpov��d+� nesm+� p+�es+�hnout po��et hotspot+�',
     path: ['minCorrect'],
   }
 );
@@ -973,16 +973,16 @@ export const PinOnImageItemSchema = BaseItemSchema.extend({
  */
 export const CategorizeItemTypeSchema = BaseItemSchema.extend({
   type: z.literal('categorize'),
-  question: RichContentSchema.max(10000, 'Ot├ízka nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
-  categories: z.array(PlainTextSchema).min(2, 'Mus├ş b├Żt alespo┼ł 2 kategorie'),
-  items: z.array(CategorizeItemSchema).min(1, 'Mus├ş b├Żt alespo┼ł 1 polo┼żka ke kategorizaci'),
+  question: RichContentSchema.max(10000, 'Ot+�zka nesm+� b+�t del+�+� ne+� 10000 znak+�'),
+  categories: z.array(PlainTextSchema).min(2, 'Mus+� b+�t alespo+� 2 kategorie'),
+  items: z.array(CategorizeItemSchema).min(1, 'Mus+� b+�t alespo+� 1 polo+�ka ke kategorizaci'),
 }).refine(
   (data) => {
     // Validate all correctCategoryIndex values
     return data.items.every(item => item.correctCategoryIndex < data.categories.length);
   },
   {
-    message: 'N─Ťkter├í polo┼żka odkazuje na neexistuj├şc├ş kategorii',
+    message: 'N��kter+� polo+�ka odkazuje na neexistuj+�c+� kategorii',
     path: ['items'],
   }
 );
@@ -992,8 +992,8 @@ export const CategorizeItemTypeSchema = BaseItemSchema.extend({
  */
 export const TimelineItemSchema = BaseItemSchema.extend({
   type: z.literal('timeline'),
-  question: RichContentSchema.max(10000, 'Ot├ízka nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
-  events: z.array(TimelineEventSchema).min(2, 'Mus├ş b├Żt alespo┼ł 2 ud├ílosti'),
+  question: RichContentSchema.max(10000, 'Ot+�zka nesm+� b+�t del+�+� ne+� 10000 znak+�'),
+  events: z.array(TimelineEventSchema).min(2, 'Mus+� b+�t alespo+� 2 ud+�losti'),
   randomize: z.boolean().optional(),
 });
 
@@ -1002,10 +1002,10 @@ export const TimelineItemSchema = BaseItemSchema.extend({
  */
 export const MatrixItemSchema = BaseItemSchema.extend({
   type: z.literal('matrix'),
-  question: RichContentSchema.max(10000, 'Ot├ízka nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
-  rows: z.array(PlainTextSchema).min(1, 'Mus├ş b├Żt alespo┼ł 1 ┼Ö├ídek'),
-  columns: z.array(PlainTextSchema).min(1, 'Mus├ş b├Żt alespo┼ł 1 sloupec'),
-  correctCells: z.array(z.tuple([z.number().int().nonnegative(), z.number().int().nonnegative()])).min(1, 'Mus├ş b├Żt alespo┼ł 1 spr├ívn├í bu┼łka'),
+  question: RichContentSchema.max(10000, 'Ot+�zka nesm+� b+�t del+�+� ne+� 10000 znak+�'),
+  rows: z.array(PlainTextSchema).min(1, 'Mus+� b+�t alespo+� 1 +�+�dek'),
+  columns: z.array(PlainTextSchema).min(1, 'Mus+� b+�t alespo+� 1 sloupec'),
+  correctCells: z.array(z.tuple([z.number().int().nonnegative(), z.number().int().nonnegative()])).min(1, 'Mus+� b+�t alespo+� 1 spr+�vn+� bu+�ka'),
   multiplePerRow: z.boolean().optional(),
 }).refine(
   (data) => {
@@ -1015,7 +1015,7 @@ export const MatrixItemSchema = BaseItemSchema.extend({
     );
   },
   {
-    message: 'N─Ťkter├ę sou┼Öadnice bu┼łky odkazuj├ş na neexistuj├şc├ş ┼Ö├ídek nebo sloupec',
+    message: 'N��kter+� sou+�adnice bu+�ky odkazuj+� na neexistuj+�c+� +�+�dek nebo sloupec',
     path: ['correctCells'],
   }
 ).refine(
@@ -1025,7 +1025,7 @@ export const MatrixItemSchema = BaseItemSchema.extend({
     return cellSet.size === data.correctCells.length;
   },
   {
-    message: 'Spr├ívn├ę bu┼łky obsahuj├ş duplicity',
+    message: 'Spr+�vn+� bu+�ky obsahuj+� duplicity',
     path: ['correctCells'],
   }
 ).refine(
@@ -1041,7 +1041,7 @@ export const MatrixItemSchema = BaseItemSchema.extend({
     return true;
   },
   {
-    message: 'Pokud multiplePerRow je false, ka┼żd├Ż ┼Ö├ídek sm├ş m├şt maxim├íln─Ť 1 spr├ívnou bu┼łku',
+    message: 'Pokud multiplePerRow je false, ka+�d+� +�+�dek sm+� m+�t maxim+�ln�� 1 spr+�vnou bu+�ku',
     path: ['correctCells'],
   }
 );
@@ -1051,7 +1051,7 @@ export const MatrixItemSchema = BaseItemSchema.extend({
  */
 export const MathInputItemSchema = BaseItemSchema.extend({
   type: z.literal('math-input'),
-  question: RichContentSchema.max(10000, 'Ot├ízka nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
+  question: RichContentSchema.max(10000, 'Ot+�zka nesm+� b+�t del+�+� ne+� 10000 znak+�'),
   correctAnswer: PlainTextSchema,
   alternativeAnswers: z.array(PlainTextSchema).optional(),
   tolerance: z.number().nonnegative().optional(),
@@ -1062,19 +1062,19 @@ export const MathInputItemSchema = BaseItemSchema.extend({
  */
 export const DiagramLabelItemSchema = BaseItemSchema.extend({
   type: z.literal('diagram-label'),
-  question: RichContentSchema.max(10000, 'Ot├ízka nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
+  question: RichContentSchema.max(10000, 'Ot+�zka nesm+� b+�t del+�+� ne+� 10000 znak+�'),
   targetAsset: AssetKeySchema,
-  labels: z.array(RichContentSchema).min(1, 'Mus├ş b├Żt alespo┼ł 1 ┼ít├ştek'),
+  labels: z.array(RichContentSchema).min(1, 'Mus+� b+�t alespo+� 1 +�t+�tek'),
   caseSensitive: z.boolean().optional(),
   requireTyping: z.boolean().optional(),
-  zones: z.array(DiagramZoneSchema).min(1, 'Mus├ş b├Żt alespo┼ł 1 z├│na'),
+  zones: z.array(DiagramZoneSchema).min(1, 'Mus+� b+�t alespo+� 1 z+-na'),
 }).refine(
   (data) => {
     // Validate all correctLabelIndex values
     return data.zones.every(zone => zone.correctLabelIndex < data.labels.length);
   },
   {
-    message: 'N─Ťkter├í z├│na odkazuje na neexistuj├şc├ş ┼ít├ştek',
+    message: 'N��kter+� z+-na odkazuje na neexistuj+�c+� +�t+�tek',
     path: ['zones'],
   }
 );
@@ -1084,7 +1084,7 @@ export const DiagramLabelItemSchema = BaseItemSchema.extend({
  */
 export const OpenEndedItemSchema = BaseItemSchema.extend({
   type: z.literal('open-ended'),
-  question: RichContentSchema.max(10000, 'Ot├ízka nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
+  question: RichContentSchema.max(10000, 'Ot+�zka nesm+� b+�t del+�+� ne+� 10000 znak+�'),
   minWords: z.number().int().positive().optional(),
   maxWords: z.number().int().positive().optional(),
   sampleAnswer: RichContentSchema.optional(),
@@ -1097,7 +1097,7 @@ export const OpenEndedItemSchema = BaseItemSchema.extend({
     return true;
   },
   {
-    message: 'Minim├íln├ş po─Źet slov mus├ş b├Żt men┼í├ş nebo roven maxim├íln├şmu po─Źtu',
+    message: 'Minim+�ln+� po��et slov mus+� b+�t men+�+� nebo roven maxim+�ln+�mu po��tu',
     path: ['maxWords'],
   }
 );
@@ -1107,7 +1107,7 @@ export const OpenEndedItemSchema = BaseItemSchema.extend({
  */
 export const NumericInputItemSchema = BaseItemSchema.extend({
   type: z.literal('numeric-input'),
-  question: RichContentSchema.max(10000, 'Ot├ízka nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
+  question: RichContentSchema.max(10000, 'Ot+�zka nesm+� b+�t del+�+� ne+� 10000 znak+�'),
   value: z.number(),
   tolerance: z.number().nonnegative().optional(),
   range: NumericRangeSchema.optional(),
@@ -1121,9 +1121,9 @@ export const NumericInputItemSchema = BaseItemSchema.extend({
  */
 export const PinOnModelItemSchema = BaseItemSchema.extend({
   type: z.literal('pin-on-model'),
-  question: RichContentSchema.max(10000, 'Ot├ízka nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
+  question: RichContentSchema.max(10000, 'Ot+�zka nesm+� b+�t del+�+� ne+� 10000 znak+�'),
   targetAsset: AssetKeySchema,
-  hotspots: z.array(MeshHotspotSchema).min(1, 'Mus├ş b├Żt alespo┼ł 1 hotspot'),
+  hotspots: z.array(MeshHotspotSchema).min(1, 'Mus+� b+�t alespo+� 1 hotspot'),
   multipleCorrect: z.boolean().optional(),
   minCorrect: z.number().int().positive().optional(),
   camera: CameraSetupSchema.optional(),
@@ -1135,7 +1135,7 @@ export const PinOnModelItemSchema = BaseItemSchema.extend({
     return true;
   },
   {
-    message: 'Minim├íln├ş po─Źet spr├ívn├Żch odpov─Ťd├ş nesm├ş p┼Öes├íhnout po─Źet hotspot┼»',
+    message: 'Minim+�ln+� po��et spr+�vn+�ch odpov��d+� nesm+� p+�es+�hnout po��et hotspot+�',
     path: ['minCorrect'],
   }
 );
@@ -1147,14 +1147,14 @@ export const PinOnModelItemSchema = BaseItemSchema.extend({
  */
 export const ChessPuzzleItemSchema = BaseItemSchema.extend({
   type: z.literal('chess-puzzle'),
-  question: RichContentSchema.max(10000, 'Ot├ízka nesm├ş b├Żt del┼í├ş ne┼ż 10000 znak┼»'),
+  question: RichContentSchema.max(10000, 'Ot+�zka nesm+� b+�t del+�+� ne+� 10000 znak+�'),
   fen: PlainTextSchema,
   answers: z
     .array(
-      z.array(PlainTextSchema).min(1, 'Sekvence tah┼» nesm├ş b├Żt pr├ízdn├í')
+      z.array(PlainTextSchema).min(1, 'Sekvence tah+� nesm+� b+�t pr+�zdn+�')
     )
-    .min(1, 'Mus├ş b├Żt alespo┼ł 1 spr├ívn├í sekvence tah┼»'),
-  elo: z.number().int().nonnegative('ELO mus├ş b├Żt nez├íporn├ę cel├ę ─Ź├şslo').optional(),
+    .min(1, 'Mus+� b+�t alespo+� 1 spr+�vn+� sekvence tah+�'),
+  elo: z.number().int().nonnegative('ELO mus+� b+�t nez+�porn+� cel+� ��+�slo').optional(),
 });
 
 // ============================================================================
@@ -1199,10 +1199,11 @@ export const OQSEItemSchema = z.discriminatedUnion('type', [
  * OQSE File Schema (Root Structure)
  */
 export const OQSEFileSchema = z.object({
+  // Recommended schema URL for draft v0.1: https://memizy.com/schemas/oqse/v0.1.json
   $schema: z.string().url().optional(),
-  version: z.string().regex(/^\d+\.\d+$/, 'Verze mus├ş b├Żt ve form├ítu "X.Y" (nap┼Ö. "1.0")'),
+  version: z.string().regex(/^\d+\.\d+$/, 'Verze musi byt ve formatu "X.Y" (napr. "0.1")'),
   meta: OQSEMetaSchema,
-  items: z.array(OQSEItemSchema).max(10000, 'Maxim├íln─Ť 10000 polo┼żek na sadu'),
+  items: z.array(OQSEItemSchema).max(10000, 'Maxim+�ln�� 10000 polo+�ek na sadu'),
 }).refine(
   (data) => {
     // Validate that all relatedItems and dependencyItems exist
@@ -1229,7 +1230,7 @@ export const OQSEFileSchema = z.object({
     return true;
   },
   {
-    message: 'N─Ťkter├í polo┼żka odkazuje na neexistuj├şc├ş relatedItems nebo dependencyItems',
+    message: 'N��kter+� polo+�ka odkazuje na neexistuj+�c+� relatedItems nebo dependencyItems',
     path: ['items'],
   }
 ).refine(
@@ -1241,7 +1242,7 @@ export const OQSEFileSchema = z.object({
     return true;
   },
   {
-    message: 'Thumbnail odkazuje na neexistuj├şc├ş asset',
+    message: 'Thumbnail odkazuje na neexistuj+�c+� asset',
     path: ['meta', 'thumbnail'],
   }
 ).refine(
@@ -1264,7 +1265,7 @@ export const OQSEFileSchema = z.object({
     return true;
   },
   {
-    message: 'N─Ťkter├í polo┼żka odkazuje na neexistuj├şc├ş source material',
+    message: 'N��kter+� polo+�ka odkazuje na neexistuj+�c+� source material',
     path: ['items'],
   }
 );
@@ -1438,7 +1439,8 @@ export function safeValidateOQSEItem(data: unknown): {
  */
 export function formatValidationErrors(error: z.ZodError): string[] {
   return error.issues.map(err => {
-    const path = err.path.join(' Ôćĺ ');
+    const path = err.path.join(' ��� ');
     return path ? `${path}: ${err.message}` : err.message;
   });
 }
+

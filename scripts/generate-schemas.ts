@@ -19,31 +19,31 @@ if (!fs.existsSync(schemasDir)) {
 
 console.log('Generuji JSON schémata pomocí nativního Zod 4...');
 
-// 1. Vygenerování schématu pro OQSE File (v1.0)
+// 1. Vygenerování schématu pro OQSE File (v0.1)
 const oqseJsonSchema = z.toJSONSchema(OQSEFileSchema, {
   target: "draft-07" // JSON Schema Draft 7 pro maximální kompatibilitu
 });
 
 fs.writeFileSync(
-  path.join(schemasDir, 'oqse-v1.0.json'),
+  path.join(schemasDir, 'oqse-v0.1.json'),
   JSON.stringify(oqseJsonSchema, null, 2)
 );
-console.log('✅ Vytvořeno: schemas/oqse-v1.0.json');
+console.log('✅ Vytvořeno: schemas/oqse-v0.1.json');
 
-// 2. Vygenerování schématu pro OQSE Manifest (v1.0)
+// 2. Vygenerování schématu pro OQSE Manifest (v0.1)
 const manifestJsonSchema = z.toJSONSchema(OQSEManifestSchema, {
   target: "draft-07"
 });
 
 fs.writeFileSync(
-  path.join(schemasDir, 'oqse-manifest-v1.0.json'),
+  path.join(schemasDir, 'oqse-manifest-v0.1.json'),
   JSON.stringify(manifestJsonSchema, null, 2)
 );
-console.log('✅ Vytvořeno: schemas/oqse-manifest-v1.0.json');
+console.log('✅ Vytvořeno: schemas/oqse-manifest-v0.1.json');
 
 const progressJsonSchema = z.toJSONSchema(OQSEPFileSchema, { target: "draft-07" });
 fs.writeFileSync(
-  path.join(schemasDir, 'oqsep-v1.0.json'),
+  path.join(schemasDir, 'oqsep-v0.1.json'),
   JSON.stringify(progressJsonSchema, null, 2)
 );
-console.log('✅ Vytvořeno: schemas/oqsep-v1.0.json');
+console.log('✅ Vytvořeno: schemas/oqsep-v0.1.json');
