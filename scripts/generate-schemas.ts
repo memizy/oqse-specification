@@ -1,0 +1,49 @@
+// scripts/generate-schemas.ts
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import * as z from 'zod'; // Importujeme hlavní zod objekt
+
+// Naimportujeme tvá hlavní Zod schémata
+import { OQSEFileSchema } from '../src/oqseValidation';
+import { OQSEManifestSchema } from '../src/manifestValidation';
+import { OQSEPFileSchema } from '../src/progressValidation';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const schemasDir = path.resolve(__dirname, '../schemas');
+
+if (!fs.existsSync(schemasDir)) {
+  fs.mkdirSync(schemasDir);
+}
+
+console.log('Generuji JSON schémata pomocí nativního Zod 4...');
+
+// 1. Vygenerování schématu pro OQSE File (v1.0)
+const oqseJsonSchema = z.toJSONSchema(OQSEFileSchema, {
+  target: "draft-07" // JSON Schema Draft 7 pro maximální kompatibilitu
+});
+
+fs.writeFileSync(
+  path.join(schemasDir, 'oqse-v1.0.json'),
+  JSON.stringify(oqseJsonSchema, null, 2)
+);
+console.log('✅ Vytvořeno: schemas/oqse-v1.0.json');
+
+// 2. Vygenerování schématu pro OQSE Manifest (v1.0)
+const manifestJsonSchema = z.toJSONSchema(OQSEManifestSchema, {
+  target: "draft-07"
+});
+
+fs.writeFileSync(
+  path.join(schemasDir, 'oqse-manifest-v1.0.json'),
+  JSON.stringify(manifestJsonSchema, null, 2)
+);
+console.log('✅ Vytvořeno: schemas/oqse-manifest-v1.0.json');
+
+const progressJsonSchema = z.toJSONSchema(OQSEPFileSchema, { target: "draft-07" });
+fs.writeFileSync(
+  path.join(schemasDir, 'oqsep-v1.0.json'),
+  JSON.stringify(progressJsonSchema, null, 2)
+);
+console.log('✅ Vytvořeno: schemas/oqsep-v1.0.json');

@@ -95,6 +95,28 @@ Here is a real-world snippet of an `.oqse.json` file. Notice how it seamlessly m
 
 ---
 
+## 🏗️ Architecture & Single Source of Truth
+
+This repository serves not only as the textual specification but also as the official NPM package providing types and validators. To maintain 100% synchronization between types, code, and JSON schemas, we use the following approach:
+
+1. **Human Source of Truth (`SPECIFICATION.md`):** This document contains all the rules, guidelines, and semantics of the OQSE format.
+2. **Code Source of Truth (`src/*Validation.ts`):** All validation logic is written using **Zod**. These Zod schemas act as the absolute source of truth for the codebase.
+3. **Derived Artifacts (Types and JSON Schemas):**
+   * TypeScript types (`src/oqse.ts` and `src/manifest.ts`) manually mirror the Zod schemas to ensure maximum readability and a great developer experience.
+   * **JSON schemas (`schemas/*.json`) are generated automatically!**
+
+> ⚠️ **CONTRIBUTOR WARNING: Do not edit the files in `schemas/*.json` manually!**
+> 
+> If you need to add a new field, modify an existing one, or change a validation rule, update the respective Zod schema in the `src/` folder and then run:
+> 
+> ```bash
+> npm run generate:schemas
+> ```
+> 
+> This command will automatically regenerate and overwrite the JSON schemas to perfectly match the updated code.
+
+---
+
 ## 📚 Documentation
 
 Detailed documentation on how to construct OQSE files and integrate them into your apps can be found in the folders below:
