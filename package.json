@@ -1,6 +1,6 @@
 {
   "name": "@memizy/oqse",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "TypeScript SDK and Zod validators for the OQSE specification.",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -17,12 +17,13 @@
     "dist",
     "schemas",
     "README.md",
-    "SPECIFICATION.md"
+    "SPECIFICATION.md",
+    "LICENSE"
   ],
   "scripts": {
     "dev": "vite build --watch",
     "generate:schemas": "tsx scripts/generate-schemas.ts",
-    "build": "npm run generate:schemas && tsc && vite build",
+    "build": "npm run generate:schemas && tsc && vite build && tsx scripts/fix-types-entry.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "prepublishOnly": "npm run build"

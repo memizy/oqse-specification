@@ -5,7 +5,10 @@ import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [
-    dts({ insertTypesEntry: true }),
+    dts({
+      insertTypesEntry: true,
+      rollupTypes: false,
+    }),
   ],
   build: {
     lib: {
