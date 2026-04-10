@@ -1439,8 +1439,16 @@ export function safeValidateOQSEItem(data: unknown): {
  */
 export function formatValidationErrors(error: z.ZodError): string[] {
   return error.issues.map(err => {
-    const path = err.path.join(' ��� ');
-    return path ? `${path}: ${err.message}` : err.message;
+    let pathStr = '';
+    err.path.forEach((part, index) => {
+      if (typeof part === 'number') {
+        pathStr += `[${part}]`;
+      } else {
+        const isFirstOrAfterNumber = index === 0 || typeof err.path[index - 1] === 'number';
+        pathStr += (isFirstOrAfterNumber ? '' : '.') + String(part);
+      }
+    });
+    return pathStr ? `${pathStr}: ${err.message}` : err.message;
   });
 }
 
