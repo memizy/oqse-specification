@@ -7,6 +7,7 @@ This repository contains:
 - Manually authored TypeScript types for developer ergonomics.
 - Auto-generated JSON Schemas distributed with the package.
 - The human-readable specification in SPECIFICATION.md.
+- **[OQSE Web Validator](https://memizy.github.io/oqse-specification/)** - Online tool for easy testing and debugging of OQSE JSON structures in the browser.
 
 ## Package
 

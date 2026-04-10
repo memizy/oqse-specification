@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OQSE Validátor</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --bg: #F9FAFB;
+            --text: #111827;
+            --text-muted: #6B7280;
+            --border: #E5E7EB;
+            --error-bg: #FEF2F2;
+            --error-text: #DC2626;
+            --error-border: #F87171;
+            --success-bg: #F0FDF4;
+            --success-text: #16A34A;
+            --success-border: #4ADE80;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+
+        p {
+            color: var(--text-muted);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        textarea, input[type="url"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 200px;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0;
+        }
+
+        .tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            color: var(--text-muted);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            font-weight: 500;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        button.primary {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button.primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .result.success {
+            display: block;
+            background-color: var(--success-bg);
+            border: 1px solid var(--success-border);
+            color: var(--success-text);
+        }
+
+        .result.error {
+            display: block;
+            background-color: var(--error-bg);
+            border: 1px solid var(--error-border);
+        }
+        
+        .result.error h2 {
+            color: var(--error-text);
+            margin-top: 0;
+        }
+
+        .error-list {
+            margin: 1rem 0 0 0;
+            padding-left: 1.5rem;
+            font-family: monospace;
+            background: rgba(255,255,255,0.5);
+            padding: 1rem 1rem 1rem 2.5rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            color: var(--text);
+        }
+        
+        .llm-prompt {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>OQSE Validátor</h1>
+        <p>Zkontrolujte validitu souborů Open Quiz & Study Exchange format (OQSE). Nástroj používá oficiální Zod schéma z <code>@memizy/oqse</code>.</p>
+        
+        <div class="tabs">
+            <button class="tab active" data-target="json-tab">Vložit JSON</button>
+            <button class="tab" data-target="url-tab">Načíst z URL</button>
+        </div>
+
+        <div id="json-tab" class="tab-content active">
+            <div class="input-group">
+                <label for="jsonInput">OQSE JSON obsah:</label>
+                <textarea id="jsonInput" placeholder="{&#10;  &quot;meta&quot;: { ... },&#10;  &quot;items&quot;: [ ... ]&#10;}"></textarea>
+            </div>
+            <button class="primary" id="validateJsonBtn">Validovat JSON</button>
+        </div>
+
+        <div id="url-tab" class="tab-content">
+            <div class="input-group">
+                <label for="urlInput">URL s OQSE JSON ({CORS povolen}):</label>
+                <input type="url" id="urlInput" placeholder="https://example.com/dataset.json">
+            </div>
+            <button class="primary" id="validateUrlBtn">Načíst a validovat</button>
+        </div>
+
+        <div id="resultArea" class="result">
+            <h2 id="resultTitle">Výsledek validace</h2>
+            <div id="resultContent"></div>
+            <div id="llmPrompt" class="llm-prompt" style="display: none;">
+                <strong>💡 Tip pro AI:</strong> Zkopírujte výše uvedené chyby a požádejte LLM (ChatGPT, Claude) o opravu s textem: <br/>
+                <em>"Zde jsou chyby OQSE validátoru (Zod). Oprav můj JSON podle této specifikace:"</em>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { safeValidateOQSEFile, formatValidationErrors } from 'https://esm.sh/@memizy/oqse';
+
+        // UI Elementy
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const jsonInput = document.getElementById('jsonInput');
+        const urlInput = document.getElementById('urlInput');
+        const validateJsonBtn = document.getElementById('validateJsonBtn');
+        const validateUrlBtn = document.getElementById('validateUrlBtn');
+        const resultArea = document.getElementById('resultArea');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultContent = document.getElementById('resultContent');
+        const llmPrompt = document.getElementById('llmPrompt');
+
+        // Přepínání tabů
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.target).classList.add('active');
+                resultArea.className = 'result'; // skrytí výsledku při změně
+            });
+        });
+
+        // Pomocná fce pro zobrazení výsledku
+        function showResult(success, message, errors = []) {
+            resultArea.className = `result ${success ? 'success' : 'error'}`;
+            resultTitle.textContent = success ? '✅ Validace úspěšná!' : '❌ Validace selhala';
+            
+            if (success) {
+                resultContent.innerHTML = `<p>${message}</p>`;
+                llmPrompt.style.display = 'none';
+            } else {
+                let errorHtml = `<p>${message}</p>`;
+                if (errors.length > 0) {
+                    errorHtml += `<ul class="error-list">`;
+                    errors.forEach(err => {
+                        // Úprava do formátu příznivějšího pro čtení a LLM
+                        errorHtml += `<li><b>Cesta:</b> <code>${err.path}</code><br/><b>Chyba:</b> ${err.message}</li>\n`;
+                    });
+                    errorHtml += `</ul>`;
+                }
+                resultContent.innerHTML = errorHtml;
+                llmPrompt.style.display = 'block';
+            }
+        }
+
+        // Vlastní validace
+        function validateData(dataStr) {
+            try {
+                const parsed = JSON.parse(dataStr);
+                const result = safeValidateOQSEFile(parsed);
+                
+                if (result.success) {
+                    showResult(true, `JSON je plně validní podle OQSE specifikace.`);
+                } else {
+                    const errors = result.error.errors.map(err => {
+                        const path = err.path.length > 0 ? err.path.join('.') : 'kořenový objekt';
+                        return { path, message: err.message };
+                    });
+                    showResult(false, `Nalezeno ${errors.length} chyb v JSON struktuře:`, errors);
+                }
+            } catch (e) {
+                showResult(false, `Chyba při parsování JSON: ${e.message}`);
+            }
+        }
+
+        // Akce
+        validateJsonBtn.addEventListener('click', () => {
+            const val = jsonInput.value.trim();
+            if (!val) {
+                showResult(false, 'Prosím vložte JSON k validaci.');
+                return;
+            }
+            validateData(val);
+        });
+
+        validateUrlBtn.addEventListener('click', async () => {
+            const url = urlInput.value.trim();
+            if (!url) {
+                showResult(false, 'Prosím zadejte platnou URL.');
+                return;
+            }
+            
+            validateUrlBtn.textContent = 'Načítám...';
+            validateUrlBtn.disabled = true;
+            
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+                const text = await res.text();
+                validateData(text);
+            } catch (e) {
+                showResult(false, `Nepodařilo se načíst data z URL: ${e.message}`);
+            } finally {
+                validateUrlBtn.textContent = 'Načíst a validovat';
+                validateUrlBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
