@@ -26,25 +26,25 @@ import { FeatureProfileSchema } from './oqseValidation';
 // ============================================================================
 
 /** Non-empty plain-text string (no leading/trailing whitespace). */
-const NonEmptyStringSchema = z.string().min(1, 'Hodnota nesm+� b+�t pr+�zdn+�').trim();
+const NonEmptyStringSchema = z.string().min(1, 'Value must not be empty').trim();
 
 /** Absolute URL (http/https). */
 const AbsoluteURLSchema = z
   .string()
-  .url('Mus+� b+�t platn+� absolutn+� URL')
+  .url('Must be a valid absolute URL')
   .refine((v) => v.startsWith('http://') || v.startsWith('https://'), {
-    message: 'URL mus+� pou+�+�vat sch+�ma http nebo https',
+    message: 'URL must use http or https scheme',
   });
 
 /** Semver version string in MAJOR.MINOR format (e.g. "0.1", "2.3"). */
 const ManifestVersionSchema = z
   .string()
-  .regex(/^\d+\.\d+$/, 'Verze mus+� b+�t ve form+�tu MAJOR.MINOR (nap+�. "0.1")');
+  .regex(/^\d+\.\d+$/, 'Version must be in MAJOR.MINOR format (e.g. "0.1")');
 
 /** Full semver version string MAJOR.MINOR.PATCH (e.g. "1.2.3"). */
 const SemVerSchema = z
   .string()
-  .regex(/^\d+\.\d+\.\d+$/, 'Verze mus+� b+�t ve form+�tu MAJOR.MINOR.PATCH (nap+�. "1.2.3")');
+  .regex(/^\d+\.\d+\.\d+$/, 'Version must be in MAJOR.MINOR.PATCH format (e.g. "1.2.3")');
 
 // ============================================================================
 // Actions
@@ -63,7 +63,7 @@ export const OQSEActionSchema = z
     (v) => (OFFICIAL_ACTIONS as ReadonlyArray<string>).includes(v) || v.startsWith('x-'),
     {
       message:
-        'Akce mus+� b+�t jedna z [render, edit, validate, import, export] nebo m+�t prefix "x-"',
+        'Action must be one of [render, edit, validate, import, export] or have prefix "x-"',
     }
   );
 
@@ -81,7 +81,7 @@ export const OQSEQuestionDensitySchema = z.enum(['low', 'medium', 'high']);
 // Feature Flags
 // ============================================================================
 
-/** Official feature keys as defined in T�2.1.1 of the OQSE spec. */
+/** Official feature keys as defined in Table 2.1.1 of the OQSE spec. */
 const OFFICIAL_FEATURE_KEYS = [
   'math',
   'media',
@@ -106,7 +106,7 @@ export const FeatureFlagSchema = z
     (v) => (OFFICIAL_FEATURE_KEYS as ReadonlyArray<string>).includes(v) || v.startsWith('x-'),
     {
       message:
-        'Funkce mus+� b+�t jedna z ofici+�ln+�ch kl+���+� nebo m+�t prefix "x-"',
+        'Feature must be one of official keys or have prefix "x-"',
     }
   );
 
@@ -117,12 +117,12 @@ export const FeatureFlagSchema = z
 /** Official item-level extension property keys (or vendor-prefixed). */
 export const ItemPropertyKeySchema = z
   .string()
-  .min(1, 'Kl+��� vlastnosti polo+�ky nesm+� b+�t pr+�zdn+�');
+  .min(1, 'Item property key must not be empty');
 
 /** Official meta-level extension property keys (or vendor-prefixed). */
 export const MetaPropertyKeySchema = z
   .string()
-  .min(1, 'Kl+��� vlastnosti metadat nesm+� b+�t pr+�zdn+�');
+  .min(1, 'Meta property key must not be empty');
 
 // ============================================================================
 // WildcardOrExplicit pattern
@@ -150,24 +150,24 @@ function wildcardOrExplicit<T extends z.ZodTypeAny>(
 /** Any valid image MIME type. */
 export const ImageMimeTypeSchema = z
   .string()
-  .refine((v) => v.startsWith('image/'), { message: 'Mus+� b+�t platn+� MIME typ obr+�zku (image/...)' });
+  .refine((v) => v.startsWith('image/'), { message: 'Must be a valid image MIME type (image/...)' });
 
 /** Any valid audio MIME type. */
 export const AudioMimeTypeSchema = z
   .string()
-  .refine((v) => v.startsWith('audio/'), { message: 'Mus+� b+�t platn+� MIME typ zvuku (audio/...)' });
+  .refine((v) => v.startsWith('audio/'), { message: 'Must be a valid audio MIME type (audio/...)' });
 
 /** Any valid video MIME type. */
 export const VideoMimeTypeSchema = z
   .string()
-  .refine((v) => v.startsWith('video/'), { message: 'Mus+� b+�t platn+� MIME typ videa (video/...)' });
+  .refine((v) => v.startsWith('video/'), { message: 'Must be a valid video MIME type (video/...)' });
 
 /** Any valid 3D model MIME type. */
 export const ModelMimeTypeSchema = z
   .string()
   .refine(
     (v) => v.startsWith('model/') || v === 'application/octet-stream',
-    { message: 'Mus+� b+�t platn+� MIME typ 3D modelu (model/... nebo application/octet-stream)' }
+    { message: 'Must be a valid 3D model MIME type (model/... or application/octet-stream)' }
   );
 
 // ============================================================================
@@ -201,7 +201,7 @@ export const ManifestCapabilitiesSchema = FeatureProfileSchema.extend({
    */
   actions: z
     .array(OQSEActionSchema)
-    .min(1, 'Aplikace mus+� podporovat alespo+� jednu akci'),
+    .min(1, 'Application must support at least one action'),
 
   /** Item types supported by this application. Uses `['*']` for all types. */
   types: wildcardOrExplicit(NonEmptyStringSchema).optional(),
@@ -215,10 +215,10 @@ export const ManifestCapabilitiesSchema = FeatureProfileSchema.extend({
 // ============================================================================
 
 /**
- * Full OQSE Application Manifest schema (T�2.1.1).
+ * Full OQSE Application Manifest schema (Table 2.1.1).
  *
  * Validated constraints beyond syntax:
- * - `minOqseVersion` �� `maxOqseVersion` when both are present
+ * - `minOqseVersion` <= `maxOqseVersion` when both are present
  * - `version` adheres to MAJOR.MINOR format
  * - `capabilities.actions` is non-empty (enforced by inner schema)
  */
@@ -231,11 +231,11 @@ export const OQSEManifestSchema = z
     /** Unique reverse-domain identifier, e.g. `com.acme.flashcards`. */
     id: NonEmptyStringSchema.regex(
       /^[a-z0-9-]+(\.[a-z0-9-]+)*$/,
-      'ID mus+� b+�t ve tvaru reverse-domain (nap+�. "com.acme.app")'
+      'ID must be in reverse-domain format (e.g. "com.acme.app")'
     ),
 
     /** Human-readable display name of the application. */
-    appName: NonEmptyStringSchema.max(100, 'N+�zev nesm+� b+�t del+�+� ne+� 100 znak+�'),
+    appName: NonEmptyStringSchema.max(100, 'Name must not be longer than 100 characters'),
 
     /**
      * Application version string. Follows MAJOR.MINOR format (manifest version
@@ -260,14 +260,14 @@ export const OQSEManifestSchema = z
 
     // ������ Plugin / Embedding ������������������������������������������������������������������������������������������������������������������������������������������������
 
-    author: z.string().max(100, 'N+�zev autora nesm+� b+�t del+�+� ne+� 100 znak+�').optional(),
+    author: z.string().max(100, 'Author name must not be longer than 100 characters').optional(),
 
     authorUrl: AbsoluteURLSchema.optional(),
 
     locales: z.array(NonEmptyStringSchema).optional(),
 
-    /** Short human-readable description (plain text, �� 500 chars). */
-    description: z.string().max(500, 'Popis nesm+� b+�t del+�+� ne+� 500 znak+�').optional(),
+    /** Short human-readable description (plain text, <= 500 chars). */
+    description: z.string().max(500, 'Description must not be longer than 500 characters').optional(),
 
     emoji: z.string().optional(),
 
@@ -298,7 +298,7 @@ export const OQSEManifestSchema = z
       return minMinor <= maxMinor;
     },
     {
-      message: 'minOqseVersion nesm+� b+�t vy+�+�+� ne+� maxOqseVersion',
+      message: 'minOqseVersion must not be greater than maxOqseVersion',
       path: ['minOqseVersion'],
     }
   );
@@ -355,8 +355,9 @@ export function safeValidateManifest(
  * @example
  * ```ts
  * console.error(formatManifestErrors(result.error));
- * // ��� "id: ID mus+� b+�t ve tvaru reverse-domain..."
- * // ��� "capabilities.actions: Aplikace mus+� podporovat alespo+� jednu akci"
+ * // Example output:
+ * // "id: ID must be in reverse-domain format (e.g. \"com.acme.app\")"
+ * // "capabilities.actions: Application must support at least one action"
  * ```
  */
 export function formatManifestErrors(error: z.ZodError): string {

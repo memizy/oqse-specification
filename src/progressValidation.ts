@@ -15,7 +15,7 @@ export const StatsObjectSchema: z.ZodType<StatsObject> = z
 		streak: z.number().int().nonnegative(),
 	})
 	.refine((data) => data.incorrect <= data.attempts, {
-		message: 'incorrect nesmí být vyšší než attempts',
+		message: 'incorrect cannot be higher than attempts',
 		path: ['incorrect'],
 	});
 
@@ -29,7 +29,7 @@ export const LastAnswerObjectSchema: z.ZodType<LastAnswerObject> = z
 		isSkipped: z.boolean().optional(),
 	})
 	.refine((data) => !data.isSkipped || data.isCorrect === false, {
-		message: 'Pokud je isSkipped=true, isCorrect má být false',
+		message: 'If isSkipped=true, isCorrect must be false',
 		path: ['isCorrect'],
 	});
 
@@ -46,13 +46,13 @@ export const ProgressMetaSchema: z.ZodType<ProgressMeta> = z.object({
 	exportedAt: ISO8601DateTimeSchema,
 	algorithm: z
 		.string()
-		.regex(/^[a-z0-9-]+$/, 'algorithm musí mít formát lowercase alphanumeric s pomlčkami')
+		.regex(/^[a-z0-9-]+$/, 'algorithm must be lowercase alphanumeric with hyphens format')
 		.optional(),
 });
 
 export const OQSEPFileSchema: z.ZodType<OQSEPFile> = z.object({
 	$schema: z.string().url().optional(),
-	version: z.string().regex(/^\d+\.\d+$/, 'Verze musí být ve formátu MAJOR.MINOR'),
+	version: z.string().regex(/^\d+\.\d+$/, 'Version must be in MAJOR.MINOR format'),
 	meta: ProgressMetaSchema,
 	records: z.record(UUIDSchema, ProgressRecordSchema),
 });

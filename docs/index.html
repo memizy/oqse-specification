@@ -171,6 +171,15 @@
         <h1>OQSE Validator</h1>
         <p>Check the validity of Open Quiz & Study Exchange (OQSE) format files. Tools use the official Zod schema from <code>@memizy/oqse</code>.</p>
         
+        
+        <div class="input-group" style="margin-bottom: 2rem;">
+            <label for="validationType">Select Document Type to Validate:</label>
+            <select id="validationType" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem;">
+                <option value="oqse">📝 OQSE Dataset (Items & Metadata)</option>
+                <option value="manifest">📦 OQSE Package Manifest</option>
+                <option value="progress">📈 OQSEP Progress Data</option>
+            </select>
+        </div>
         <div class="tabs">
             <button class="tab active" data-target="json-tab">Paste JSON</button>
             <button class="tab" data-target="url-tab">Fetch from URL</button>
@@ -205,7 +214,7 @@
     <!-- Ensure module matches library export syntax -->
     <script type="module">
         // Import from unpkg to support local development and browser environments immediately
-        import { safeValidateOQSEFile, formatValidationErrors } from 'https://esm.sh/@memizy/oqse@latest';
+        import { safeValidateOQSEFile, safeValidateManifest, safeValidateOQSEPFile, formatValidationErrors } from 'https://esm.sh/@memizy/oqse@latest';
 
         const tabs = document.querySelectorAll('.tab');
         const tabContents = document.querySelectorAll('.tab-content');
@@ -250,23 +259,38 @@
             }
         }
 
+                const validationType = document.getElementById('validationType');
+
         function validateData(dataStr) {
             try {
                 const parsed = JSON.parse(dataStr);
-                const result = safeValidateOQSEFile(parsed);
+                const type = validationType.value;
+                
+                let result;
+                let typeName = '';
+                
+                if (type === 'oqse') {
+                    result = safeValidateOQSEFile(parsed);
+                    typeName = 'OQSE Dataset';
+                } else if (type === 'manifest') {
+                    result = safeValidateManifest(parsed);
+                    typeName = 'OQSE Manifest';
+                } else if (type === 'progress') {
+                    result = safeValidateOQSEPFile(parsed);
+                    typeName = 'OQSEP Progress';
+                }
                 
                 if (result.success) {
-                    showResult(true, `JSON is fully valid according to the OQSE specification.`);
+                    showResult(true, `JSON is fully valid according to the ${typeName} specification.`);
                 } else {
-                    // Use formatValidationErrors from the SDK! 
                     const formattedErrors = formatValidationErrors(result.error);
-                    showResult(false, `Found ${formattedErrors.length} errors in the JSON structure:`, formattedErrors);
+                    showResult(false, `Found ${formattedErrors.length} validation error(s) in the ${typeName} structure:`, formattedErrors);
                 }
             } catch (e) {
                 if (e instanceof SyntaxError) {
-                    showResult(false, `JSON parsing error. Your input is not valid JSON Data. Check for missing quotes or brackets:\\n\n${e.message}`);
+                    showResult(false, `JSON parsing error. Your input is not valid JSON Data. Check for missing quotes or brackets:\n\n${e.message}`);
                 } else {
-                    showResult(false, `An unexpected error occurred:\\n\n${e.message}`);
+                    showResult(false, `An unexpected error occurred:\n\n${e.message}`);
                 }
             }
         }
