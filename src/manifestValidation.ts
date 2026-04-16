@@ -133,9 +133,9 @@ export const MetaPropertyKeySchema = z
  * `ManifestAssets` and `ManifestCapabilities`.
  *
  * Valid values:
- * - `['*']`  ��� wildcard, accepts anything
- * - `T[]`    ��� explicit allow-list
- * - `null`   ��� feature disabled / not supported
+ * - `['*']` - wildcard, accepts anything
+ * - `T[]` - explicit allow-list
+ * - `null` - feature disabled / not supported
  */
 function wildcardOrExplicit<T extends z.ZodTypeAny>(
   itemSchema: T
@@ -226,7 +226,7 @@ export const OQSEManifestSchema = z
   .object({
     // Recommended schema URL for draft v0.1: https://memizy.com/schemas/oqse-manifest/v0.1.json
     $schema: AbsoluteURLSchema.optional(),
-    // ������ Identity ������������������������������������������������������������������������������������������������������������������������������������������������������������������������������
+    // --- Identity ---
 
     /** Unique reverse-domain identifier, e.g. `com.acme.flashcards`. */
     id: NonEmptyStringSchema.regex(
@@ -245,7 +245,7 @@ export const OQSEManifestSchema = z
 
     pluginVersion: SemVerSchema.optional(),
 
-    // ������ OQSE Compatibility ������������������������������������������������������������������������������������������������������������������������������������������������
+    // --- OQSE Compatibility ---
 
     /** Minimum OQSE spec version this application can consume. */
     minOqseVersion: ManifestVersionSchema.optional(),
@@ -253,12 +253,12 @@ export const OQSEManifestSchema = z
     /** Maximum OQSE spec version this application can consume. */
     maxOqseVersion: ManifestVersionSchema.optional(),
 
-    // ������ Capabilities ������������������������������������������������������������������������������������������������������������������������������������������������������������������
+    // --- Capabilities ---
 
     /** Declares all features, item types, and media assets the app handles. */
     capabilities: ManifestCapabilitiesSchema,
 
-    // ������ Plugin / Embedding ������������������������������������������������������������������������������������������������������������������������������������������������
+    // --- Plugin / Embedding ---
 
     author: z.string().max(100, 'Author name must not be longer than 100 characters').optional(),
 
@@ -284,7 +284,7 @@ export const OQSEManifestSchema = z
   })
   .refine(
     (data) => {
-      // Validate minOqseVersion �� maxOqseVersion when both are present
+      // Validate minOqseVersion <= maxOqseVersion when both are present
       if (!data.minOqseVersion || !data.maxOqseVersion) return true;
 
       const minParts = data.minOqseVersion.split('.');
@@ -372,7 +372,7 @@ export function formatManifestErrors(error: z.ZodError): string {
 /**
  * Checks whether a plain object looks like an OQSE Manifest (duck-typing).
  *
- * This is a fast pre-check ��� use `validateManifest` for full validation.
+ * This is a fast pre-check - use `validateManifest` for full validation.
  *
  * @param data - Any value.
  * @returns `true` if `data` has the minimum required shape.
@@ -404,4 +404,3 @@ const manifestSchemaContracts: {
 };
 
 void manifestSchemaContracts;
-

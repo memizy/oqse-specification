@@ -267,34 +267,6 @@
           },
           "additionalProperties": false
         },
-        "requiredFeatures": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string",
-                "minLength": 1
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "official",
-                  "experimental",
-                  "proprietary"
-                ]
-              },
-              "vendor": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "name",
-              "type"
-            ],
-            "additionalProperties": false
-          }
-        },
         "tags": {
           "type": "array",
           "items": {

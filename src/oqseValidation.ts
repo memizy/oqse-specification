@@ -19,7 +19,6 @@ import type {
   DiagramLabelItem,
   DiagramZone,
   FeatureProfile,
-  FeatureRequirement,
   FillInBlanksItem,
   FillInSelectItem,
   FlashcardItem,
@@ -279,40 +278,6 @@ export const FeatureProfileSchema = z.object({
 });
 
 // ============================================================================
-// Feature Requirements (legacy ��� kept for backward-compat with requiredFeatures)
-// ============================================================================
-
-export const FeatureTypeSchema = z.enum(['official', 'experimental', 'proprietary']);
-
-export const OfficialFeatureNameSchema = z.enum([
-  'math',
-  'media-image',
-  'media-audio',
-  'media-video',
-  'hotspots',
-  'complex-pairing',
-  'open-text',
-]);
-
-export const FeatureRequirementSchema = z.object({
-  name: PlainTextSchema,
-  type: FeatureTypeSchema,
-  vendor: z.string().optional(),
-}).refine(
-  (data) => {
-    // Vendor is required for proprietary features
-    if (data.type === 'proprietary' && !data.vendor) {
-      return false;
-    }
-    return true;
-  },
-  {
-    message: 'Proprietary feature must have vendor defined (e.g. "memizy.com")',
-    path: ['vendor'],
-  }
-);
-
-// ============================================================================
 // Translation and Linked Sets
 // ============================================================================
 
@@ -387,7 +352,6 @@ export const OQSEMetaSchema = z.object({
   license: SPDXLicenseSchema.optional(),
   licenseUrl: AbsoluteURLSchema.optional(),
   requirements: FeatureProfileSchema.optional(),
-  requiredFeatures: z.array(FeatureRequirementSchema).optional(),
   tags: z.array(PlainTextSchema).optional(),
   tagDefinitions: TagDefinitionDictionarySchema.optional(),
   translations: z.array(TranslationObjectSchema).optional(),
@@ -496,7 +460,7 @@ export const PolygonHotspotSchema = z.object({
 });
 
 /**
- * Mesh hotspot ��� references a named node/mesh in a 3D glTF scene.
+ * Mesh hotspot references a named node/mesh in a 3D glTF scene.
  * Used exclusively in `pin-on-model` items.
  */
 export const MeshHotspotSchema = z.object({
@@ -532,7 +496,7 @@ export const CameraSetupSchema = z.object({
 /**
  * Categorize item
  */
-export const CategorizeItemSchema = z.object({
+export const CategorizeItemObjectSchema = z.object({
   id: PlainTextSchema,
   text: RichContentSchema,
   correctCategoryIndex: z.number().int().nonnegative(),
@@ -971,11 +935,11 @@ export const PinOnImageItemSchema = BaseItemSchema.extend({
 /**
  * Categorize Item
  */
-export const CategorizeItemTypeSchema = BaseItemSchema.extend({
+export const CategorizeItemSchema = BaseItemSchema.extend({
   type: z.literal('categorize'),
   question: RichContentSchema.max(10000, 'Question must not be longer than 10000 characters'),
   categories: z.array(PlainTextSchema).min(2, 'Must have at least 2 categories'),
-  items: z.array(CategorizeItemSchema).min(1, 'Must have at least 1 item to categorize'),
+  items: z.array(CategorizeItemObjectSchema).min(1, 'Must have at least 1 item to categorize'),
 }).refine(
   (data) => {
     // Validate all correctCategoryIndex values
@@ -1180,7 +1144,7 @@ export const OQSEItemSchema = z.discriminatedUnion('type', [
   SortItemsItemSchema,
   SliderItemSchema,
   PinOnImageItemSchema,
-  CategorizeItemTypeSchema,
+  CategorizeItemSchema,
   TimelineItemSchema,
   MatrixItemSchema,
   MathInputItemSchema,
@@ -1283,7 +1247,6 @@ const schemaTypeContracts: {
   SourceReferenceSchema: z.ZodType<SourceReference>;
   TagDefinitionSchema: z.ZodType<TagDefinition>;
   FeatureProfileSchema: z.ZodType<FeatureProfile>;
-  FeatureRequirementSchema: z.ZodType<FeatureRequirement>;
   TranslationObjectSchema: z.ZodType<TranslationObject>;
   LinkedSetObjectSchema: z.ZodType<LinkedSetObject>;
   PedagogySchema: z.ZodType<Pedagogy>;
@@ -1298,7 +1261,7 @@ const schemaTypeContracts: {
   HotspotObjectSchema: z.ZodType<HotspotObject>;
   Vector3Schema: z.ZodType<Vector3>;
   CameraSetupSchema: z.ZodType<CameraSetup>;
-  CategorizeItemSchema: z.ZodType<CategorizeItem>;
+  CategorizeItemObjectSchema: z.ZodType<CategorizeItem>;
   TimelineEventSchema: z.ZodType<TimelineEvent>;
   DiagramZoneSchema: z.ZodType<DiagramZone>;
   RubricCriterionSchema: z.ZodType<RubricCriterion>;
@@ -1317,7 +1280,7 @@ const schemaTypeContracts: {
   SortItemsItemSchema: z.ZodType<SortItemsItem>;
   SliderItemSchema: z.ZodType<SliderItem>;
   PinOnImageItemSchema: z.ZodType<PinOnImageItem>;
-  CategorizeItemTypeSchema: z.ZodType<CategorizeItemType>;
+  CategorizeItemSchema: z.ZodType<CategorizeItemType>;
   TimelineItemSchema: z.ZodType<TimelineItem>;
   MatrixItemSchema: z.ZodType<MatrixItem>;
   MathInputItemSchema: z.ZodType<MathInputItem>;
@@ -1337,7 +1300,6 @@ const schemaTypeContracts: {
   SourceReferenceSchema,
   TagDefinitionSchema,
   FeatureProfileSchema,
-  FeatureRequirementSchema,
   TranslationObjectSchema,
   LinkedSetObjectSchema,
   PedagogySchema,
@@ -1352,7 +1314,7 @@ const schemaTypeContracts: {
   HotspotObjectSchema,
   Vector3Schema,
   CameraSetupSchema,
-  CategorizeItemSchema,
+  CategorizeItemObjectSchema,
   TimelineEventSchema,
   DiagramZoneSchema,
   RubricCriterionSchema,
@@ -1371,7 +1333,7 @@ const schemaTypeContracts: {
   SortItemsItemSchema,
   SliderItemSchema,
   PinOnImageItemSchema,
-  CategorizeItemTypeSchema,
+  CategorizeItemSchema,
   TimelineItemSchema,
   MatrixItemSchema,
   MathInputItemSchema,
