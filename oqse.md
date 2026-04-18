@@ -2054,11 +2054,11 @@ OQSE is an open standard. Suggestions for improvements:
 -----
 
 **Document Version:** 0.1  
-**Last Updated:** November 20, 2025  
+**Last Updated:** April 18, 2026  
 **Documentation License:** CC-BY-SA-4.0
 
 -----
 
-### Version 0.1 (November 20, 2025)
+### Version 0.1 (April 18, 2026 )
 #### First version of this specification created
 

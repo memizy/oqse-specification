@@ -56,11 +56,15 @@ export function tokenizeOqseTags(rawText: string): { text: string; tokens: Token
  * If 'html' is not allowed, any raw HTML tags written by the user must cause a validation error.
  */
 export function validateTier1Markdown(textWithoutOqseTags: string): void {
-  // Odstraníme z textu všechny inline kódové bloky (`kod`) a víceřádkové bloky (```kod```),
-  // abychom nepenalizovali uživatele, kteří píší o HTML v čistém Markdownu.
-  const textWithoutCodeBlocks = textWithoutOqseTags.replace(/`{1,3}[^`]*`{1,3}/g, '');
+  // Remove all code blocks from the text before checking for HTML.
+  // This ensures we don't penalize users writing about HTML inside Markdown code blocks.
+  const textWithoutCodeBlocks = textWithoutOqseTags
+    // 1. Strip backtick blocks and inline code (e.g., `code` or ```code```)
+    .replace(/`{1,}[^`]*`{1,}/g, '')
+    // 2. Strip GFM tilde blocks (e.g., ~~~html <div> ~~~)
+    .replace(/~{3,}[\s\S]*?~{3,}/g, '');
 
-  // Základní detekce surových HTML tagů.
+  // Basic detection for manual HTML tags. 
   const rawHtmlRegex = /<[a-zA-Z\/][^>]*>/;
   
   if (rawHtmlRegex.test(textWithoutCodeBlocks)) {
