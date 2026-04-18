@@ -64,3 +64,24 @@ export function validateOQSEPFile(data: unknown): OQSEPFile {
 export function safeValidateOQSEPFile(data: unknown): ReturnType<typeof OQSEPFileSchema.safeParse> {
 	return OQSEPFileSchema.safeParse(data);
 }
+
+// ============================================================================
+// Schema Type Contracts
+// ============================================================================
+
+const progressSchemaContracts: {
+	StatsObjectSchema: z.ZodType<StatsObject>;
+	LastAnswerObjectSchema: z.ZodType<LastAnswerObject>;
+	ProgressRecordSchema: z.ZodType<ProgressRecord>;
+	ProgressMetaSchema: z.ZodType<ProgressMeta>;
+	OQSEPFileSchema: z.ZodType<OQSEPFile>;
+} = {
+	StatsObjectSchema,
+	LastAnswerObjectSchema: LastAnswerObjectSchema as unknown as z.ZodType<LastAnswerObject>,
+	ProgressRecordSchema,
+	ProgressMetaSchema,
+	OQSEPFileSchema,
+};
+
+// Prevent TS from complaining about unused variable
+void progressSchemaContracts;

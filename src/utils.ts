@@ -1,12 +1,20 @@
+import { v7 as uuidv7, validate as uuidValidate } from 'uuid';
+
 export type UUID = string;
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
+/**
+ * Validates if the given string is a syntactically valid UUID (any version).
+ * Uses the robust validator from the 'uuid' package.
+ */
 export function isValidUUID(id: string): boolean {
-  return UUID_PATTERN.test(id);
+  return uuidValidate(id);
 }
 
+/**
+ * Generates a new UUIDv7.
+ * UUIDv7 is required by the OQSE specification for new items 
+ * because it is time-sortable and optimized for database indexing.
+ */
 export function generateUUID(): UUID {
-  return crypto.randomUUID();
+  return uuidv7();
 }

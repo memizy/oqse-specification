@@ -9,6 +9,11 @@
  */
 
 import { z } from 'zod';
+import {
+  OFFICIAL_FEATURE_KEYS,
+  OFFICIAL_ITEM_PROPERTIES,
+  OFFICIAL_META_PROPERTIES,
+} from './manifest';
 import type {
   BaseItem,
   CameraSetup,
@@ -271,10 +276,19 @@ export const TagDefinitionDictionarySchema = z.record(z.string(), TagDefinitionS
  * All arrays accept official values from the registry or custom `x-` prefixed keys.
  */
 export const FeatureProfileSchema = z.object({
-  features: z.array(z.string().min(1, 'Feature key must not be empty')).optional(),
+  features: z.array(z.string().refine(
+    (v) => (OFFICIAL_FEATURE_KEYS as ReadonlyArray<string>).includes(v) || v.startsWith('x-'),
+    { message: 'Feature must be an official key or have prefix "x-"' }
+  )).optional(),
   latexPackages: z.array(z.string().min(1, 'Package name must not be empty')).optional(),
-  itemProperties: z.array(z.string().min(1, 'Property key must not be empty')).optional(),
-  metaProperties: z.array(z.string().min(1, 'Property key must not be empty')).optional(),
+  itemProperties: z.array(z.string().refine(
+    (v) => (OFFICIAL_ITEM_PROPERTIES as ReadonlyArray<string>).includes(v) || v.startsWith('x-'),
+    { message: 'Item property must be an official key or have prefix "x-"' }
+  )).optional(),
+  metaProperties: z.array(z.string().refine(
+    (v) => (OFFICIAL_META_PROPERTIES as ReadonlyArray<string>).includes(v) || v.startsWith('x-'),
+    { message: 'Meta property must be an official key or have prefix "x-"' }
+  )).optional(),
 });
 
 // ============================================================================

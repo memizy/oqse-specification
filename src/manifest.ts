@@ -27,7 +27,8 @@ export type { FeatureProfile } from './oqse';
  * - `import`   - Data ingestion: parses OQSE data into an internal system.
  * - `export`   - Data generation: serializes internal data into OQSE format.
  */
-export type OfficialAction = 'render' | 'edit' | 'validate' | 'import' | 'export';
+export const OFFICIAL_ACTIONS = ['render', 'edit', 'validate', 'import', 'export'] as const;
+export type OfficialAction = typeof OFFICIAL_ACTIONS[number];
 
 /**
  * Custom action using the required `x-` prefix (e.g., `"x-preview"`, `"x-sync"`).
@@ -82,23 +83,26 @@ export type OQSEQuestionDensity = 'low' | 'medium' | 'high';
  *   are only meaningful when `markdown` is also declared.
  * - `latexPackages` (in FeatureProfile) is only meaningful when `math` is declared.
  */
-export type OfficialFeatureKey =
+export const OFFICIAL_FEATURE_KEYS = [
   // 1. Base Formatting (Tier 1)
-  | 'markdown'            // GitHub Flavored Markdown (GFM) in Rich Content fields
-  | 'math'                // LaTeX formulas via $ / $$ delimiters (KaTeX/MathJax)
-  | 'rtl'                 // Right-to-Left text direction
+  'markdown',
+  'math',
+  'rtl',
 
   // 2. Extended Formatting & Blocks (Higher parsing complexity or sanitization overhead)
-  | 'html'                // Intended, safely sanitized raw HTML tags
-  | 'syntax-highlighting' // Syntax coloring in GFM fenced code blocks
-  | 'mermaid'             // Mermaid diagram rendering in ```mermaid blocks
-  | 'smiles'              // 2D chemical structure from SMILES in ```smiles blocks
-  | 'abc-notation'        // Music notation from ABC syntax in ```abc blocks
+  'html',
+  'syntax-highlighting',
+  'mermaid',
+  'smiles',
+  'abc-notation',
 
   // 3. Device & Interaction Features (Client capabilities)
-  | 'text-to-speech'          // Read text aloud
-  | 'voice-input'             // Accept voice dictation as input
-  | 'handwriting-recognition'; // Handwriting input (tablets)
+  'text-to-speech',
+  'voice-input',
+  'handwriting-recognition'
+] as const;
+
+export type OfficialFeatureKey = typeof OFFICIAL_FEATURE_KEYS[number];
 
 /**
  * A custom feature using the required `x-` prefix (e.g., `"x-memizy-3d-voxel"`).
@@ -122,17 +126,20 @@ export type FeatureFlag = OfficialFeatureKey | CustomFeatureKey;
  * Declared in `capabilities.itemProperties` (app support) and
  * `meta.requirements.itemProperties` (set requirement).
  */
-export type OfficialItemProperty =
-  | 'hints'             // Application displays optional hints
-  | 'explanation'       // Application shows explanation after answer
-  | 'incorrectFeedback' // Application shows feedback specific to wrong answers
-  | 'sources'           // Application displays item-level source references
-  | 'relatedItems'      // Application navigates to/displays related items
-  | 'dependencyItems'   // Application enforces item prerequisites
-  | 'timeLimit'         // Application enforces/displays item time limits
-  | 'lang'              // Application respects per-item language override
-  | 'topic'             // Application groups/filters items by topic
-  | 'pedagogy';         // Application uses IRT/forgetting-curve data
+export const OFFICIAL_ITEM_PROPERTIES = [
+  'hints',             // Application displays optional hints
+  'explanation',       // Application shows explanation after answer
+  'incorrectFeedback', // Application shows feedback specific to wrong answers
+  'sources',           // Application displays item-level source references
+  'relatedItems',      // Application navigates to/displays related items
+  'dependencyItems',   // Application enforces item prerequisites
+  'timeLimit',         // Application enforces/displays item time limits
+  'lang',              // Application respects per-item language override
+  'topic',             // Application groups/filters items by topic
+  'pedagogy'           // Application uses IRT/forgetting-curve data
+] as const;
+
+export type OfficialItemProperty = typeof OFFICIAL_ITEM_PROPERTIES[number];
 
 /**
  * A custom item property using the `x-` prefix.
@@ -154,22 +161,25 @@ export type ItemPropertyKey = OfficialItemProperty | CustomItemProperty;
  * Declared in `capabilities.metaProperties` (app support) and
  * `meta.requirements.metaProperties` (set requirement).
  */
-export type OfficialMetaProperty =
-  | 'description'     // Application displays set description
-  | 'thumbnail'       // Application displays set cover image
-  | 'subject'         // Application uses subject for categorization/search
-  | 'language'        // Application respects set language (TTS, fonts, locale)
-  | 'author'          // Application attributes the primary author
-  | 'contributors'    // Application attributes all contributors
-  | 'license'         // Application displays licensing and respects rights
-  | 'ageRestriction'  // Application respects ageMin/ageMax recommendations
-  | 'tags'            // Application supports browsing/filtering by tags
-  | 'tagDefinitions'  // Application uses tag definitions (Wikidata tooltips)
-  | 'sourceMaterials' // Application displays the set's source range
-  | 'estimatedTime'   // Application displays/uses completion time estimate
-  | 'prerequisites'   // Application enforces prerequisite sets
-  | 'translations'    // Application offers navigation to translated versions
-  | 'relatedSets';    // Application suggests related study sets
+export const OFFICIAL_META_PROPERTIES = [
+  'description',     // Application displays set description
+  'thumbnail',       // Application displays set cover image
+  'subject',         // Application uses subject for categorization/search
+  'language',        // Application respects set language (TTS, fonts, locale)
+  'author',          // Application attributes the primary author
+  'contributors',    // Application attributes all contributors
+  'license',         // Application displays licensing and respects rights
+  'ageRestriction',  // Application respects ageMin/ageMax recommendations
+  'tags',            // Application supports browsing/filtering by tags
+  'tagDefinitions',  // Application uses tag definitions (Wikidata tooltips)
+  'sourceMaterials', // Application displays the set's source range
+  'estimatedTime',   // Application displays/uses completion time estimate
+  'prerequisites',   // Application enforces prerequisite sets
+  'translations',    // Application offers navigation to translated versions
+  'relatedSets'      // Application suggests related study sets
+] as const;
+
+export type OfficialMetaProperty = typeof OFFICIAL_META_PROPERTIES[number];
 
 /**
  * A custom meta property using the `x-` prefix.

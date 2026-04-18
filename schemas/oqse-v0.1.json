@@ -239,8 +239,7 @@
             "features": {
               "type": "array",
               "items": {
-                "type": "string",
-                "minLength": 1
+                "type": "string"
               }
             },
             "latexPackages": {
@@ -253,15 +252,13 @@
             "itemProperties": {
               "type": "array",
               "items": {
-                "type": "string",
-                "minLength": 1
+                "type": "string"
               }
             },
             "metaProperties": {
               "type": "array",
               "items": {
-                "type": "string",
-                "minLength": 1
+                "type": "string"
               }
             }
           },

@@ -10,14 +10,18 @@
  */
 
 import { z } from 'zod';
-import type {
-  FeatureFlag,
-  ManifestAssets,
-  ManifestCapabilities,
-  OQSEAction,
-  OQSEManifest,
-  OQSEQuestionDensity,
-  OQSEStudyMode,
+import {
+  OFFICIAL_ACTIONS,
+  OFFICIAL_FEATURE_KEYS,
+  OFFICIAL_ITEM_PROPERTIES,
+  OFFICIAL_META_PROPERTIES,
+  type FeatureFlag,
+  type ManifestAssets,
+  type ManifestCapabilities,
+  type OQSEAction,
+  type OQSEManifest,
+  type OQSEQuestionDensity,
+  type OQSEStudyMode,
 } from './manifest';
 import { FeatureProfileSchema } from './oqseValidation';
 
@@ -50,9 +54,6 @@ const SemVerSchema = z
 // Actions
 // ============================================================================
 
-/** Official actions defined in the OQSE specification. */
-const OFFICIAL_ACTIONS = ['render', 'edit', 'validate', 'import', 'export'] as const;
-
 /**
  * A valid OQSE action: one of the five official actions, or a vendor-specific
  * action prefixed with `x-` (e.g. `x-acme-grade`).
@@ -81,21 +82,6 @@ export const OQSEQuestionDensitySchema = z.enum(['low', 'medium', 'high']);
 // Feature Flags
 // ============================================================================
 
-/** Official feature keys as defined in Table 2.1.1 of the OQSE spec. */
-const OFFICIAL_FEATURE_KEYS = [
-  'math',
-  'media',
-  'media-image',
-  'media-audio',
-  'media-video',
-  'media-model',
-  'hotspots',
-  'hotspots-3d',
-  'complex-pairing',
-  'open-text',
-  'chess',
-] as const;
-
 /**
  * A feature flag: one of the official keys or a vendor-specific key prefixed
  * with `x-` (e.g. `x-acme-chemistry`).
@@ -117,12 +103,18 @@ export const FeatureFlagSchema = z
 /** Official item-level extension property keys (or vendor-prefixed). */
 export const ItemPropertyKeySchema = z
   .string()
-  .min(1, 'Item property key must not be empty');
+  .refine(
+    (v) => (OFFICIAL_ITEM_PROPERTIES as ReadonlyArray<string>).includes(v) || v.startsWith('x-'),
+    { message: 'Item property must be an official key or have prefix "x-"' }
+  );
 
 /** Official meta-level extension property keys (or vendor-prefixed). */
 export const MetaPropertyKeySchema = z
   .string()
-  .min(1, 'Meta property key must not be empty');
+  .refine(
+    (v) => (OFFICIAL_META_PROPERTIES as ReadonlyArray<string>).includes(v) || v.startsWith('x-'),
+    { message: 'Meta property must be an official key or have prefix "x-"' }
+  );
 
 // ============================================================================
 // WildcardOrExplicit pattern

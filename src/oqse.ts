@@ -298,41 +298,6 @@ export interface FeatureProfile {
   metaProperties?: string[];
 }
 
-/**
- * Feature requirement type
- * @deprecated Use FeatureProfile instead for spec-compliant requirements.
- */
-export type FeatureType = 'official' | 'experimental' | 'proprietary';
-
-/**
- * Official feature names
- */
-export type OfficialFeatureName = 
-  | 'math'
-  | 'media-image'
-  | 'media-audio'
-  | 'media-video'
-  | 'hotspots'
-  | 'complex-pairing'
-  | 'open-text';
-
-/**
- * Feature requirement object
- */
-export interface FeatureRequirement {
-  /** Feature name */
-  name: string;
-  
-  /** Feature type */
-  type: FeatureType;
-  
-  /** 
-   * For proprietary features: Domain name of the provider (e.g., "memizy.com").
-   * MUST be present for type: "proprietary", ignored for other types.
-   */
-  vendor?: string;
-}
-
 // ============================================================================
 // Translation and Linked Sets
 // ============================================================================
@@ -506,12 +471,6 @@ export interface OQSEMeta {
    */
   requirements?: FeatureProfile;
 
-  /**
-   * @deprecated Use `requirements` (FeatureProfile) instead.
-   * This field used a non-spec-compliant structure.
-   */
-  requiredFeatures?: FeatureRequirement[];
-  
   /** Array of text labels (tags) for the entire set */
   tags?: string[];
   
