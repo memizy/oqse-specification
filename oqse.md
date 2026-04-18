@@ -15,7 +15,7 @@ In this specification, the keywords **MUST**, **MUST NOT**, **SHOULD**, **SHOULD
 **Note on Tables:** In columns labeled "Required," "Yes" = MUST be present (per RFC 2119), "No" = MAY be omitted.
 
 **Implementation Terminology:**
-- **Application:** Any software entity that interacts with OQSE data. Every application declares its specific **Capabilities** via an OQSEM (Open Quiz & Study Exchange Manifest).
+- **Application:** Any software entity that interacts with OQSE data. Every application declares its specific **Capabilities** via an [OQSEM (Open Quiz & Study Exchange Manifest)](./oqse-manifest.md).
 - **Capability:** A specifically declared competence of an application. This encompasses the actions it can perform (e.g., `render`, `edit`, `export`), the item types and asset formats it supports (e.g., `mcq-single`, `image/png`), and the advanced features (e.g., `explanations`, `sourceMaterials`) or metadata it can process (e.g., `markdown`, `math`).
 - **Rule Application:** When the specification states "Application MUST...", the rule applies contextually based on the application's declared capabilities. For example, rules regarding UI display and tolerant parsing apply to applications declaring the `render` action, whereas strict data normalization rules during saving apply to those declaring `edit` or `export`.
 
@@ -86,7 +86,7 @@ An OQSE set MAY be distributed in two ways:
     * IGNORE all other files (e.g., OS metadata, `.DS_Store`, thumbnails)
     * MUST NOT fail due to the presence of other files
 
-Exporters should choose `.json` if the set does not need local binary files. Once a set contains custom media (e.g., user-uploaded), the editor MUST create a `.oqse` package [(see section 2.3)](#23-the-handshake-matching-process).
+Exporters should choose `.json` if the set does not need local binary files. Once a set contains custom media (e.g., user-uploaded), the editor MUST create a `.oqse` package.
 
 -----
 
@@ -313,7 +313,7 @@ Standardized object for embedding media. Used:
 
 | Key | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
-| `type` | string | Yes | Media type from selection (`image`, `audio`, `video`, `model`). The specific allowed file formats are negotiated via the OQSEM (`capabilities.assets`). For the `model` type, the glTF format (`model/gltf-binary` for `.glb` or `model/gltf+json` for `.gltf`) is highly RECOMMENDED as the universal baseline for interoperability. However, applications and sets MAY use other formats (like `.obj` or `.fbx`) provided they are explicitly declared and matched during the capability handshake. |
+| `type` | string | Yes | Media type from selection (`image`, `audio`, `video`, `model`). The specific allowed file formats are negotiated via the [OQSEM (`capabilities.assets`)](./oqse-manifest.md#12-capabilities-object-extends-featureprofile). For the `model` type, the glTF format (`model/gltf-binary` for `.glb` or `model/gltf+json` for `.gltf`) is highly RECOMMENDED as the universal baseline for interoperability. However, applications and sets MAY use other formats (like `.obj` or `.fbx`) provided they are explicitly declared and matched during the capability handshake. |
 | `value` | string | Yes | URI of the resource. Can be **absolute URL** (e.g., `https://.../image.png`) or **relative path** to file in package (e.g., `assets/diagram.png`). |
 | `mimeType` | string | Recommended | MIME type of file (e.g., `image/png`, `audio/mpeg`, `video/mp4`, `model/gltf-binary`). |
 | `altText` | string | **REQUIRED for images**, optional for audio/video | **Plain Text.** Alternative text for accessibility. Must be plain text without formatting for screen readers. |
@@ -1707,84 +1707,11 @@ This order ensures that:
 }
 ```
 
-### 9.12. OQSEM Validation Rules
+### 9.12. OQSEM Validation (Manifest)
 
-This section is the single reference for all constraints on OQSEM fields. For the normative definition of each field and its behavioral semantics, see the OQSEM Specification. A host environment MUST reject a manifest that violates any MUST rule below and MUST report an appropriate structured error to the user.
+To ensure interoperability, application manifests must be validated against strict rules. The normative definition of all validation constraints, ID formats, and handshake rules are located in a standalone document:
 
-#### 9.12.1. Required Fields
-
-- `version`, `id`, `appName`, and `capabilities` MUST be present. A manifest missing any of these MUST be rejected.
-- `capabilities.actions` MUST be present and non-empty. A manifest with no declared actions is inoperable.
-
-#### 9.12.2. Root Field Constraints
-
-**`version`, `minOqseVersion`, `maxOqseVersion`:**
-- MUST match the pattern `^\d+\.\d+$` (e.g., `"1.0"`, `"1.99"`, `"2.0"`). Both components MUST be non-negative integers.
-- Version comparison is performed numerically field-by-field: `"1.10"` is greater than `"1.9"`.
-- A malformed `version` value MUST cause manifest rejection (it is a required field). A malformed `minOqseVersion` or `maxOqseVersion` SHOULD be treated as absent; the host SHOULD warn.
-- If both `minOqseVersion` and `maxOqseVersion` are present, `minOqseVersion` MUST be less than or equal to `maxOqseVersion`. A manifest violating this MUST be rejected.
-
-**`pluginVersion`:**
-- SHOULD follow SemVer format `MAJOR.MINOR.PATCH` (e.g., `"2.1.0"`).
-- Applications MUST NOT reject a manifest solely because `pluginVersion` does not follow SemVer.
-
-**`id`:**
-- MUST be either a controlled absolute URL (e.g., `"https://memizy.com/player"`) or a URN-format UUID (e.g., `"urn:uuid:019aa600-abc1-7234-b678-c0ffee000001"`).
-- A value that is neither a valid absolute URL nor a valid URN UUID SHOULD trigger a warning.
-
-**`appName`:**
-- MUST NOT be empty or contain only whitespace.
-
-**`studyMode`:**
-- MUST be one of: `"game"`, `"fun"`, `"drill"`.
-- An unrecognized value SHOULD be treated as absent; the host SHOULD warn.
-
-**`questionDensity`:**
-- MUST be one of: `"low"`, `"medium"`, `"high"`.
-- An unrecognized value SHOULD be treated as absent; the host SHOULD warn.
-- If `studyMode` is `"drill"` and `questionDensity` is anything other than `"high"`, hosts SHOULD emit an inconsistency warning (the host treats it as `"high"` per [§2.1.1](#211-manifest-root-object)).
-
-**`emoji`:**
-- SHOULD contain a single visually-rendered emoji glyph.
-- An empty string or a value containing no recognizable emoji SHOULD trigger a warning.
-- Hosts MUST NOT reject a manifest solely due to a multi-codepoint emoji sequence (flags, ZWJ family sequences, etc.).
-
-**`locales`:**
-- Each entry MUST be a valid BCP 47 language tag (e.g., `"en"`, `"cs"`, `"zh-Hans"`).
-- `[]` MUST be treated identically to key omission; the host SHOULD assume English in both cases.
-
-#### 9.12.3. Capabilities Validation
-
-For the full semantics of the capabilities object, see [§2.1.2 – Capabilities Object](#212-capabilities-object-extends-featureprofile) and [Wildcard and Null Semantics](#wildcard-and-null-semantics).
-
-**`capabilities.actions`:**
-- MUST contain at least one value from the [Action Registry (§2.1.3)](#213-action-registry).
-- Values that are not in the Action Registry and do not carry an `x-` prefix SHOULD trigger a warning; a host MAY reject the manifest.
-- If `render` or `edit` is declared in `actions`, then `types` MUST also be declared and non-null (see below).
-
-**`capabilities.types`:**
-- If `render` or `edit` is in `actions`, at least one type or `["*"]` MUST be declared; a null or empty result makes the manifest inoperable for its declared purpose and MUST be reported as an error.
-- `[]` MUST be treated identically to `null` per [Wildcard and Null Semantics](#wildcard-and-null-semantics).
-- `["*"]` is valid and declares support for all item types.
-- Custom type values not among the official item types defined in [§6](#6-item-types-itemtype) MUST use the `x-` prefix per [§11.1](#111-adding-custom-item-types).
-
-**`capabilities.assets`:**
-- Each asset category key (`image`, `audio`, `video`, `model`) follows the [Wildcard and Null Semantics](#wildcard-and-null-semantics): `["*"]`, an explicit MIME type list, `null`, or `[]` (equivalent to `null`).
-- MIME type strings SHOULD conform to IANA media type format (e.g., `"image/webp"`, `"audio/mpeg"`).
-- An unrecognized MIME type SHOULD trigger a warning but MUST NOT cause manifest rejection.
-
-**`capabilities.features`:**
-- Each value MUST either appear in the [Official Feature Registry (§2.2)](#official-feature-registry) or carry the `x-` prefix per [Extension Rules (§2.2)](#extension-rules).
-- A value without an `x-` prefix that is not in the registry is invalid; the host SHOULD warn and MAY reject the manifest.
-- The features `syntax-highlighting`, `mermaid`, `smiles`, and `abc-notation` are only meaningful when `markdown` is also declared (they operate on GFM fenced code blocks). Declaring any of these without `markdown` SHOULD trigger a warning.
-- `html-safe` is only meaningful when `markdown` is also declared, since raw HTML in Rich Content fields is only parsed and rendered as part of the GFM pipeline. Declaring `html-safe` without `markdown` SHOULD trigger a warning.
-
-**`capabilities.latexPackages`:**
-- Only meaningful when `"math"` is present in `capabilities.features`. Declaring `latexPackages` without `"math"` SHOULD trigger a warning.
-
-**`capabilities.itemProperties` / `capabilities.metaProperties`:**
-- Each value SHOULD appear in the [Registry of Properties (§2.2)](#registry-of-properties-itemproperties--metaproperties) or carry the `x-` prefix.
-- Unrecognized values without an `x-` prefix SHOULD trigger a warning but MUST NOT cause manifest rejection.
+👉 **[OQSEM Validation Rules](./oqse-manifest.md#4-oqsem-validation-rules)**
 
 -----
 

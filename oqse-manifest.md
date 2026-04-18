@@ -1,9 +1,9 @@
 
-## 2. Capability-Based Interoperability, Application Manifest & Progress Data
+# OQSEM v0.1 Specification (Open Quiz & Study Exchange Manifest)
 
 OQSE v0.1 uses a **capability-based negotiation system**. Every application, micro-frontend, or plugin MUST declare exactly what it can do using an **OQSEM**. Interoperability is achieved by matching the **Requirements** of a study set with the **Capabilities** of the application.
 
-### 2.1. OQSEM (Application Manifest)
+## 1. OQSEM (Application Manifest)
 
 Applications MUST declare their capabilities in a standardized JSON format, known as **OQSEM** (Open Quiz & Study Exchange Manifest). This allows host environments to automatically determine if an application or plugin can safely process a given study set.
 
@@ -66,7 +66,7 @@ Applications MUST declare their capabilities in a standardized JSON format, know
 }
 ```
 
-#### 2.1.1 OQSEM Root Object
+### 1.1 OQSEM Root Object
 
 | Key | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
@@ -88,11 +88,11 @@ Applications MUST declare their capabilities in a standardized JSON format, know
 | `appSpecific` | object | No | Object for application-specific metadata not covered by the standard fields. Top-level keys in this object MUST be namespaced by the application identifier (e.g., `"memizy"`) to prevent collisions between applications (e.g., `{ "memizy": { "editorState": {...} } }`). Applications declaring custom `x-` features SHOULD document their semantics here so that host environments can surface that information. Other applications MUST ignore this object. |
 | `capabilities` | object | Yes | Object defining application's capabilities. Extends **FeatureProfile** (adds `types` and `assets`). |
 
-#### 2.1.2 Capabilities Object (extends FeatureProfile)
+### 1.2 Capabilities Object (extends FeatureProfile)
 
 | Key | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
-| `actions` | string[] | Yes | Array of actions the application can perform on supported types (e.g., `["render", "edit"]`). MUST contain at least one action from the [Action Registry](#213-action-registry). Custom actions MAY be declared using the `x-` prefix (e.g., `"x-preview"`). |
+| `actions` | string[] | Yes | Array of actions the application can perform on supported types (e.g., `["render", "edit"]`). MUST contain at least one action from the [Action Registry](#13-action-registry). Custom actions MAY be declared using the `x-` prefix (e.g., `"x-preview"`). |
 | `types` | string[] | Conditional | Array of OQSE item types the application supports (e.g., `["flashcard", "mcq-single"]`). Use `["*"]` to declare support for all item types. **Required** (at least one type or `["*"]`) when `actions` includes `render` or `edit`; MAY be omitted for `validate`, `import`, or `export`-only applications (though declaring `["*"]` is recommended). An empty array `[]` MUST be treated as `null` (no types declared); such a manifest would fail the `render`/`edit` rule above. See [Wildcard and Null Semantics](#wildcard-and-null-semantics). |
 | `assets` | object | No | Map of asset categories (`image`, `audio`, `video`, `model`) to arrays of supported MIME types. If `assets` is omitted entirely, the application declares no media support (equivalent to all categories being `null`). See [Wildcard and Null Semantics](#wildcard-and-null-semantics). |
 | `features` | string[] | No | **(Inherited)** Array of supported features from the **Official Feature Registry** and/or custom `x-` prefixed extensions. See [Extension Rules](#extension-rules). |
@@ -111,7 +111,7 @@ The `types` array and each value in the `assets` map follow a unified convention
 | `null` or key absent | **Not supported.** The application does not support this category at all. Hosts MUST NOT pass such content to the application. |
 | `[]` | **Equivalent to `null`.** An empty array carries the same meaning as `null` or key omission — nothing is supported in that category. Applications SHOULD NOT emit an empty array (prefer `null` or key omission for clarity), but parsers MUST treat it identically to `null`. |
 
-#### 2.1.3 Action Registry
+### 1.3 Action Registry
 
 The `actions` array in the `capabilities` object defines the functional roles an application performs on supported item `types`. The interpretation of `itemProperties` is directly tied to these declared actions.
 
@@ -136,7 +136,7 @@ Properties defined in `itemProperties` and `metaProperties` are interpreted cont
 
 
 
-### 2.3. The Handshake (Matching Process)
+## 2. The Handshake (Matching Process)
 
 Before an application attempts to process a set, it MUST perform a compatibility check:
 
@@ -148,7 +148,7 @@ Before an application attempts to process a set, it MUST perform a compatibility
     *   **LaTeX Packages:** Application MUST support all packages listed in `meta.requirements.latexPackages`.
     *   **Properties:** Application SHOULD support all properties listed in `meta.requirements.itemProperties` and `meta.requirements.metaProperties`.
 
-### 2.4. Graceful Degradation
+## 3. Graceful Degradation
 
 If an application lacks a required capability:
 *   **Missing `types`:** The application MUST NOT crash. It MUST either ignore the unsupported items (allowing a partial study session), display a generic fallback message, or allow their raw editing as JSON to prevent data loss.
@@ -157,3 +157,82 @@ If an application lacks a required capability:
 *   **Missing `assets` capability:** The application declares no support for one or more asset categories (either `capabilities.assets` is absent, or the specific category is `null` or `[]`). The application SHOULD display a placeholder for the unsupported media and MUST NOT crash when encountering asset references for those categories.
 *   **Missing `x-` prefixed feature:** Treated identically to a missing official feature — the application SHOULD warn the user. Unlike official features, the application MAY additionally display a message identifying the specific proprietary extension that is not supported.
 *   **OQSE Version Mismatch:** If the set's `version` falls outside the application's declared `minOqseVersion`–`maxOqseVersion` range, the host MUST NOT load the set into the application. The host MUST display a clear error message indicating the version incompatibility and SHOULD suggest an alternative compatible application if one is available in the catalog.
+
+## 4. OQSEM Validation Rules
+
+This section is the single reference for all constraints on OQSEM fields. For the normative definition of each field and its behavioral semantics, see the sections above. A host environment MUST reject a manifest that violates any MUST rule below and MUST report an appropriate structured error to the user.
+
+### 4.1. Required Fields
+
+- `version`, `id`, `appName`, and `capabilities` MUST be present. A manifest missing any of these MUST be rejected.
+- `capabilities.actions` MUST be present and non-empty. A manifest with no declared actions is inoperable.
+
+### 4.2. Root Field Constraints
+
+**`version`, `minOqseVersion`, `maxOqseVersion`:**
+- MUST match the pattern `^\d+\.\d+$` (e.g., `"1.0"`, `"1.99"`, `"2.0"`). Both components MUST be non-negative integers.
+- Version comparison is performed numerically field-by-field: `"1.10"` is greater than `"1.9"`.
+- A malformed `version` value MUST cause manifest rejection (it is a required field). A malformed `minOqseVersion` or `maxOqseVersion` SHOULD be treated as absent; the host SHOULD warn.
+- If both `minOqseVersion` and `maxOqseVersion` are present, `minOqseVersion` MUST be less than or equal to `maxOqseVersion`. A manifest violating this MUST be rejected.
+
+**`pluginVersion`:**
+- SHOULD follow SemVer format `MAJOR.MINOR.PATCH` (e.g., `"2.1.0"`).
+- Applications MUST NOT reject a manifest solely because `pluginVersion` does not follow SemVer.
+
+**`id`:**
+- MUST be either a controlled absolute URL (e.g., `"https://memizy.com/player"`) or a URN-format UUID (e.g., `"urn:uuid:019aa600-abc1-7234-b678-c0ffee000001"`).
+- A value that is neither a valid absolute URL nor a valid URN UUID SHOULD trigger a warning.
+
+**`appName`:**
+- MUST NOT be empty or contain only whitespace.
+
+**`studyMode`:**
+- MUST be one of: `"game"`, `"fun"`, `"drill"`.
+- An unrecognized value SHOULD be treated as absent; the host SHOULD warn.
+
+**`questionDensity`:**
+- MUST be one of: `"low"`, `"medium"`, `"high"`.
+- An unrecognized value SHOULD be treated as absent; the host SHOULD warn.
+- If `studyMode` is `"drill"` and `questionDensity` is anything other than `"high"`, hosts SHOULD emit an inconsistency warning (the host treats it as `"high"` per [§1.1](#11-oqsem-root-object)).
+
+**`emoji`:**
+- SHOULD contain a single visually-rendered emoji glyph.
+- An empty string or a value containing no recognizable emoji SHOULD trigger a warning.
+- Hosts MUST NOT reject a manifest solely due to a multi-codepoint emoji sequence (flags, ZWJ family sequences, etc.).
+
+**`locales`:**
+- Each entry MUST be a valid BCP 47 language tag (e.g., `"en"`, `"cs"`, `"zh-Hans"`).
+- `[]` MUST be treated identically to key omission; the host SHOULD assume English in both cases.
+
+### 4.3. Capabilities Validation
+
+For the full semantics of the capabilities object, see [§1.2 – Capabilities Object](#12-capabilities-object-extends-featureprofile) and [Wildcard and Null Semantics](#wildcard-and-null-semantics).
+
+**`capabilities.actions`:**
+- MUST contain at least one value from the [Action Registry (§1.3)](#13-action-registry).
+- Values that are not in the Action Registry and do not carry an `x-` prefix SHOULD trigger a warning; a host MAY reject the manifest.
+- If `render` or `edit` is declared in `actions`, then `types` MUST also be declared and non-null (see below).
+
+**`capabilities.types`:**
+- If `render` or `edit` is in `actions`, at least one type or `["*"]` MUST be declared; a null or empty result makes the manifest inoperable for its declared purpose and MUST be reported as an error.
+- `[]` MUST be treated identically to `null` per [Wildcard and Null Semantics](#wildcard-and-null-semantics).
+- `["*"]` is valid and declares support for all item types.
+- Custom type values MUST use the `x-` prefix.
+
+**`capabilities.assets`:**
+- Each asset category key (`image`, `audio`, `video`, `model`) follows the [Wildcard and Null Semantics](#wildcard-and-null-semantics): `["*"]`, an explicit MIME type list, `null`, or `[]` (equivalent to `null`).
+- MIME type strings SHOULD conform to IANA media type format (e.g., `"image/webp"`, `"audio/mpeg"`).
+- An unrecognized MIME type SHOULD trigger a warning but MUST NOT cause manifest rejection.
+
+**`capabilities.features`:**
+- Each value MUST either appear in the Official Feature Registry or carry the `x-` prefix.
+- A value without an `x-` prefix that is not in the registry is invalid; the host SHOULD warn and MAY reject the manifest.
+- The features `syntax-highlighting`, `mermaid`, `smiles`, and `abc-notation` are only meaningful when `markdown` is also declared. Declaring any of these without `markdown` SHOULD trigger a warning.
+- `html-safe` is only meaningful when `markdown` is also declared. Declaring `html-safe` without `markdown` SHOULD trigger a warning.
+
+**`capabilities.latexPackages`:**
+- Only meaningful when `"math"` is present in `capabilities.features`. Declaring `latexPackages` without `"math"` SHOULD trigger a warning.
+
+**`capabilities.itemProperties` / `capabilities.metaProperties`:**
+- Each value SHOULD appear in the relevant registry or carry the `x-` prefix.
+- Unrecognized values without an `x-` prefix SHOULD trigger a warning but MUST NOT cause manifest rejection.
