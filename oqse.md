@@ -15,7 +15,7 @@ In this specification, the keywords **MUST**, **MUST NOT**, **SHOULD**, **SHOULD
 **Note on Tables:** In columns labeled "Required," "Yes" = MUST be present (per RFC 2119), "No" = MAY be omitted.
 
 **Implementation Terminology:**
-- **Application:** Any software entity that interacts with OQSE data. Every application declares its specific **Capabilities** via a Manifest (see OQSE Manifest Specification).
+- **Application:** Any software entity that interacts with OQSE data. Every application declares its specific **Capabilities** via an OQSEM (Open Quiz & Study Exchange Manifest).
 - **Capability:** A specifically declared competence of an application. This encompasses the actions it can perform (e.g., `render`, `edit`, `export`), the item types and asset formats it supports (e.g., `mcq-single`, `image/png`), and the advanced features (e.g., `explanations`, `sourceMaterials`) or metadata it can process (e.g., `markdown`, `math`).
 - **Rule Application:** When the specification states "Application MUST...", the rule applies contextually based on the application's declared capabilities. For example, rules regarding UI display and tolerant parsing apply to applications declaring the `render` action, whereas strict data normalization rules during saving apply to those declaring `edit` or `export`.
 
@@ -112,7 +112,7 @@ The root object of an OQSE file consists of 4 keys:
 
 ### 2. Feature Profile & Official Registry
 
-To avoid redundancy, OQSE defines a base object called **FeatureProfile**. This structure is used in both the Application Manifest (in `capabilities`) and the Study Set (in `meta.requirements`).
+To avoid redundancy, OQSE defines a base object called **FeatureProfile**. This structure is used in both the OQSEM (in `capabilities`) and the Study Set (in `meta.requirements`).
 
 #### FeatureProfile Structure
 
@@ -190,7 +190,7 @@ For features `syntax-highlighting`, `mermaid`, `smiles`, and `abc-notation`, con
 
 To prevent fragmentation, the following rules apply to the `features` array:
 1.  **Official values only** (without prefix): Developers MUST NOT invent new unprefixed string values. Only values from the **Official Feature Registry** above are valid without a prefix.
-2.  **Custom features with `x-` prefix:** Developers MAY define proprietary feature flags using the `x-` prefix (e.g., `x-memizy-3d-voxel`, `x-spaced-repetition`). These values MUST NOT collide with future official registry entries and SHOULD be documented in the Application Manifest's own `appSpecific` field.
+2.  **Custom features with `x-` prefix:** Developers MAY define proprietary feature flags using the `x-` prefix (e.g., `x-memizy-3d-voxel`, `x-spaced-repetition`). These values MUST NOT collide with future official registry entries and SHOULD be documented in the OQSEM's own `appSpecific` field.
 3.  **Proprietary Behavior (no feature contract):** Application-specific configurations or internal UI behaviors that do not need to be negotiated via the handshake MUST be placed inside the `appSpecific` object instead.
 4.  **New Data Structures:** If a completely new data structure is needed, a new `item.type` MUST be defined (following the same `x-` prefix convention per [section 11.1](#111-adding-custom-item-types)).
 
@@ -313,7 +313,7 @@ Standardized object for embedding media. Used:
 
 | Key | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
-| `type` | string | Yes | Media type from selection (`image`, `audio`, `video`, `model`). The specific allowed file formats are negotiated via the Application Manifest (`capabilities.assets`). For the `model` type, the glTF format (`model/gltf-binary` for `.glb` or `model/gltf+json` for `.gltf`) is highly RECOMMENDED as the universal baseline for interoperability. However, applications and sets MAY use other formats (like `.obj` or `.fbx`) provided they are explicitly declared and matched during the capability handshake. |
+| `type` | string | Yes | Media type from selection (`image`, `audio`, `video`, `model`). The specific allowed file formats are negotiated via the OQSEM (`capabilities.assets`). For the `model` type, the glTF format (`model/gltf-binary` for `.glb` or `model/gltf+json` for `.gltf`) is highly RECOMMENDED as the universal baseline for interoperability. However, applications and sets MAY use other formats (like `.obj` or `.fbx`) provided they are explicitly declared and matched during the capability handshake. |
 | `value` | string | Yes | URI of the resource. Can be **absolute URL** (e.g., `https://.../image.png`) or **relative path** to file in package (e.g., `assets/diagram.png`). |
 | `mimeType` | string | Recommended | MIME type of file (e.g., `image/png`, `audio/mpeg`, `video/mp4`, `model/gltf-binary`). |
 | `altText` | string | **REQUIRED for images**, optional for audio/video | **Plain Text.** Alternative text for accessibility. Must be plain text without formatting for screen readers. |
@@ -1707,9 +1707,9 @@ This order ensures that:
 }
 ```
 
-### 9.12. Manifest Validation Rules
+### 9.12. OQSEM Validation Rules
 
-This section is the single reference for all constraints on Application Manifest fields. For the normative definition of each field and its behavioral semantics, see [§2.1 – The Application Manifest](#21-the-application-manifest). A host environment MUST reject a manifest that violates any MUST rule below and MUST report an appropriate structured error to the user.
+This section is the single reference for all constraints on OQSEM fields. For the normative definition of each field and its behavioral semantics, see the OQSEM Specification. A host environment MUST reject a manifest that violates any MUST rule below and MUST report an appropriate structured error to the user.
 
 #### 9.12.1. Required Fields
 

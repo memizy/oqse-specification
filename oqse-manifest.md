@@ -1,15 +1,15 @@
 
 ## 2. Capability-Based Interoperability, Application Manifest & Progress Data
 
-OQSE v0.1 uses a **capability-based negotiation system**. Every application, micro-frontend, or plugin MUST declare exactly what it can do using an **Application Manifest**. Interoperability is achieved by matching the **Requirements** of a study set with the **Capabilities** of the application.
+OQSE v0.1 uses a **capability-based negotiation system**. Every application, micro-frontend, or plugin MUST declare exactly what it can do using an **OQSEM**. Interoperability is achieved by matching the **Requirements** of a study set with the **Capabilities** of the application.
 
-### 2.1. The Application Manifest
+### 2.1. OQSEM (Application Manifest)
 
-Applications MUST declare their capabilities in a standardized JSON format. This allows host environments to automatically determine if an application or plugin can safely process a given study set.
+Applications MUST declare their capabilities in a standardized JSON format, known as **OQSEM** (Open Quiz & Study Exchange Manifest). This allows host environments to automatically determine if an application or plugin can safely process a given study set.
 
 **Delivery:** Applications delivered via HTML SHOULD embed their manifest using a `<script type="application/oqse-manifest+json">` tag. This pattern is known as an **HTML Data Island**: the browser ignores the script block entirely (it does not execute it), but the host environment can locate and parse it cheaply via a DOM query (`document.querySelector('script[type="application/oqse-manifest+json"]')`), without requiring a separate network request. Applications that are not HTML-based (e.g., server-side importers, CLI tools) SHOULD expose their manifest as a static `oqse-manifest.json` file at the root of their deployment, allowing host environments to fetch it without rendering the application. When served over HTTP, this file SHOULD be delivered with the standard `Content-Type: application/json` MIME type; this avoids the need for developers to configure custom MIME types on their static file servers. Host environments MAY also support manifest discovery via an HTTP `Link` response header: `Link: <oqse-manifest.json>; rel="oqse-manifest"`.
 
-**Manifest Structure Example:**
+**OQSEM Structure Example:**
 
 ```json
 {
@@ -66,12 +66,12 @@ Applications MUST declare their capabilities in a standardized JSON format. This
 }
 ```
 
-#### 2.1.1 Manifest Root Object
+#### 2.1.1 OQSEM Root Object
 
 | Key | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
 | `$schema` | string | No | **Recommended.** URL reference to the JSON Schema specification for automatic validation. |
-| `version` | string | Yes | Version of the Application Manifest format. MUST follow `"MAJOR.MINOR"` format (e.g., `"1.0"`). The current manifest format version is `"1.0"`. |
+| `version` | string | Yes | Version of the OQSEM format. MUST follow `"MAJOR.MINOR"` format (e.g., `"1.0"`). The current OQSEM format version is `"1.0"`. |
 | `pluginVersion` | string | No | Version of the application/plugin itself using SemVer (e.g., `"2.1.0"`). Independent of the manifest format version. |
 | `minOqseVersion` | string | No | Minimum OQSE spec version this application requires. MUST follow `"MAJOR.MINOR"` format (e.g., `"1.0"`). Version comparison is performed numerically field-by-field. Host environments MAY use this for compatibility filtering. |
 | `maxOqseVersion` | string | No | Maximum OQSE spec version this application is compatible with. MUST follow `"MAJOR.MINOR"` format (e.g., `"1.99"`). Version comparison is performed numerically field-by-field. Host environments MAY use this to prevent loading a plugin with a newer, potentially incompatible OQSE version. If absent, no upper bound is assumed. |
