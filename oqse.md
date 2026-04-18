@@ -1834,7 +1834,7 @@ Applications may define custom item types using `x-` prefix (e.g., `x-code-chall
 
 **Rules for applications:**
   * Application MUST ignore unknown keys (forward compatibility)
-  * Application MUST check the `version` field and apply version-specific handling; the value MUST conform to `MAJOR.MINOR` format (see [§9.12](#912-manifest-validation-rules) for format rules applied equally to OQSE file version and all manifest version fields)
+  * Application MUST check the `version` field and apply version-specific handling; the value MUST conform to `MAJOR.MINOR` format (see [OQSEM Root Constraints](./oqse-manifest.md#42-root-field-constraints) for format rules applied equally to OQSE file version and all manifest version fields)
   * When importing higher MAJOR version: display warning to user
   * When importing higher MINOR version: safely ignore new keys
 

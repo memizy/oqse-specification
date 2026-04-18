@@ -2,28 +2,34 @@
 
 Official TypeScript SDK for the Open Quiz & Study Exchange ecosystem, published as @memizy/oqse.
 
+🚀 **[OQSE Web Validator](https://memizy.github.io/oqse-specification/)** - Online tool for easy testing and debugging of OQSE JSON structures in the browser.
+
 This repository contains:
+- The human-readable specifications split into three standalone documents:
+  - [OQSE (Study Sets)](./oqse.md)
+  - [OQSEM (Application Manifests)](./oqse-manifest.md)
+  - [OQSEP (User Progress)](./oqse-progress.md)
 - Runtime validators built with Zod.
 - Manually authored TypeScript types for developer ergonomics.
 - Auto-generated JSON Schemas distributed with the package.
-- The human-readable specification in SPECIFICATION.md.
-- **[OQSE Web Validator](https://memizy.github.io/oqse-specification/)** - Online tool for easy testing and debugging of OQSE JSON structures in the browser.
 
 ## Package
 
 - Name: @memizy/oqse
-- Purpose: validate, parse, and type OQSE, OQSE Manifest, and OQSEP progress data.
+- Purpose: validate, parse, and type OQSE, OQSEM (Application Manifest), and OQSEP (User Progress) data.
 
 ## Architecture & Single Source of Truth
 
-1. The specification markdown is for humans.
-   SPECIFICATION.md is the normative documentation for concepts, rules, and semantics.
+The human-readable Markdown specifications are the **absolute single source of truth** for the OQSE ecosystem.
 
-2. Zod schemas (*Validation.ts) are the absolute source of truth for code validation.
-   Runtime validation behavior is defined in src/oqseValidation.ts, src/manifestValidation.ts, and src/progressValidation.ts.
+1. **The Specifications**
+   The three Markdown files ([oqse.md](./oqse.md), [oqse-manifest.md](./oqse-manifest.md), and [oqse-progress.md](./oqse-progress.md)) constitute the normative documentation for concepts, rules, and semantics. 
 
-3. TypeScript types (oqse.ts, manifest.ts, progress.ts) manually mirror the Zod schemas for better Developer Experience.
-   These files are intentionally hand-written to provide clearer interfaces, JSDoc, and IntelliSense quality.
+2. **Zod Schemas**
+   Runtime validators (`*Validation.ts`) are implementations. They **MUST match** the rules defined in the Markdown specs. They are not the source of truth; if they disagree with the text spec, the code is considered a bug.
+
+3. **TypeScript Types**
+   TypeScript types (`oqse.ts`, `manifest.ts`, `progress.ts`) manually mirror the Zod schemas for better Developer Experience. They must also strictly adhere to the Markdown specifications.
 
 4. JSON schemas are strictly auto-generated using npm run generate:schemas and contributors MUST NOT edit them manually.
    If validation behavior changes, update the Zod schemas first, then regenerate.

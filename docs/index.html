@@ -4,100 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OQSE Validator</title>
-    <style>
-        :root {
-            --primary: #4F46E5;
-            --primary-hover: #4338CA;
-            --bg: #F9FAFB;
-            --text: #111827;
-            --text-muted: #6B7280;
-            --border: #E5E7EB;
-            --error-bg: #FEF2F2;
-            --error-text: #DC2626;
-            --error-border: #F87171;
-            --success-bg: #F0FDF4;
-            --success-text: #16A34A;
-            --success-border: #4ADE80;
+    
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+        @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+        @import "tailwindcss";
+        
+        @theme {
+            --color-primary-blue: #1E88E5;
+            --color-primary-blue-dark: #1565C0;
+            --color-accent-orange: #FF6F00;
+            --color-accent-orange-light: #FF8F00;
+            --color-accent-orange-dark: #E65100;
+            --color-off-white: #F8F9FA;
+            --color-text-dark: #212529;
+            --color-text-gray: #6C757D;
+            
+            --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+            --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.08);
+            --shadow-soft-hover: 0 8px 32px rgba(0, 0, 0, 0.12);
+
+            --animate-float: float 3s ease-in-out infinite;
+            --animate-scale-in: scale-in 0.2s ease-out;
+
+            @keyframes float {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-10px); }
+            }
+
+            @keyframes scale-in {
+                from { transform: scale(0.95); opacity: 0; }
+                to { transform: scale(1); opacity: 1; }
+            }
+        }
+
+        @layer utilities {
+            .btn-primary-gradient {
+                background: linear-gradient(135deg, var(--color-accent-orange) 0%, var(--color-accent-orange-light) 100%);
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
         }
 
         body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            line-height: 1.5;
-            margin: 0;
-            padding: 2rem;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            margin-top: 0;
-            font-size: 1.5rem;
-        }
-
-        p {
-            color: var(--text-muted);
-        }
-
-        .input-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
-        textarea, input[type="url"] {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            font-family: inherit;
-            box-sizing: border-box;
+            background-color: var(--color-off-white);
+            color: var(--color-text-dark);
+            font-family: var(--font-sans);
         }
         
-        textarea {
-            resize: vertical;
-            min-height: 200px;
-            font-family: monospace;
-            font-size: 0.875rem;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 0;
-        }
-
-        .tab {
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            border: none;
-            background: none;
-            font-size: 1rem;
-            color: var(--text-muted);
-            border-bottom: 2px solid transparent;
-            margin-bottom: -1px;
+        button:hover {
+            cursor:pointer;
         }
 
         .tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-            font-weight: 500;
+            color: var(--color-primary-blue);
+            border-bottom-color: var(--color-primary-blue);
+            font-weight: 600;
         }
-
+        
         .tab-content {
             display: none;
         }
@@ -105,108 +71,60 @@
         .tab-content.active {
             display: block;
         }
-
-        button.primary {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 4px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        button.primary:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .result {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            border-radius: 4px;
-            display: none;
-        }
-
-        .result.success {
-            display: block;
-            background-color: var(--success-bg);
-            border: 1px solid var(--success-border);
-            color: var(--success-text);
-        }
-
-        .result.error {
-            display: block;
-            background-color: var(--error-bg);
-            border: 1px solid var(--error-border);
-        }
-        
-        .result.error h2 {
-            color: var(--error-text);
-            margin-top: 0;
-        }
-
-        .error-list {
-            margin: 1rem 0 0 0;
-            padding-left: 1.5rem;
-            font-family: monospace;
-            background: rgba(255,255,255,0.5);
-            padding: 1rem 1rem 1rem 2.5rem;
-            border-radius: 4px;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            color: var(--text);
-        }
-        
-        .llm-prompt {
-            margin-top: 1rem;
-            font-size: 0.875rem;
-            color: var(--text-muted);
-        }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>OQSE Validator</h1>
-        <p>Check the validity of Open Quiz & Study Exchange (OQSE) format files. Tools use the official Zod schema from <code>@memizy/oqse</code>.</p>
+<body class="bg-off-white text-text-dark min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-3xl bg-white p-8 rounded-2xl shadow-soft animate-scale-in">
+        <div class="flex items-center gap-3 mb-6">
+            <span class="text-4xl animate-float">🚀</span>
+            <h1 class="text-3xl font-extrabold text-primary-blue-dark">OQSE Validator</h1>
+        </div>
+        <p class="text-text-gray mb-8">Check the validity of Open Quiz & Study Exchange (OQSE) format files. Tools use the official Zod schema from <code class="bg-gray-100 px-1 py-0.5 rounded text-primary-blue font-mono text-sm">@memizy/oqse</code>.</p>
         
-        
-        <div class="input-group" style="margin-bottom: 2rem;">
-            <label for="validationType">Select Document Type to Validate:</label>
-            <select id="validationType" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem;">
+        <div class="mb-8 p-6 border border-gray-200 rounded-xl bg-gray-50">
+            <label for="validationType" class="block font-semibold text-text-dark mb-2">Select Document Type to Validate:</label>
+            <select id="validationType" class="w-full p-3 border border-gray-300 rounded-lg text-text-dark bg-white focus:ring-2 focus:ring-primary-blue focus:border-primary-blue outline-none transition-all">
                 <option value="oqse">📝 OQSE Dataset (Items & Metadata)</option>
                 <option value="manifest">📦 OQSE Package Manifest</option>
                 <option value="progress">📈 OQSEP Progress Data</option>
             </select>
         </div>
-        <div class="tabs">
-            <button class="tab active" data-target="json-tab">Paste JSON</button>
-            <button class="tab" data-target="url-tab">Fetch from URL</button>
+
+        <div class="flex gap-6 mb-6 border-b border-gray-200">
+            <button class="tab active pb-3 px-2 text-lg text-text-gray border-b-2 border-transparent hover:text-primary-blue transition-colors" data-target="json-tab">Paste JSON</button>
+            <button class="tab pb-3 px-2 text-lg text-text-gray border-b-2 border-transparent hover:text-primary-blue transition-colors" data-target="url-tab">Fetch from URL</button>
         </div>
 
-        <div id="json-tab" class="tab-content active">
-            <div class="input-group">
-                <label for="jsonInput">OQSE JSON content:</label>
-                <textarea id="jsonInput" placeholder="{&#10;  &quot;meta&quot;: { ... },&#10;  &quot;items&quot;: [ ... ]&#10;}"></textarea>
+        <div id="json-tab" class="tab-content active mb-6">
+            <div class="mb-6">
+                <label for="jsonInput" class="block font-semibold text-text-dark mb-2">OQSE JSON content:</label>
+                <textarea id="jsonInput" class="w-full p-4 border border-gray-300 rounded-lg font-mono text-sm h-64 focus:ring-2 focus:ring-primary-blue focus:border-primary-blue outline-none transition-all" placeholder="{&#10;  &quot;meta&quot;: { ... },&#10;  &quot;items&quot;: [ ... ]&#10;}"></textarea>
             </div>
-            <button class="primary" id="validateJsonBtn">Validate JSON</button>
+            <button id="validateJsonBtn" class="btn-primary-gradient text-white w-full py-4 rounded-xl text-lg font-bold shadow-soft hover:shadow-soft-hover transition-all transform hover:-translate-y-0.5">Validate JSON</button>
         </div>
 
-        <div id="url-tab" class="tab-content">
-            <div class="input-group">
-                <label for="urlInput">URL with OQSE JSON (CORS allowed):</label>
-                <input type="url" id="urlInput" placeholder="https://example.com/dataset.json">
+        <div id="url-tab" class="tab-content mb-6">
+            <div class="mb-6">
+                <label for="urlInput" class="block font-semibold text-text-dark mb-2">URL with OQSE JSON (CORS allowed):</label>
+                <input type="url" id="urlInput" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-blue focus:border-primary-blue outline-none transition-all" placeholder="https://example.com/dataset.json">
             </div>
-            <button class="primary" id="validateUrlBtn">Fetch and Validate</button>
+            <button id="validateUrlBtn" class="btn-primary-gradient text-white w-full py-4 rounded-xl text-lg font-bold shadow-soft hover:shadow-soft-hover transition-all transform hover:-translate-y-0.5">Fetch and Validate</button>
         </div>
 
-        <div id="resultArea" class="result">
-            <h2 id="resultTitle">Validation Result</h2>
-            <div id="resultContent"></div>
-            <div id="llmPrompt" class="llm-prompt" style="display: none;">
-                <strong>💡 Tip for AI:</strong> Copy the errors above and ask an LLM (ChatGPT, Claude) to fix it by saying: <br/>
-                <em>"Here are the OQSE validator errors. Please fix my JSON according to these Zod schema constraints:"</em>
+        <div id="resultArea" class="hidden mt-8 p-6 rounded-xl border border-gray-200">
+            <h2 id="resultTitle" class="text-2xl font-bold mb-4">Validation Result</h2>
+            <div id="resultContent" class="text-lg"></div>
+            <div id="llmPrompt" class="hidden mt-6 pt-4 border-t border-red-200">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-red-100/50 p-4 rounded-lg border border-red-200 gap-4">
+                    <div class="text-sm text-red-800">
+                        <strong class="text-base mb-1 block">💡 LLM Assistant</strong>
+                        Automatically format these errors with instructions for AI (ChatGPT, Claude) to fix your JSON.
+                    </div>
+                    <button id="copyLlmPromptBtn" class="flex-shrink-0 flex items-center justify-center gap-2 px-5 py-2.5 bg-white border border-red-300 rounded-lg shadow-sm hover:bg-red-50 text-sm font-bold text-red-700 transition-all active:scale-95">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                        <span>Copy Errors for AI</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -226,6 +144,9 @@
         const resultTitle = document.getElementById('resultTitle');
         const resultContent = document.getElementById('resultContent');
         const llmPrompt = document.getElementById('llmPrompt');
+        const copyLlmPromptBtn = document.getElementById('copyLlmPromptBtn');
+
+        let currentValidationErrors = [];
 
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
@@ -234,30 +155,73 @@
                 
                 tab.classList.add('active');
                 document.getElementById(tab.dataset.target).classList.add('active');
-                resultArea.className = 'result';
+                resultArea.className = 'hidden';
             });
         });
 
         function showResult(success, message, errors = []) {
-            resultArea.className = `result ${success ? 'success' : 'error'}`;
+            currentValidationErrors = errors;
+            resultArea.className = success 
+                ? 'mt-8 p-6 rounded-xl border border-green-300 bg-green-50 text-green-800 block scale-in'
+                : 'mt-8 p-6 rounded-xl border border-red-300 bg-red-50 text-red-800 block scale-in';
+            
+            resultTitle.className = success ? 'text-2xl font-bold mb-4 text-green-700' : 'text-2xl font-bold mb-4 text-red-700';
             resultTitle.textContent = success ? '✅ Validation Successful!' : '❌ Validation Failed';
             
             if (success) {
-                resultContent.innerHTML = `<p>${message}</p>`;
-                llmPrompt.style.display = 'none';
+                resultContent.innerHTML = `<p class="text-lg">${message}</p>`;
+                llmPrompt.classList.add('hidden');
+                llmPrompt.classList.remove('block');
             } else {
-                let errorHtml = `<p>${message}</p>`;
+                let errorHtml = `<p class="text-lg mb-4 text-red-700">${message}</p>`;
                 if (errors.length > 0) {
-                    errorHtml += `<ul class="error-list">`;
+                    errorHtml += `<ul class="error-list list-disc pl-5 font-mono text-sm space-y-1 bg-white bg-opacity-50 p-4 rounded border border-red-200 overflow-x-auto max-w-[calc(100vw-6rem)]">`;
                     errors.forEach(err => {
-                        errorHtml += `<li><code>${err}</code></li>\n`;
+                        errorHtml += `<li class="break-words w-full whitespace-pre-wrap">${err}</li>\n`;
                     });
                     errorHtml += `</ul>`;
                 }
                 resultContent.innerHTML = errorHtml;
-                llmPrompt.style.display = 'block';
+                llmPrompt.classList.remove('hidden');
+                llmPrompt.classList.add('block');
+                
+                // Reset copy button state on new errors
+                const btnContent = copyLlmPromptBtn.querySelector('span');
+                btnContent.textContent = 'Copy Errors for AI';
+                copyLlmPromptBtn.classList.remove('bg-green-100', 'border-green-300', 'text-green-700');
+                copyLlmPromptBtn.classList.add('bg-white', 'border-red-300', 'text-red-700');
             }
         }
+        
+        copyLlmPromptBtn.addEventListener('click', async () => {
+            const type = document.getElementById('validationType').options[document.getElementById('validationType').selectedIndex].text;
+            const promptText = `I have a JSON file that is failing validation according to the ${type} specification rules natively implemented in Zod.
+
+Here are the strict Zod validation errors my file is producing:
+
+${currentValidationErrors.map(e => '- ' + e).join('\n')}
+
+Please analyze these specific constraint violations and correct my JSON so it fully conforms to the expected schema without breaking any of the rules above.`;
+            
+            try {
+                await navigator.clipboard.writeText(promptText);
+                
+                // Visual feedback
+                const btnContent = copyLlmPromptBtn.querySelector('span');
+                btnContent.textContent = 'Copied!';
+                copyLlmPromptBtn.classList.remove('bg-white', 'border-red-300', 'text-red-700');
+                copyLlmPromptBtn.classList.add('bg-green-100', 'border-green-300', 'text-green-700');
+                
+                setTimeout(() => {
+                    btnContent.textContent = 'Copy Errors for AI';
+                    copyLlmPromptBtn.classList.remove('bg-green-100', 'border-green-300', 'text-green-700');
+                    copyLlmPromptBtn.classList.add('bg-white', 'border-red-300', 'text-red-700');
+                }, 3000);
+            } catch (err) {
+                console.error("Failed to copy:", err);
+                copyLlmPromptBtn.querySelector('span').textContent = 'Failed to copy';
+            }
+        });
 
                 const validationType = document.getElementById('validationType');
 
