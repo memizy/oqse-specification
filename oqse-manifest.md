@@ -16,7 +16,7 @@ Applications MUST declare their capabilities in a standardized JSON format, know
   "$schema": "https://memizy.com/schemas/oqse-manifest/v0.1.json",
   "version": "0.1",
   "pluginVersion": "2.1.0",
-  "minOqseVersion": "1.0",
+  "minOqseVersion": "0.1",
   "maxOqseVersion": "1.99",
   "id": "https://memizy.com/universal-player",
   "appName": "Memizy Universal Player",
