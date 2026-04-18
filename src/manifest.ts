@@ -78,23 +78,24 @@ export type OQSEQuestionDensity = 'low' | 'medium' | 'high';
  * `meta.requirements.features` (Study Set) to signal support/requirement.
  *
  * Dependency notes:
- * - `syntax-highlighting`, `mermaid`, `smiles`, `abc-notation`, `html-safe`
+ * - `syntax-highlighting`, `mermaid`, `smiles`, `abc-notation`, `html`
  *   are only meaningful when `markdown` is also declared.
  * - `latexPackages` (in FeatureProfile) is only meaningful when `math` is declared.
  */
 export type OfficialFeatureKey =
-  // Formatting
+  // 1. Base Formatting (Tier 1)
   | 'markdown'            // GitHub Flavored Markdown (GFM) in Rich Content fields
-  | 'html-safe'           // Safe rendering of raw HTML tags in text (requires markdown)
   | 'math'                // LaTeX formulas via $ / $$ delimiters (KaTeX/MathJax)
-  | 'ruby-annotations'    // HTML5 <ruby>/<rt>/<rp> for Furigana/Pinyin
   | 'rtl'                 // Right-to-Left text direction
-  // Block renderers (all require markdown)
+
+  // 2. Extended Formatting & Blocks (Higher parsing complexity or sanitization overhead)
+  | 'html'                // Intended, safely sanitized raw HTML tags
   | 'syntax-highlighting' // Syntax coloring in GFM fenced code blocks
   | 'mermaid'             // Mermaid diagram rendering in ```mermaid blocks
   | 'smiles'              // 2D chemical structure from SMILES in ```smiles blocks
   | 'abc-notation'        // Music notation from ABC syntax in ```abc blocks
-  // Interaction
+
+  // 3. Device & Interaction Features (Client capabilities)
   | 'text-to-speech'          // Read text aloud
   | 'voice-input'             // Accept voice dictation as input
   | 'handwriting-recognition'; // Handwriting input (tablets)

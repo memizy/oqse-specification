@@ -47,6 +47,7 @@ Applications MUST declare their capabilities in a standardized JSON format, know
     "features": [
       "math",
       "markdown",
+      "html",
       "text-to-speech"
     ],
     "latexPackages": [
@@ -228,7 +229,7 @@ For the full semantics of the capabilities object, see [§1.2 – Capabilities O
 - Each value MUST either appear in the Official Feature Registry or carry the `x-` prefix.
 - A value without an `x-` prefix that is not in the registry is invalid; the host SHOULD warn and MAY reject the manifest.
 - The features `syntax-highlighting`, `mermaid`, `smiles`, and `abc-notation` are only meaningful when `markdown` is also declared. Declaring any of these without `markdown` SHOULD trigger a warning.
-- `html-safe` is only meaningful when `markdown` is also declared. Declaring `html-safe` without `markdown` SHOULD trigger a warning.
+- `html` is only meaningful when `markdown` is also declared. Declaring `html` without `markdown` SHOULD trigger a warning.
 
 **`capabilities.latexPackages`:**
 - Only meaningful when `"math"` is present in `capabilities.features`. Declaring `latexPackages` without `"math"` SHOULD trigger a warning.
