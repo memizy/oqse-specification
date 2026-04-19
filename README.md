@@ -5,10 +5,11 @@ Official TypeScript SDK for the Open Quiz & Study Exchange ecosystem, published 
 🚀 **[OQSE Web Validator](https://memizy.github.io/oqse-specification/)** - Online tool for easy testing and debugging of OQSE JSON structures in the browser.
 
 This repository contains:
-- The human-readable specifications split into three standalone documents:
+- The human-readable specifications split into four standalone documents:
   - [OQSE (Study Sets)](./oqse.md)
   - [OQSEM (Application Manifests)](./oqse-manifest.md)
   - [OQSEP (User Progress)](./oqse-progress.md)
+   - [OQSEH (Set Headers/Registries)](./oqse-header.md)
 - Runtime validators built with Zod.
 - Manually authored TypeScript types for developer ergonomics.
 - Auto-generated JSON Schemas distributed with the package.
@@ -25,13 +26,14 @@ The auto-generated JSON Schemas are published with this repository and are avail
 - Core OQSE Schema: https://cdn.jsdelivr.net/gh/memizy/oqse-specification@main/schemas/oqse-v0.1.json
 - Manifest Schema: https://cdn.jsdelivr.net/gh/memizy/oqse-specification@main/schemas/oqse-manifest-v0.1.json
 - Progress Schema: https://cdn.jsdelivr.net/gh/memizy/oqse-specification@main/schemas/oqse-progress-v0.1.json
+- Header Schema: https://cdn.jsdelivr.net/gh/memizy/oqse-specification@main/schemas/oqse-header-v0.1.json
 
 ## Architecture & Single Source of Truth
 
 The human-readable Markdown specifications are the **absolute single source of truth** for the OQSE ecosystem.
 
 1. **The Specifications**
-   The three Markdown files ([oqse.md](./oqse.md), [oqse-manifest.md](./oqse-manifest.md), and [oqse-progress.md](./oqse-progress.md)) constitute the normative documentation for concepts, rules, and semantics. 
+   The four Markdown files ([oqse.md](./oqse.md), [oqse-manifest.md](./oqse-manifest.md), [oqse-progress.md](./oqse-progress.md), and [oqse-header.md](./oqse-header.md)) constitute the normative documentation for concepts, rules, and semantics. 
 
 2. **Zod Schemas**
    Runtime validators (`*Validation.ts`) are implementations. They **MUST match** the rules defined in the Markdown specs. They are not the source of truth; if they disagree with the text spec, the code is considered a bug.

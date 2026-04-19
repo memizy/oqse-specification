@@ -8,6 +8,7 @@ import * as z from 'zod'; // Importujeme hlavní zod objekt
 import { OQSEFileSchema } from '../src/oqseValidation';
 import { OQSEManifestSchema } from '../src/manifestValidation';
 import { OQSEPFileSchema } from '../src/progressValidation';
+import { OQSEHeaderSchema } from '../src/headerValidation';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -47,3 +48,10 @@ fs.writeFileSync(
   JSON.stringify(progressJsonSchema, null, 2)
 );
 console.log('✅ Vytvořeno: schemas/oqse-progress-v0.1.json');
+
+const headerJsonSchema = z.toJSONSchema(OQSEHeaderSchema, { target: 'draft-07' });
+fs.writeFileSync(
+  path.join(schemasDir, 'oqse-header-v0.1.json'),
+  JSON.stringify(headerJsonSchema, null, 2)
+);
+console.log('✅ Vytvořeno: schemas/oqse-header-v0.1.json');
