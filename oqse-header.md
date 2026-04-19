@@ -21,7 +21,7 @@ An OQSEHeader represents one catalog entry that points to a full OQSE set.
   "author": {
     "name": "Memizy Team"
   },
-  "subject": "biology",
+  "subject": "Biology",
   "tags": ["cells", "biology", "intro"],
   "createdAt": "2026-03-01T08:00:00Z",
   "estimatedTime": 20,
