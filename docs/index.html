@@ -86,6 +86,7 @@
                 <option value="oqse">📝 OQSE</option>
                 <option value="manifest">📦 OQSEM</option>
                 <option value="progress">📈 OQSEP</option>
+                <option value="header">🪪 OQSEH</option>
             </select>
         </div>
 
@@ -96,7 +97,7 @@
 
         <div id="json-tab" class="tab-content active mb-6">
             <div class="mb-6">
-                <label for="jsonInput" class="block font-semibold text-text-dark mb-2">OQSE JSON content:</label>
+                <label id="jsonInputLabel" for="jsonInput" class="block font-semibold text-text-dark mb-2">OQSE JSON content:</label>
                 <textarea id="jsonInput" class="w-full p-4 border border-gray-300 rounded-lg font-mono text-sm h-64 focus:ring-2 focus:ring-primary-blue focus:border-primary-blue outline-none transition-all" placeholder="{&#10;  &quot;meta&quot;: { ... },&#10;  &quot;items&quot;: [ ... ]&#10;}"></textarea>
             </div>
             <button id="validateJsonBtn" class="btn-primary-gradient text-white w-full py-4 rounded-xl text-lg font-bold shadow-soft hover:shadow-soft-hover transition-all transform hover:-translate-y-0.5">Validate JSON</button>
@@ -104,7 +105,7 @@
 
         <div id="url-tab" class="tab-content mb-6">
             <div class="mb-6">
-                <label for="urlInput" class="block font-semibold text-text-dark mb-2">URL with OQSE JSON (CORS allowed):</label>
+                <label id="urlInputLabel" for="urlInput" class="block font-semibold text-text-dark mb-2">URL with OQSE JSON (CORS allowed):</label>
                 <input type="url" id="urlInput" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-blue focus:border-primary-blue outline-none transition-all" placeholder="https://example.com/dataset.json">
             </div>
             <button id="validateUrlBtn" class="btn-primary-gradient text-white w-full py-4 rounded-xl text-lg font-bold shadow-soft hover:shadow-soft-hover transition-all transform hover:-translate-y-0.5">Fetch and Validate</button>
@@ -137,7 +138,7 @@
     <!-- Ensure module matches library export syntax -->
     <script type="module">
         // Import from unpkg to support local development and browser environments immediately
-        import { safeValidateOQSEFile, safeValidateManifest, safeValidateOQSEPFile, formatValidationErrors } from 'https://esm.sh/@memizy/oqse@latest';
+        import { safeValidateOQSEFile, safeValidateManifest, safeValidateOQSEPFile, safeValidateOQSEHeader, formatValidationErrors } from 'https://esm.sh/@memizy/oqse@latest';
 
         const tabs = document.querySelectorAll('.tab');
         const tabContents = document.querySelectorAll('.tab-content');
@@ -151,8 +152,50 @@
         const llmPrompt = document.getElementById('llmPrompt');
         const copyLlmPromptBtn = document.getElementById('copyLlmPromptBtn');
         const includeSpecCheckbox = document.getElementById('includeSpecCheckbox');
+        const validationType = document.getElementById('validationType');
+        const jsonInputLabel = document.getElementById('jsonInputLabel');
+        const urlInputLabel = document.getElementById('urlInputLabel');
 
         let currentValidationErrors = [];
+
+        const validatorLabels = {
+            oqse: {
+                jsonLabel: 'OQSE JSON content:',
+                jsonPlaceholder: '{\n  "meta": { ... },\n  "items": [ ... ]\n}',
+                urlLabel: 'URL with OQSE JSON (CORS allowed):',
+                urlPlaceholder: 'https://example.com/dataset.json'
+            },
+            manifest: {
+                jsonLabel: 'OQSEM JSON content:',
+                jsonPlaceholder: '{\n  "meta": { ... },\n  "permissions": [ ... ]\n}',
+                urlLabel: 'URL with OQSEM JSON (CORS allowed):',
+                urlPlaceholder: 'https://example.com/manifest.json'
+            },
+            progress: {
+                jsonLabel: 'OQSEP JSON content:',
+                jsonPlaceholder: '{\n  "meta": { ... },\n  "state": { ... }\n}',
+                urlLabel: 'URL with OQSEP JSON (CORS allowed):',
+                urlPlaceholder: 'https://example.com/progress.json'
+            },
+            header: {
+                jsonLabel: 'OQSEH JSON content (single object or array):',
+                jsonPlaceholder: '{\n  "id": "...",\n  "title": "...",\n  "language": "en",\n  "updatedAt": "...",\n  "url": "https://..."\n}',
+                urlLabel: 'URL with OQSEH JSON (CORS allowed):',
+                urlPlaceholder: 'https://example.com/headers.json'
+            }
+        };
+
+        function syncValidationLabels() {
+            const type = validationType.value;
+            const labels = validatorLabels[type] ?? validatorLabels.oqse;
+            jsonInputLabel.textContent = labels.jsonLabel;
+            jsonInput.placeholder = labels.jsonPlaceholder;
+            urlInputLabel.textContent = labels.urlLabel;
+            urlInput.placeholder = labels.urlPlaceholder;
+        }
+
+        syncValidationLabels();
+        validationType.addEventListener('change', syncValidationLabels);
 
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
@@ -219,6 +262,7 @@
                     let mdFile = 'oqse.md';
                     if (typeValue === 'manifest') mdFile = 'oqse-manifest.md';
                     if (typeValue === 'progress') mdFile = 'oqse-progress.md';
+                    if (typeValue === 'header') mdFile = 'oqse-header.md';
                     
                     // Fetch the raw markdown of the specification
                     const response = await fetch(`https://raw.githubusercontent.com/memizy/oqse-specification/main/${mdFile}`);
@@ -253,8 +297,6 @@
             }
         });
 
-                const validationType = document.getElementById('validationType');
-
         function validateData(dataStr) {
             try {
                 const parsed = JSON.parse(dataStr);
@@ -272,6 +314,29 @@
                 } else if (type === 'progress') {
                     result = safeValidateOQSEPFile(parsed);
                     typeName = 'OQSEP Progress';
+                } else if (type === 'header') {
+                    typeName = 'OQSE Header';
+
+                    if (Array.isArray(parsed)) {
+                        const arrayErrors = [];
+
+                        parsed.forEach((entry, index) => {
+                            const itemResult = safeValidateOQSEHeader(entry);
+                            if (!itemResult.success) {
+                                const itemErrors = formatValidationErrors(itemResult.error);
+                                itemErrors.forEach(err => arrayErrors.push(`[${index}] ${err}`));
+                            }
+                        });
+
+                        if (arrayErrors.length === 0) {
+                            showResult(true, `JSON array is fully valid according to the ${typeName} specification.`);
+                        } else {
+                            showResult(false, `Found ${arrayErrors.length} validation error(s) in the ${typeName} array:`, arrayErrors);
+                        }
+                        return;
+                    }
+
+                    result = safeValidateOQSEHeader(parsed);
                 }
                 
                 if (result.success) {
