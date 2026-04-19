@@ -6,7 +6,7 @@
  * validating manifest objects received from plugins, presets, or remote sources.
  *
  * @see {@link ./manifest.ts} for the corresponding TypeScript type definitions.
- * @see {@link /SPECIFICATION.md#211-application-manifest} for the canonical specification.
+ * @see {@link /oqse-manifest.md#11-oqsem-root-object} for the canonical specification.
  */
 
 import { z } from 'zod';

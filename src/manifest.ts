@@ -6,7 +6,7 @@
  * Every application that interacts with OQSE data MUST declare its capabilities
  * via this manifest format.
  *
- * @see /SPECIFICATION.md#21-the-application-manifest
+ * @see /oqse-manifest.md#1-oqsem-application-manifest
  */
 
 import type { FeatureProfile } from './oqse';
@@ -304,7 +304,7 @@ export interface ManifestAssets {
  * Declares everything the application can do, what types it handles,
  * what media formats it accepts, and which OQSE features it supports.
  *
- * @see /SPECIFICATION.md#212-capabilities-object-extends-featureprofile
+ * @see /oqse-manifest.md#12-capabilities-object-extends-featureprofile
  */
 export interface ManifestCapabilities extends FeatureProfile {
   /**
@@ -386,7 +386,7 @@ export interface ManifestCapabilities extends FeatureProfile {
  * - Non-HTML application: static `oqse-manifest.json` at the deployment root.
  * - HTTP discovery: `Link: <manifest.json>; rel="oqse-manifest"` header.
  *
- * @see /SPECIFICATION.md#21-the-application-manifest
+ * @see /oqse-manifest.md#1-oqsem-application-manifest
  *
  * @example
  * ```json

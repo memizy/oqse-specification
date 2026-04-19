@@ -2,7 +2,7 @@
  * OQSEP v0.1 Type Definitions
  * (Open Quiz & Study Exchange - Progress)
  *
- * @see /SPECIFICATION.md#25-user-progress-portability-oqsep
+ * @see /oqse-progress.md#1-data-model
  */
 
 /** Aggregate performance statistics for a single item. */
