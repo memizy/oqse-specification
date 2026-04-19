@@ -45,10 +45,10 @@ const ManifestVersionSchema = z
   .string()
   .regex(/^\d+\.\d+$/, 'Version must be in MAJOR.MINOR format (e.g. "0.1")');
 
-/** Full semver version string MAJOR.MINOR.PATCH (e.g. "1.2.3"). */
+/** Full semver version string MAJOR.MINOR.PATCH with optional pre-release/build metadata (e.g. "1.2.3-rc.1"). */
 const SemVerSchema = z
   .string()
-  .regex(/^\d+\.\d+\.\d+$/, 'Version must be in MAJOR.MINOR.PATCH format (e.g. "1.2.3")');
+  .regex(/^\d+\.\d+\.\d+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$/, 'Version must be a valid SemVer string (e.g. "1.2.3" or "1.2.3-rc.1")');
 
 // ============================================================================
 // Actions
@@ -220,10 +220,17 @@ export const OQSEManifestSchema = z
     $schema: AbsoluteURLSchema.optional(),
     // --- Identity ---
 
-    /** Unique reverse-domain identifier, e.g. `com.acme.flashcards`. */
-    id: NonEmptyStringSchema.regex(
-      /^[a-z0-9-]+(\.[a-z0-9-]+)*$/,
-      'ID must be in reverse-domain format (e.g. "com.acme.app")'
+    /** Unique manifest identifier as absolute URL or URN UUID. */
+    id: NonEmptyStringSchema.refine(
+      (v) => {
+        try {
+          new URL(v);
+          return true;
+        } catch {
+          return v.startsWith('urn:uuid:');
+        }
+      },
+      { message: 'ID must be an absolute URL or a URN-format UUID (urn:uuid:...)' }
     ),
 
     /** Human-readable display name of the application. */
@@ -348,7 +355,7 @@ export function safeValidateManifest(
  * ```ts
  * console.error(formatManifestErrors(result.error));
  * // Example output:
- * // "id: ID must be in reverse-domain format (e.g. \"com.acme.app\")"
+ * // "id: ID must be an absolute URL or a URN-format UUID (urn:uuid:...)"
  * // "capabilities.actions: Application must support at least one action"
  * ```
  */

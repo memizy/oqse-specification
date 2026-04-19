@@ -33,7 +33,6 @@ import type {
   MatchComplexItem,
   MatchPairsItem,
   MathInputItem,
-  MathSettings,
   MatrixItem,
   MCQMultiItem,
   MCQSingleItem,
@@ -126,6 +125,11 @@ export const RichContentSchema = z.string().min(1, 'Content must not be empty');
  * Optional rich content
  */
 export const OptionalRichContentSchema = z.string().optional();
+
+/**
+ * Blank token identifier
+ */
+export const BlankTokenSchema = z.string().regex(/^[a-zA-Z0-9_-]{1,64}$/, 'Token must be alphanumeric, max 64 chars');
 
 // ============================================================================
 // Media Types
@@ -335,17 +339,6 @@ export const PedagogySchema = z.object({
 });
 
 // ============================================================================
-// Math Settings
-// ============================================================================
-
-export const MathRendererSchema = z.enum(['katex', 'mathjax']);
-
-export const MathSettingsSchema = z.object({
-  renderer: MathRendererSchema.optional(),
-  packages: z.array(z.string()).optional(),
-});
-
-// ============================================================================
 // Meta Object
 // ============================================================================
 
@@ -373,7 +366,6 @@ export const OQSEMetaSchema = z.object({
   estimatedTime: z.number().positive().optional(),
   prerequisites: z.array(LinkedSetObjectSchema).optional(),
   relatedSets: z.array(LinkedSetObjectSchema).optional(),
-  mathSettings: MathSettingsSchema.optional(),
   customData: z.record(z.string(), z.unknown()).optional(),
   appSpecific: z.record(z.string(), z.unknown()).optional(),
 }).refine(
@@ -721,7 +713,7 @@ export const FillInBlanksItemSchema = BaseItemSchema.extend({
   type: z.literal('fill-in-blanks'),
   question: OptionalRichContentSchema,
   text: RichContentSchema.max(10000, 'Text must not be longer than 10000 characters'),
-  blanks: z.record(z.string(), z.array(PlainTextSchema).min(1, 'Each blank must have at least 1 correct answer')),
+  blanks: z.record(BlankTokenSchema, z.array(PlainTextSchema).min(1, 'Each blank must have at least 1 correct answer')),
   caseSensitive: z.boolean().optional(),
   trimWhitespace: z.boolean().optional(),
 }).refine(
@@ -773,7 +765,7 @@ export const FillInSelectItemSchema = BaseItemSchema.extend({
   type: z.literal('fill-in-select'),
   question: OptionalRichContentSchema,
   text: RichContentSchema.max(10000, 'Text must not be longer than 10000 characters'),
-  blanks: z.record(z.string(), SelectBlankObjectSchema),
+  blanks: z.record(BlankTokenSchema, SelectBlankObjectSchema),
 }).refine(
   (data) => Object.keys(data.blanks).length > 0,
   {
@@ -1266,7 +1258,6 @@ const schemaTypeContracts: {
   TranslationObjectSchema: z.ZodType<TranslationObject>;
   LinkedSetObjectSchema: z.ZodType<LinkedSetObject>;
   PedagogySchema: z.ZodType<Pedagogy>;
-  MathSettingsSchema: z.ZodType<MathSettings>;
   OQSEMetaSchema: z.ZodType<OQSEMeta>;
   BaseItemSchema: z.ZodType<BaseItem>;
   SelectBlankObjectSchema: z.ZodType<SelectBlankObject>;
@@ -1319,7 +1310,6 @@ const schemaTypeContracts: {
   TranslationObjectSchema,
   LinkedSetObjectSchema,
   PedagogySchema,
-  MathSettingsSchema,
   OQSEMetaSchema,
   BaseItemSchema,
   SelectBlankObjectSchema,

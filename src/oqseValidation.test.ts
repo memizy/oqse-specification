@@ -153,4 +153,23 @@ describe('Complex Constraints & Referential Integrity', () => {
       expect(result.error.issues.some(i => i.message.includes('tokens in text must have definition'))).toBe(true);
     }
   });
+
+  it('FillInBlanksItemSchema: rejects blank keys that do not match token regex', () => {
+    const invalidItem = {
+      id: '123e4567-e89b-12d3-a456-426614174001',
+      type: 'fill-in-blanks',
+      text: 'Hello <blank:name />',
+      blanks: { 'bad key': ['John'], name: ['John'] }
+    };
+
+    const result = FillInBlanksItemSchema.safeParse(invalidItem);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(
+        result.error.issues.some(
+          i => i.message.includes('Token must be alphanumeric') || i.message.includes('Invalid key in record')
+        )
+      ).toBe(true);
+    }
+  });
 });

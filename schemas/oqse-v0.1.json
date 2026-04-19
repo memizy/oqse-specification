@@ -442,25 +442,6 @@
             "additionalProperties": false
           }
         },
-        "mathSettings": {
-          "type": "object",
-          "properties": {
-            "renderer": {
-              "type": "string",
-              "enum": [
-                "katex",
-                "mathjax"
-              ]
-            },
-            "packages": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          },
-          "additionalProperties": false
-        },
         "customData": {
           "type": "object",
           "propertyNames": {
@@ -2590,7 +2571,8 @@
               "blanks": {
                 "type": "object",
                 "propertyNames": {
-                  "type": "string"
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9_-]{1,64}$"
                 },
                 "additionalProperties": {
                   "minItems": 1,
@@ -2897,7 +2879,8 @@
               "blanks": {
                 "type": "object",
                 "propertyNames": {
-                  "type": "string"
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9_-]{1,64}$"
                 },
                 "additionalProperties": {
                   "type": "object",

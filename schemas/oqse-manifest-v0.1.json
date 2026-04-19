@@ -8,8 +8,7 @@
     },
     "id": {
       "type": "string",
-      "minLength": 1,
-      "pattern": "^[a-z0-9-]+(\\.[a-z0-9-]+)*$"
+      "minLength": 1
     },
     "appName": {
       "type": "string",
@@ -22,7 +21,7 @@
     },
     "pluginVersion": {
       "type": "string",
-      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+      "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
     },
     "minOqseVersion": {
       "type": "string",

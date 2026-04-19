@@ -29,7 +29,7 @@ describe('Manifest Validation Schemas', () => {
   it('OQSEManifestSchema: fails when minOqseVersion > maxOqseVersion', () => {
     const invalidManifest = {
       version: "1.0",
-      id: "org.example",
+      id: "https://example.org/apps/test-app",
       appName: "Test App",
       minOqseVersion: "2.0",
       maxOqseVersion: "1.0",
@@ -46,7 +46,7 @@ describe('Manifest Validation Schemas', () => {
   it('OQSEManifestSchema: succeeds with valid version boundaries (min < max)', () => {
     const validManifest = {
       version: "1.0",
-      id: "org.example",
+      id: "https://example.org/apps/test-app",
       appName: "Test App",
       minOqseVersion: "0.1",
       maxOqseVersion: "1.99",
@@ -54,6 +54,40 @@ describe('Manifest Validation Schemas', () => {
     };
     
     const result = OQSEManifestSchema.safeParse(validManifest);
+    expect(result.success).toBe(true);
+  });
+
+  it('OQSEManifestSchema: accepts absolute URL and URN UUID manifest IDs', () => {
+    const baseManifest = {
+      version: '1.0',
+      appName: 'Test App',
+      capabilities: { actions: ['render'], features: [] },
+    };
+
+    expect(
+      OQSEManifestSchema.safeParse({
+        ...baseManifest,
+        id: 'https://example.org/apps/test-app',
+      }).success
+    ).toBe(true);
+
+    expect(
+      OQSEManifestSchema.safeParse({
+        ...baseManifest,
+        id: 'urn:uuid:123e4567-e89b-12d3-a456-426614174000',
+      }).success
+    ).toBe(true);
+  });
+
+  it('OQSEManifestSchema: accepts SemVer pre-release in pluginVersion', () => {
+    const result = OQSEManifestSchema.safeParse({
+      version: '1.0',
+      id: 'https://example.org/apps/test-app',
+      appName: 'Test App',
+      capabilities: { actions: ['render'], features: [] },
+      pluginVersion: '1.2.3-rc.1',
+    });
+
     expect(result.success).toBe(true);
   });
 });

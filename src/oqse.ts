@@ -383,26 +383,6 @@ export interface Pedagogy {
 }
 
 // ============================================================================
-// Math Settings
-// ============================================================================
-
-/**
- * Math renderer type
- */
-export type MathRenderer = 'katex' | 'mathjax';
-
-/**
- * Math settings for rendering mathematical formulas
- */
-export interface MathSettings {
-  /** Preferred renderer */
-  renderer?: MathRenderer;
-  
-  /** Array of LaTeX package names required for proper formula display */
-  packages?: string[];
-}
-
-// ============================================================================
 // Meta Object
 // ============================================================================
 
@@ -412,13 +392,6 @@ export interface MathSettings {
 export interface OQSEMeta {
   /** Unique UUID of the set */
   id: string;
-
-  /** 
-   * Origin UUID of the creator.
-   * Used to verify ownership when syncing between devices or cloud.
-   * If created anonymously, this is the local device install ID.
-   */
-  originUid?: string;
   
   /** Language code of the set (BCP 47) */
   language: LanguageCode;
@@ -491,9 +464,6 @@ export interface OQSEMeta {
   
   /** Array of references to related OQSE sets */
   relatedSets?: LinkedSetObject[];
-  
-  /** Configuration for rendering mathematical formulas */
-  mathSettings?: MathSettings;
   
   /** Object for metadata determined by the author/creator */
   customData?: Record<string, unknown>;
