@@ -43,7 +43,7 @@ console.log('✅ Vytvořeno: schemas/oqse-manifest-v0.1.json');
 
 const progressJsonSchema = z.toJSONSchema(OQSEPFileSchema, { target: "draft-07" });
 fs.writeFileSync(
-  path.join(schemasDir, 'oqsep-v0.1.json'),
+  path.join(schemasDir, 'oqse-progress-v0.1.json'),
   JSON.stringify(progressJsonSchema, null, 2)
 );
-console.log('✅ Vytvořeno: schemas/oqsep-v0.1.json');
+console.log('✅ Vytvořeno: schemas/oqse-progress-v0.1.json');

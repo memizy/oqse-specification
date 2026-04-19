@@ -628,6 +628,10 @@
                   "minLength": 1
                 }
               },
+              "topic": {
+                "type": "string",
+                "minLength": 1
+              },
               "difficulty": {
                 "type": "integer",
                 "minimum": 1,
@@ -760,6 +764,11 @@
                 "type": "string"
               },
               "content": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 10000
+              },
+              "hiddenContent": {
                 "type": "string",
                 "minLength": 1,
                 "maxLength": 10000
@@ -909,6 +918,10 @@
                   "type": "string",
                   "minLength": 1
                 }
+              },
+              "topic": {
+                "type": "string",
+                "minLength": 1
               },
               "difficulty": {
                 "type": "integer",
@@ -1195,6 +1208,10 @@
                   "minLength": 1
                 }
               },
+              "topic": {
+                "type": "string",
+                "minLength": 1
+              },
               "difficulty": {
                 "type": "integer",
                 "minimum": 1,
@@ -1477,6 +1494,10 @@
                   "type": "string",
                   "minLength": 1
                 }
+              },
+              "topic": {
+                "type": "string",
+                "minLength": 1
               },
               "difficulty": {
                 "type": "integer",
@@ -1790,6 +1811,10 @@
                   "type": "string",
                   "minLength": 1
                 }
+              },
+              "topic": {
+                "type": "string",
+                "minLength": 1
               },
               "difficulty": {
                 "type": "integer",
@@ -2118,6 +2143,10 @@
                   "minLength": 1
                 }
               },
+              "topic": {
+                "type": "string",
+                "minLength": 1
+              },
               "difficulty": {
                 "type": "integer",
                 "minimum": 1,
@@ -2417,6 +2446,10 @@
                   "type": "string",
                   "minLength": 1
                 }
+              },
+              "topic": {
+                "type": "string",
+                "minLength": 1
               },
               "difficulty": {
                 "type": "integer",
@@ -2720,6 +2753,10 @@
                   "type": "string",
                   "minLength": 1
                 }
+              },
+              "topic": {
+                "type": "string",
+                "minLength": 1
               },
               "difficulty": {
                 "type": "integer",
@@ -3033,6 +3070,10 @@
                   "minLength": 1
                 }
               },
+              "topic": {
+                "type": "string",
+                "minLength": 1
+              },
               "difficulty": {
                 "type": "integer",
                 "minimum": 1,
@@ -3326,6 +3367,10 @@
                   "type": "string",
                   "minLength": 1
                 }
+              },
+              "topic": {
+                "type": "string",
+                "minLength": 1
               },
               "difficulty": {
                 "type": "integer",
@@ -3646,6 +3691,10 @@
                   "minLength": 1
                 }
               },
+              "topic": {
+                "type": "string",
+                "minLength": 1
+              },
               "difficulty": {
                 "type": "integer",
                 "minimum": 1,
@@ -3933,6 +3982,10 @@
                   "type": "string",
                   "minLength": 1
                 }
+              },
+              "topic": {
+                "type": "string",
+                "minLength": 1
               },
               "difficulty": {
                 "type": "integer",
@@ -4237,6 +4290,10 @@
                   "type": "string",
                   "minLength": 1
                 }
+              },
+              "topic": {
+                "type": "string",
+                "minLength": 1
               },
               "difficulty": {
                 "type": "integer",
@@ -4675,6 +4732,10 @@
                   "minLength": 1
                 }
               },
+              "topic": {
+                "type": "string",
+                "minLength": 1
+              },
               "difficulty": {
                 "type": "integer",
                 "minimum": 1,
@@ -4991,6 +5052,10 @@
                   "type": "string",
                   "minLength": 1
                 }
+              },
+              "topic": {
+                "type": "string",
+                "minLength": 1
               },
               "difficulty": {
                 "type": "integer",
@@ -5310,6 +5375,10 @@
                   "type": "string",
                   "minLength": 1
                 }
+              },
+              "topic": {
+                "type": "string",
+                "minLength": 1
               },
               "difficulty": {
                 "type": "integer",
@@ -5631,6 +5700,10 @@
                   "minLength": 1
                 }
               },
+              "topic": {
+                "type": "string",
+                "minLength": 1
+              },
               "difficulty": {
                 "type": "integer",
                 "minimum": 1,
@@ -5925,6 +5998,10 @@
                   "type": "string",
                   "minLength": 1
                 }
+              },
+              "topic": {
+                "type": "string",
+                "minLength": 1
               },
               "difficulty": {
                 "type": "integer",
@@ -6367,6 +6444,10 @@
                   "minLength": 1
                 }
               },
+              "topic": {
+                "type": "string",
+                "minLength": 1
+              },
               "difficulty": {
                 "type": "integer",
                 "minimum": 1,
@@ -6695,6 +6776,10 @@
                   "minLength": 1
                 }
               },
+              "topic": {
+                "type": "string",
+                "minLength": 1
+              },
               "difficulty": {
                 "type": "integer",
                 "minimum": 1,
@@ -7000,6 +7085,10 @@
                   "type": "string",
                   "minLength": 1
                 }
+              },
+              "topic": {
+                "type": "string",
+                "minLength": 1
               },
               "difficulty": {
                 "type": "integer",
@@ -7364,6 +7453,10 @@
                   "type": "string",
                   "minLength": 1
                 }
+              },
+              "topic": {
+                "type": "string",
+                "minLength": 1
               },
               "difficulty": {
                 "type": "integer",

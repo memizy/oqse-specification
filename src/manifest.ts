@@ -391,7 +391,7 @@ export interface ManifestCapabilities extends FeatureProfile {
  * @example
  * ```json
  * {
- *   "$schema": "https://memizy.com/schemas/oqse-manifest/v0.1.json",
+ *   "$schema": "https://raw.githubusercontent.com/memizy/oqse-specification/main/schemas/oqse-manifest-v0.1.json",
  *   "version": "0.1",
  *   "pluginVersion": "2.1.0",
  *   "id": "https://memizy.com/universal-player",
@@ -408,7 +408,7 @@ export interface OQSEManifest {
   /**
    * URL reference to the JSON Schema for automatic validation.
    * Recommended but not required.
-   * @example `"https://memizy.com/schemas/oqse-manifest/v0.1.json"`
+  * @example `"https://raw.githubusercontent.com/memizy/oqse-specification/main/schemas/oqse-manifest-v0.1.json"`
    */
   $schema?: string;
 

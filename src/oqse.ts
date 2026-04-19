@@ -524,6 +524,9 @@ export interface BaseItem {
   
   /** Array of text labels (tags) for this item */
   tags?: string[];
+
+  /** Primary category, chapter, or lecture name for this item */
+  topic?: string;
   
   /** Numeric difficulty from 1 (easy) to 5 (hard) */
   difficulty?: number;
@@ -790,6 +793,9 @@ export interface NoteItem extends BaseItem {
   
   /** Main educational content (Rich Content) */
   content: string;
+
+  /** Additional content that is initially hidden (Rich Content) */
+  hiddenContent?: string;
 }
 
 /**

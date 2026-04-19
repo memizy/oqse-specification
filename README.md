@@ -63,3 +63,11 @@ npm test
 ## Contributing Rule
 
 Never edit files in schemas/ by hand. Always regenerate via npm run generate:schemas.
+
+## Schemas
+
+The auto-generated JSON Schemas are published with this repository and are available at the following URLs:
+
+- Core OQSE Schema: https://raw.githubusercontent.com/memizy/oqse-specification/main/schemas/oqse-v0.1.json
+- Manifest Schema: https://raw.githubusercontent.com/memizy/oqse-specification/main/schemas/oqse-manifest-v0.1.json
+- Progress Schema: https://raw.githubusercontent.com/memizy/oqse-specification/main/schemas/oqse-progress-v0.1.json

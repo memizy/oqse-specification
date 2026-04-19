@@ -216,7 +216,7 @@ export const ManifestCapabilitiesSchema = FeatureProfileSchema.extend({
  */
 export const OQSEManifestSchema = z
   .object({
-    // Recommended schema URL for draft v0.1: https://memizy.com/schemas/oqse-manifest/v0.1.json
+    // Recommended schema URL for draft v0.1: https://raw.githubusercontent.com/memizy/oqse-specification/main/schemas/oqse-manifest-v0.1.json
     $schema: AbsoluteURLSchema.optional(),
     // --- Identity ---
 

@@ -411,6 +411,7 @@ export const BaseItemSchema = z.object({
   assets: AssetDictionarySchema.optional(),
   lang: LanguageCodeSchema.optional(),
   tags: z.array(PlainTextSchema).optional(),
+  topic: PlainTextSchema.optional(),
   difficulty: z.number().int().min(1, 'Difficulty must be at least 1').max(5, 'Difficulty must be at most 5').optional(),
   timeLimit: z.number().positive('Time limit must be a positive number').optional(),
   hints: z.array(RichContentSchema.max(2000, 'Hint must not be longer than 2000 characters')).max(20, 'Maximum 20 hints per item').optional(),
@@ -584,6 +585,7 @@ export const NoteItemSchema = BaseItemSchema.extend({
   type: z.literal('note'),
   title: z.string().optional(),
   content: RichContentSchema.max(10000, 'Content must not be longer than 10000 characters'),
+  hiddenContent: RichContentSchema.max(10000, 'Content must not be longer than 10000 characters').optional(),
 });
 
 /**
@@ -1177,7 +1179,7 @@ export const OQSEItemSchema = z.discriminatedUnion('type', [
  * OQSE File Schema (Root Structure)
  */
 export const OQSEFileSchema = z.object({
-  // Recommended schema URL for draft v0.1: https://memizy.com/schemas/oqse/v0.1.json
+  // Recommended schema URL for draft v0.1: https://raw.githubusercontent.com/memizy/oqse-specification/main/schemas/oqse-v0.1.json
   $schema: z.string().url().optional(),
   version: z.string().regex(/^\d+\.\d+$/, 'Version must be in MAJOR.MINOR format (e.g. "0.1")'),
   meta: OQSEMetaSchema,
