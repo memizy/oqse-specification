@@ -2,7 +2,7 @@
 
 OQSEH defines a lightweight projection of the OQSE `meta` object.
 
-It acts as a standalone header (a "library card") that can be used by directories, APIs, and registries to list OQSE study sets without hosting full `.oqse.json` payloads. Registries are simply JSON arrays of OQSEHeader objects.
+It acts as a standalone header (a "library card") that can be used by directories and APIs to list OQSE study sets without hosting full `.oqse.json` payloads.
 
 ## OQSEHeader Root Object
 
@@ -50,31 +50,7 @@ An OQSEHeader represents one catalog entry that points to a full OQSE set.
 | `requirements` | object | No | Picked from `meta.requirements`. Feature profile required by the set. |
 | `url` | string | Yes | Absolute URL to the full raw `.oqse.json` file. |
 
-## Registry Format
-
-A registry (for example `community.json`) is a JSON array of OQSEHeader objects.
-
-```json
-[
-  {
-    "id": "123e4567-e89b-12d3-a456-426614174000",
-    "title": "Biology - Cell Basics",
-    "language": "en",
-    "updatedAt": "2026-04-19T10:15:00Z",
-    "url": "https://cdn.example.org/sets/biology-cells.oqse.json"
-  },
-  {
-    "id": "223e4567-e89b-12d3-a456-426614174001",
-    "title": "Linear Algebra - Matrices",
-    "language": "cs",
-    "updatedAt": "2026-04-18T09:00:00Z",
-    "url": "https://cdn.example.org/sets/matrices.oqse.json"
-  }
-]
-```
-
 ## Validation Notes
 
 - OQSEH is intentionally lightweight and should remain a projection of OQSE `meta` plus `url`.
 - Header consumers should use `url` as the canonical pointer to the full set payload.
-- Registries should avoid storing heavy set bodies inline.

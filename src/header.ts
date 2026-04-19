@@ -21,5 +21,3 @@ export type OQSEHeader = Omit<OQSEHeaderMetaProjection, 'createdAt'>
     url: string;
     $schema?: string;
   };
-
-export type OQSEHeaderList = OQSEHeader[];

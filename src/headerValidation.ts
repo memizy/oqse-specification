@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { OQSEHeader, OQSEHeaderList } from './header';
+import type { OQSEHeader } from './header';
 import { AbsoluteURLSchema, OQSEMetaSchema } from './oqseValidation';
 
 // OQSEMetaSchema contains object-level refinements, which block .pick() in Zod 4.
@@ -27,8 +27,6 @@ export const OQSEHeaderSchema: z.ZodType<OQSEHeader> = OQSEHeaderMetaSchema.exte
   $schema: z.string().url().optional(),
 });
 
-export const OQSEHeaderListSchema: z.ZodType<OQSEHeaderList> = z.array(OQSEHeaderSchema);
-
 export function validateOQSEHeader(data: unknown): OQSEHeader {
   return OQSEHeaderSchema.parse(data);
 }
@@ -37,14 +35,4 @@ export function safeValidateOQSEHeader(
   data: unknown
 ): ReturnType<typeof OQSEHeaderSchema.safeParse> {
   return OQSEHeaderSchema.safeParse(data);
-}
-
-export function validateOQSEHeaderList(data: unknown): OQSEHeaderList {
-  return OQSEHeaderListSchema.parse(data);
-}
-
-export function safeValidateOQSEHeaderList(
-  data: unknown
-): ReturnType<typeof OQSEHeaderListSchema.safeParse> {
-  return OQSEHeaderListSchema.safeParse(data);
 }

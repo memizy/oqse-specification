@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { OQSEHeaderListSchema, OQSEHeaderSchema } from './headerValidation';
+import { OQSEHeaderSchema } from './headerValidation';
 
 describe('OQSE Header Validation Schemas', () => {
   it('OQSEHeaderSchema: accepts a valid single header', () => {
@@ -12,27 +12,6 @@ describe('OQSE Header Validation Schemas', () => {
       description: 'A compact intro to cells',
       tags: ['biology', 'cells'],
     });
-
-    expect(result.success).toBe(true);
-  });
-
-  it('OQSEHeaderListSchema: accepts a valid list of headers', () => {
-    const result = OQSEHeaderListSchema.safeParse([
-      {
-        id: '123e4567-e89b-12d3-a456-426614174000',
-        title: 'Biology - Cell Basics',
-        language: 'en',
-        updatedAt: '2026-04-19T10:15:00Z',
-        url: 'https://cdn.example.org/sets/biology-cells.oqse.json',
-      },
-      {
-        id: '223e4567-e89b-12d3-a456-426614174001',
-        title: 'Linear Algebra - Matrices',
-        language: 'cs',
-        updatedAt: '2026-04-18T09:00:00Z',
-        url: 'https://cdn.example.org/sets/linear-algebra.oqse.json',
-      },
-    ]);
 
     expect(result.success).toBe(true);
   });

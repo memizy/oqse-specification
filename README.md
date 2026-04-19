@@ -9,7 +9,7 @@ This repository contains:
   - [OQSE (Study Sets)](./oqse.md)
   - [OQSEM (Application Manifests)](./oqse-manifest.md)
   - [OQSEP (User Progress)](./oqse-progress.md)
-   - [OQSEH (Set Headers/Registries)](./oqse-header.md)
+   - [OQSEH (Set Headers)](./oqse-header.md)
 - Runtime validators built with Zod.
 - Manually authored TypeScript types for developer ergonomics.
 - Auto-generated JSON Schemas distributed with the package.
