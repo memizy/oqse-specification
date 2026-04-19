@@ -15,7 +15,15 @@ Applications that implement spaced repetition or other adaptive learning algorit
 
 OQSEP files MUST be valid UTF-8 encoded JSON. The RECOMMENDED file extension is `.oqsep.json` (plain `.json` is also fully permitted; the compound extension improves discoverability in editors and file managers without requiring special tooling). The RECOMMENDED MIME type for HTTP transmission is `application/json` (custom APIs MAY use `application/vnd.oqsep+json` for strict content negotiation). An OQSEP file MUST NOT be embedded inside an OQSE container (`.oqse` / `.json`); it is always a separate, standalone artifact.
 
-## 1. Data Model
+## Table of Contents
+
+*   [Data Model](#data-model)
+*   [Bucket Scale](#bucket-scale)
+*   [Confidence Scale](#confidence-scale)
+*   [Example](#example)
+*   [Portability Best Practices](#portability-best-practices)
+
+## Data Model
 
 An OQSEP document is a single JSON object with the following structure.
 
@@ -67,7 +75,7 @@ Each entry in the `records` map is keyed by an item UUID and contains the follow
 | `hintsUsed` | integer | No | Number of hints the user revealed during this attempt. MUST be ≥ 0 if present. Defaults to `0` when absent. |
 | `isSkipped` | boolean | No | Whether the user skipped the item without submitting an answer. When `true`, `isCorrect` SHOULD be `false` and MUST be ignored by scheduling logic. |
 
-## 2. Bucket Scale
+## Bucket Scale
 
 The `bucket` field encodes the current knowledge level of an item on a **0–4 integer scale**, directly inspired by the Leitner box system. It provides a universal, algorithm-agnostic signal that all importing applications can map to their own scheduling tiers.
 
@@ -81,7 +89,7 @@ The absence of an item from the `records` map is the canonical representation of
 | **3** | *Consolidated* | Item is recalled reliably under normal conditions. Review intervals are longer. |
 | **4** | *Mastered* | Item is recalled effortlessly and consistently. Review intervals are long-term. |
 
-## 3. Confidence Scale
+## Confidence Scale
 
 The `confidence` field, when present, captures the user's **subjective assessment of their own recall quality** immediately after answering. It uses a **forced four-point scale (1–4)** with no middle value.
 
@@ -94,7 +102,7 @@ The deliberate absence of a middle option prevents the central-tendency bias com
 | **3** | *Correct with Effort* | The answer was correct, but required noticeable hesitation, conscious effort, or felt uncertain throughout. |
 | **4** | *Effortless Recall* | The answer was correct and came immediately, without hesitation or doubt. |
 
-## 4. Example
+## Example
 
 A minimal but complete OQSEP document with two item records:
 
@@ -151,7 +159,7 @@ A minimal but complete OQSEP document with two item records:
 
 Note that an item belonging to the set might be entirely absent from `records`. The absence of a record implicitly means the user has never been shown that item (and it defaults to bucket 0 behavior). However, explicit records with `bucket: 0` are also perfectly valid for unseen items.
 
-## 5. Portability Best Practices
+## Portability Best Practices
 
 **On omitting answer content:** OQSEP deliberately does not store the literal text or selection of the user's answers (e.g., the exact string they typed). The `lastAnswer` object records only whether the answer was correct (`isCorrect`) and an optional confidence rating. This is a conscious design choice to keep the progress file lean. Spaced repetition algorithms require outcome signals (correctness, confidence, timing), not a replay of what was typed. If an application strictly requires saving the exact user input for custom features, it MUST place this data inside its `appSpecific` namespace.
 

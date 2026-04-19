@@ -22,22 +22,22 @@ In this specification, the keywords **MUST**, **MUST NOT**, **SHOULD**, **SHOULD
 
 ## Table of Contents
 
-*   [1. Global Rules and Root Structure](#1-global-rules-and-root-structure)
-*   [2. Feature profile and official registry](#2-feature-profile--official-registry)
-*   [3. The `meta` Object](#3-the-meta-object)
-*   [4. Common Item Properties](#4-common-item-properties-in-items)
-*   [5. The `MediaObject` Object](#5-the-mediaobject-object)
-*   [6. Item Types](#6-item-types-itemtype)
-*   [7. Helper Data Structures](#7-helper-data-structures)
-*   [8. Complete Example File](#8-complete-example-file)
-*   [9. Validation Rules and Constraints](#9-validation-rules-and-constraints)
-*   [10. Error Handling](#10-error-handling-error-handling-policy)
-*   [11. Extensibility and Versioning](#11-extensibility-and-versioning)
-*   [12. Best Practices](#12-best-practices-for-set-creators)
-*   [13. Validation and Tools](#13-validation-and-tools)
-*   [14. Contributing and Community](#14-contributing-and-community)
+*   [Global Rules and Root Structure](#global-rules-and-root-structure)
+*   [Feature Profile and Official Registry](#feature-profile--official-registry)
+*   [The `meta` Object](#the-meta-object)
+*   [Common Item Properties](#common-item-properties-in-items)
+*   [The `MediaObject` Object](#the-mediaobject-object)
+*   [Item Types](#item-types-itemtype)
+*   [Helper Data Structures](#helper-data-structures)
+*   [Complete Example File](#complete-example-file)
+*   [Validation Rules and Constraints](#validation-rules-and-constraints)
+*   [Error Handling](#error-handling-error-handling-policy)
+*   [Extensibility and Versioning](#extensibility-and-versioning)
+*   [Best Practices for Set Creators](#best-practices-for-set-creators)
+*   [Validation and Tools](#validation-and-tools)
+*   [Contributing and Community](#contributing-and-community)
 
-## 1. Global Rules and Root Structure
+## Global Rules and Root Structure
 
   * **File Format:** JSON (`.json`)
   * **MIME Types:**
@@ -50,19 +50,19 @@ In this specification, the keywords **MUST**, **MUST NOT**, **SHOULD**, **SHOULD
   * **Text Formatting:** The specification distinguishes two types of text fields:
     * **Plain Text:** Fields intended for metadata and identifiers (e.g., titles, tags, alt texts). Interpreted as plain text without any formatting.
     * **Rich Content:** Fields intended for educational content. Support **GitHub Flavored Markdown (GFM)**, **LaTeX** mathematics compatible with KaTeX/MathJax (inline `$x^2$` and blocks `$$...$$` rendered as display style on a separate line), and media references using Media Tag syntax `<asset:key />`.
-  * **Media Embedding System (Assets):** The format uses a centralized "assets" system for embedding media in Rich Content fields. Media are defined in `item.assets` and referenced using the special tag `<asset:key />`. **[(See section 5.1 for details)](#51-media-reference-syntax-media-tags)**.
+  * **Media Embedding System (Assets):** The format uses a centralized "assets" system for embedding media in Rich Content fields. Media are defined in `item.assets` and referenced using the special tag `<asset:key />`. **[(See Media Reference Syntax)](#media-reference-syntax-media-tags)**.
   * **Backward Compatibility:** Applications MUST ignore unknown keys (forward compatibility). New specification versions MUST NOT change the meaning of existing keys within the same MAJOR version.
   * **Case Sensitivity of Files:** All keys in `assets` and filenames within the OQSE container (ZIP) MUST be written in lowercase. Application MUST immediately convert all filenames and asset keys to lowercase during import (with a warning on change) and MUST reject colliding names that match after conversion. On export, only lowercase names may be generated. References `<asset:... />` are case-insensitive; applications MUST convert the token to lowercase before lookup to maintain consistency across platforms.
 
 **Note on Field Types:** Throughout the specification, each text field is explicitly marked as either "Plain Text" or "Rich Content."
 
-### 1.1 Distribution Formats
+### Distribution Formats
 
 An OQSE set MAY be distributed in two ways:
 
 1. **Standalone JSON file (`.oqse.json` or `.json`)**
   * Suitable for sets whose media are hosted on public URLs or use no media.
-  * For standalone JSON files, `MediaObject.value` MUST contain an absolute URL [(see section 9.4)](#94-uri-and-path-security-validation-rules).
+  * For standalone JSON files, `MediaObject.value` MUST contain an absolute URL [(see URI and Path Security Validation Rules)](#uri-and-path-security-validation-rules).
   * RECOMMENDED MIME type for HTTP transmission: `application/json` (custom APIs MAY use `application/vnd.oqse+json` for strict content negotiation).
 
 2. **OQSE container (`.oqse`)**
@@ -79,7 +79,7 @@ An OQSE set MAY be distributed in two ways:
     ```
   * `index.json` references local media using relative paths (e.g., `assets/audio/countdown.mp3`). Relative paths MUST NOT contain `..` or start with `/`.
   * Hierarchy within `assets/` is flexible, but all files MUST be within this folder (e.g., `assets/images/diagram.png`).
-  * ZIP MUST NOT contain executable files or scripts. It is recommended to apply SHA-256 `checksum` for each asset [(see section 5)](#5-the-mediaobject-object).
+  * ZIP MUST NOT contain executable files or scripts. It is recommended to apply SHA-256 `checksum` for each asset [(see The MediaObject Object)](#the-mediaobject-object).
   * **Application MUST:**
     * Load `index.json` from the root
     * Load files from `assets/` according to JSON references
@@ -90,7 +90,7 @@ Exporters should choose `.json` if the set does not need local binary files. Onc
 
 -----
 
-### 1.2 Root Structure
+### Root Structure
 
 The root object of an OQSE file consists of 4 keys:
 
@@ -105,12 +105,12 @@ The root object of an OQSE file consists of 4 keys:
 
   * `$schema` (string): **Recommended.** URL reference to the JSON Schema specification for automatic validation.
   * `version` (string): **Required.** Version of the OQSE specification (e.g., "1.0").
-  * `meta` (object): **Required.** Object containing metadata about the entire set. [See section 3](#3-the-meta-object).
-  * `items` (array): **Required.** Array containing individual study items. May be empty (e.g., for a template or work-in-progress set). [See section 4](#4-common-item-properties-in-items).
+  * `meta` (object): **Required.** Object containing metadata about the entire set. [See The `meta` Object](#the-meta-object).
+  * `items` (array): **Required.** Array containing individual study items. May be empty (e.g., for a template or work-in-progress set). [See Common Item Properties](#common-item-properties-in-items).
 
 -----
 
-### 2. Feature Profile & Official Registry
+## Feature Profile & Official Registry
 
 To avoid redundancy, OQSE defines a base object called **FeatureProfile**. This structure is used in both the OQSEM (in `capabilities`) and the Study Set (in `meta.requirements`).
 
@@ -140,7 +140,7 @@ These features are advanced extensions that **explicitly require** a Tier 1 feat
 
 | Feature Key | Category | Description |
 | :--- | :--- | :--- |
-| `html` | Formatting | **Requires `markdown`.** Application allows intentional raw HTML tags embedded in text fields. This includes standard typography, layout elements (e.g., `<span style="color:red">`), and phonetic guides (e.g., `<ruby>`, `<rt>`, `<rp>` for Furigana/Pinyin). The set MUST still be strictly sanitized (see Section 12.4). **Optimization note:** This explicit flag allows applications to lazy-load heavy HTML sanitizers (like DOMPurify) only when required. |
+| `html` | Formatting | **Requires `markdown`.** Application allows intentional raw HTML tags embedded in text fields. This includes standard typography, layout elements (e.g., `<span style="color:red">`), and phonetic guides (e.g., `<ruby>`, `<rt>`, `<rp>` for Furigana/Pinyin). The set MUST still be strictly sanitized (see Best Practices for Set Creators). **Optimization note:** This explicit flag allows applications to lazy-load heavy HTML sanitizers (like DOMPurify) only when required. |
 | `syntax-highlighting`| Blocks | **Requires `markdown`.** Application applies syntax coloring to the structural code blocks generated by the GFM parser (e.g., coloring Java keywords in ` ```java `). |
 | `mermaid` | Blocks | **Requires `markdown`.** Application can render Mermaid diagrams from code blocks (via ` ```mermaid `). |
 | `smiles` | Blocks | **Requires `markdown`.** Application can render 2D chemical structures from SMILES strings in code blocks (via ` ```smiles `). |
@@ -205,9 +205,9 @@ To prevent fragmentation, the following rules apply to the `features` array:
 1.  **Official values only** (without prefix): Developers MUST NOT invent new unprefixed string values. Only values from the **Official Feature Registry** above are valid without a prefix.
 2.  **Custom features with `x-` prefix:** Developers MAY define proprietary feature flags using the `x-` prefix (e.g., `x-memizy-3d-voxel`, `x-spaced-repetition`). These values MUST NOT collide with future official registry entries and SHOULD be documented in the OQSEM's own `appSpecific` field.
 3.  **Proprietary Behavior (no feature contract):** Application-specific configurations or internal UI behaviors that do not need to be negotiated via the handshake MUST be placed inside the `appSpecific` object instead.
-4.  **New Data Structures:** If a completely new data structure is needed, a new `item.type` MUST be defined (following the same `x-` prefix convention per [section 11.1](#111-adding-custom-item-types)).
+4.  **New Data Structures:** If a completely new data structure is needed, a new `item.type` MUST be defined (following the same `x-` prefix convention per [Adding Custom Item Types](#adding-custom-item-types)).
 
-## 3. The `meta` Object
+## The `meta` Object
 
 Contains all information describing the entire set.
 
@@ -224,22 +224,22 @@ Contains all information describing the entire set.
 | `subject` | string | No | **Plain Text.** Subject/field in the set's language (e.g., `mathematics`, `biology`, `history`). |
 | `createdAt` | string | Yes | Date and time of creation in ISO 8601 format (UTC recommended). |
 | `updatedAt` | string | Yes | Date and time of last modification in ISO 8601 format. (UTC recommended)|
-| `author` | PersonObject | No | Information about the main author of the set. [See section 3.4](#34-the-personobject-object-in-metaauthor-and-metacontributors). |
+| `author` | PersonObject | No | Information about the main author of the set. [See The `PersonObject` Object](#the-personobject-object-in-metaauthor-and-metacontributors). |
 | `contributors` | PersonObject[] | No | Array of information about other contributors. |
 | `license` | string | No | [SPDX license](https://spdx.org/licenses/) identifier (e.g., `CC-BY-SA-4.0`, `CC0-1.0`). Determines usage rights for the set. |
 | `licenseUrl` | string | No | **URI (absolute URL).** Link to the full text of the license. |
 | `requirements` | object | No | A **FeatureProfile** object describing set's explicit requirements (e.g., `features`, `latexPackages`). **Note:** Required item types and assets are implicit to the content and MUST NOT be listed here. |
 | `tags` | string[] | No | **Plain Text.** Array of text labels (tags) for the entire set. |
-| `tagDefinitions` | object | No | Dictionary (map), where the key is a string (tag) and the value is a TagDefinition object. [See section 3.3](#33-the-tagdefinition-object-as-value-in-tagdefinitions). Used for tag meanings in `meta.tags` and `item.tags`. |
-| `translations` | TranslationObject[] | No | Array of references to translations of this set in other languages. [See **section 7.5**](#75-translationobject-for-metatranslations). |
+| `tagDefinitions` | object | No | Dictionary (map), where the key is a string (tag) and the value is a TagDefinition object. [See TagDefinition](#tagdefinition-object-as-value-in-tagdefinitions). Used for tag meanings in `meta.tags` and `item.tags`. |
+| `translations` | TranslationObject[] | No | Array of references to translations of this set in other languages. [See TranslationObject](#translationobject-for-metatranslations). |
 | `sourceMaterials` | SourceMaterial[] | No | Array of objects describing sources from which the set draws. |
 | `estimatedTime` | number | No | Estimated time to complete the set in minutes. |
-| `prerequisites` | LinkedSetObject[] | No | Array of references to sets that should be completed before this set. [See section 7.6](#76-linkedsetobject-for-metaprerequisites-and-metarelatedsets). |
-| `relatedSets` | LinkedSetObject[] | No | Array of references to related OQSE sets (for recommendations). [See section 7.6](#76-linkedsetobject-for-metaprerequisites-and-metarelatedsets). |
+| `prerequisites` | LinkedSetObject[] | No | Array of references to sets that should be completed before this set. [See LinkedSetObject](#linkedsetobject-for-metaprerequisites-and-metarelatedsets). |
+| `relatedSets` | LinkedSetObject[] | No | Array of references to related OQSE sets (for recommendations). [See LinkedSetObject](#linkedsetobject-for-metaprerequisites-and-metarelatedsets). |
 | `customData` | object | No | Object for metadata determined by the author/creator (e.g., internal notes, course ID at school). Not intended for application logic. |
 | `appSpecific` | object | No | Object for metadata specific to a particular software application (e.g., editor configuration, display state, last position). Top-level keys MUST be namespaced by the application identifier to prevent collisions (e.g., `{ "memizy": { "lastPosition": 42 } }`). Other applications MUST ignore this object. |
 
-### 3.1. The `SourceMaterial` Object (in `sourceMaterials`)
+### The `SourceMaterial` Object (in `sourceMaterials`)
 
 | Key | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
@@ -253,7 +253,7 @@ Contains all information describing the entire set.
 | `retrievedAt` | string | No | Date (ISO 8601 - UTC recommended) when the source was used (important for online sources). |
 | `license` | string | No | License of the original source (SPDX ID). |
 
-### 3.2. Description of Source Material Types (`type` in `SourceMaterial`)
+### Description of Source Material Types (`type` in `SourceMaterial`)
 
 The following table defines what content we expect in the `value` field for individual types:
 
@@ -270,7 +270,7 @@ The following table defines what content we expect in the `value` field for indi
 | `model` | URI address to 3D model file (glTF/GLB). | `https://example.com/anatomy.glb` |
 | `other` | Descriptive string for any other source type. | `Internal company document no. 123` |
 
-### 3.3. The `TagDefinition` Object (as value in `tagDefinitions`)
+### The `TagDefinition` Object (as value in `tagDefinitions`)
 
 The key in `tagDefinitions` is a human-readable tag (string, Plain Text).
 
@@ -279,7 +279,7 @@ The key in `tagDefinitions` is a human-readable tag (string, Plain Text).
 | `wikidataId` | string | No | "Q" identifier from Wikidata for semantic linking. |
 | `description` | string | No | **Plain Text.** More detailed tag description. |
 
-### 3.4. The `PersonObject` Object (in `meta.author` and `meta.contributors`)
+### The `PersonObject` Object (in `meta.author` and `meta.contributors`)
 
 Complex type for identifying persons involved in the set.
 
@@ -292,15 +292,15 @@ Complex type for identifying persons involved in the set.
 
 -----
 
-## 4. Common Item Properties in `items`
+## Common Item Properties in `items`
 
 Each object in the `items` array is one study item. All items share these basic keys:
 
 | Key | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
 | `id` | string | Yes | Unique UUID of the item. |
-| `type` | string | Yes | Defines the item type and its other properties. [See section 6](#6-item-types-itemtype). |
-| `assets` | object | No | Dictionary (map) of media, where the key is a local identifier (e.g., `"img1"`) and the value is a `MediaObject` object. [See section 5](#5-the-mediaobject-object). |
+| `type` | string | Yes | Defines the item type and its other properties. [See Item Types](#item-types-itemtype). |
+| `assets` | object | No | Dictionary (map) of media, where the key is a local identifier (e.g., `"img1"`) and the value is a `MediaObject` object. [See The `MediaObject` Object](#the-mediaobject-object). |
 | `lang` | string | No | **Plain Text.** Language code (BCP 47) for *this specific* item. Overrides `meta.language`. |
 | `tags` | string[] | No | **Plain Text.** Array of text labels (tags) for this item. |
 | `topic` | string | No | **Plain Text.** A primary category, chapter, or lecture name to which the item belongs (e.g., "Lecture 1: Introduction"). Useful for grouping items in the UI independently of multiple `tags`. |
@@ -309,16 +309,16 @@ Each object in the `items` array is one study item. All items share these basic 
 | `hints` | string[] | No | **Rich Content.** Array of hints from first to last. |
 | `explanation` | string | No | **Rich Content.** Explanation of the correct answer. |
 | `incorrectFeedback` | string | No | **Rich Content.** Message displayed to the user after an incorrect answer before it is appropriate to reveal the full `explanation`. Serves for gentle guidance or pointing out the error without revealing the solution. |
-| `sources` | SourceReference[] | No | Array of references to sources (`sourceMaterials`) related to this item. [See section 7.7](#77-sourcereference-for-itemsources). |
+| `sources` | SourceReference[] | No | Array of references to sources (`sourceMaterials`) related to this item. [See SourceReference](#sourcereference-for-itemsources). |
 | `relatedItems` | string[] | No | Array of IDs of related items in this set. All IDs MUST exist in the `items` array. Item MUST NOT reference its own `id`. Application MUST ignore non-existent references with a warning. |
 | `dependencyItems` | string[] | No | Array of `id`s of items that should logically precede this item (prerequisites). All IDs MUST exist in the `items` array. Item MUST NOT reference its own `id`. Circular dependencies are allowed – if the Application supports dependencies, it MUST detect them; Applications that do not support dependencies MAY ignore this field. Application MUST ignore non-existent references with a warning. |
-| `pedagogy` | Pedagogy | No | Object containing advanced data for adaptive learning and psychometrics. [See section 7.8](#78-the-pedagogy-object-adaptive-difficulty). |
+| `pedagogy` | Pedagogy | No | Object containing advanced data for adaptive learning and psychometrics. [See Pedagogy Object](#the-pedagogy-object-adaptive-difficulty). |
 | `customData` | object | No | Field for static creator metadata. |
 | `appSpecific` | object | No | Field for application-specific static metadata. Top-level keys MUST be namespaced by the application identifier to prevent collisions (e.g., `{ "memizy": { "displayHint": "compact" } }`). Other applications MUST ignore this object. |
 
 -----
 
-## 5. The `MediaObject` Object
+## The `MediaObject` Object
 
 Standardized object for embedding media. Used:
 - As a value in `meta.assets` (dictionary of media at set level, e.g., cover image).
@@ -326,7 +326,7 @@ Standardized object for embedding media. Used:
 
 | Key | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
-| `type` | string | Yes | Media type from selection (`image`, `audio`, `video`, `model`). The specific allowed file formats are negotiated via the [OQSEM (`capabilities.assets`)](./oqse-manifest.md#12-capabilities-object-extends-featureprofile). For the `model` type, the glTF format (`model/gltf-binary` for `.glb` or `model/gltf+json` for `.gltf`) is highly RECOMMENDED as the universal baseline for interoperability. However, applications and sets MAY use other formats (like `.obj` or `.fbx`) provided they are explicitly declared and matched during the capability handshake. |
+| `type` | string | Yes | Media type from selection (`image`, `audio`, `video`, `model`). The specific allowed file formats are negotiated via the [OQSEM (`capabilities.assets`)](./oqse-manifest.md#capabilities-object-extends-featureprofile). For the `model` type, the glTF format (`model/gltf-binary` for `.glb` or `model/gltf+json` for `.gltf`) is highly RECOMMENDED as the universal baseline for interoperability. However, applications and sets MAY use other formats (like `.obj` or `.fbx`) provided they are explicitly declared and matched during the capability handshake. |
 | `value` | string | Yes | URI of the resource. Can be **absolute URL** (e.g., `https://.../image.png`) or **relative path** to file in package (e.g., `assets/diagram.png`). |
 | `mimeType` | string | Recommended | MIME type of file (e.g., `image/png`, `audio/mpeg`, `video/mp4`, `model/gltf-binary`). |
 | `altText` | string | **REQUIRED for images**, optional for audio/video | **Plain Text.** Alternative text for accessibility. Must be plain text without formatting for screen readers. |
@@ -350,7 +350,7 @@ Standardized object for embedding media. Used:
   * On export: Always generate lowercase keys
   * When processing `<asset:... />` tags: Normalize captured token to lowercase before lookup, so syntax is case-insensitive even in user-written text
 
-### 5.1. Media Reference Syntax (Media Tags)
+### Media Reference Syntax (Media Tags)
 
 In all text fields with "rich content" (Rich Content), media defined in `assets` are referenced exclusively using the unified self-closing Media Tag syntax:
 
@@ -446,11 +446,11 @@ If same key exists in both scopes, local definition (`item.assets`) takes preced
 
 -----
 
-## 6. Item Types (`item.type`)
+## Item Types (`item.type`)
 
 The specification in the current version defines **22 official item types**. Each application MUST clearly identify the type using the `type` key, which determines what other processing logic is applied.
 
-### 6.1. `type: "note"` (Study Note)
+### `type: "note"` (Study Note)
 
   * `title` (string, optional): **Plain Text.** Note heading.
   * `content` (string, required): **Rich Content.** Main educational content of the item (text, Markdown, LaTeX, media references).
@@ -467,7 +467,7 @@ The specification in the current version defines **22 official item types**. Eac
 }
 ```
 
-### 6.2. `type: "flashcard"` (Flashcard)
+### `type: "flashcard"` (Flashcard)
 
   * `front` (string, required): **Rich Content.** Text on front side.
   * `back` (string, required): **Rich Content.** Text on back side.
@@ -489,7 +489,7 @@ The specification in the current version defines **22 official item types**. Eac
 }
 ```
 
-### 6.3. `type: "true-false"` (True/False)
+### `type: "true-false"` (True/False)
 
   * `question` (string, required): **Rich Content.** Statement to be evaluated.
   * `answer` (boolean, required): Correct answer (`true` or `false`).
@@ -505,7 +505,7 @@ The specification in the current version defines **22 official item types**. Eac
 }
 ```
 
-### 6.4. `type: "mcq-single"` (Single Choice)
+### `type: "mcq-single"` (Single Choice)
 
   * `question` (string, required): **Rich Content.** Question text.
   * `options` (string[], required): **Rich Content.** Array of text options. Must contain at least 2 items.
@@ -530,7 +530,7 @@ The specification in the current version defines **22 official item types**. Eac
 }
 ```
 
-### 6.5. `type: "mcq-multi"` (Multiple Choice)
+### `type: "mcq-multi"` (Multiple Choice)
 
   * `question` (string, required): **Rich Content.** Question text.
   * `options` (string[], required): **Rich Content.** Array of text options. Must contain at least 2 items.
@@ -560,7 +560,7 @@ The specification in the current version defines **22 official item types**. Eac
 }
 ```
 
-### 6.6. `type: "short-answer"` (Short Text Answer)
+### `type: "short-answer"` (Short Text Answer)
 
   * `question` (string, required): **Rich Content.** Question text.
   * `answers` (string[], required): **Plain Text.** Array of acceptable text answers (for checking variants). Must contain at least 1 item.
@@ -582,7 +582,7 @@ The specification in the current version defines **22 official item types**. Eac
 }
 ```
 
-### 6.7. `type: "fill-in-blanks"` (Fill in the Blanks)
+### `type: "fill-in-blanks"` (Fill in the Blanks)
 
   * `question` (string, optional): **Rich Content.** Heading or instructions.
   * `text` (string, required): **Rich Content.** Text with blanks marked using blank tags `<blank:token />` (e.g., `<blank:1 />`). **Token rules:** Token MUST be alphanumeric identifier (`a-z`, `A-Z`, `0-9`, `_`, `-`). Tokens are case-sensitive (`<blank:A />` ≠ `<blank:a />`). Maximum length: 64 characters. Regex: `^[a-zA-Z0-9_-]{1,64}$`. **Valid token examples:** `<blank:1 />`, `<blank:q1 />`, `<blank:answer_A />`, `<blank:first-name />`. Syntax is consistent with Media Tag (`<asset:key />`) for easier parsing. **Duplicate tokens:** If same token (e.g., `<blank:1 />`) occurs multiple times in text, all its occurrences represent **the same** input field. Application SHOULD ensure that when one occurrence is filled, other occurrences with same token are automatically filled as well.
@@ -611,11 +611,11 @@ The specification in the current version defines **22 official item types**. Eac
 }
 ```
 
-### 6.8. `type: "fill-in-select"` (Fill in with Selection)
+### `type: "fill-in-select"` (Fill in with Selection)
 
 * `question` (string, optional): **Rich Content.** Heading or instructions.
 * `text` (string, required): **Rich Content.** Text with blanks marked using blank tags `<blank:token />` (e.g., `<blank:1 />`).
-* `blanks` (object, required): Dictionary (map), where key is `token` (e.g., `"1"`) and value is `SelectBlankObject` object ([see section 7.1](#71-selectblankobject-for-fill-in-select)).
+* `blanks` (object, required): Dictionary (map), where key is `token` (e.g., `"1"`) and value is `SelectBlankObject` object ([see SelectBlankObject](#selectblankobject-for-fill-in-select)).
 
 **Example:**
 ```json
@@ -637,11 +637,11 @@ The specification in the current version defines **22 official item types**. Eac
 }
 ```
 
-### 6.9. `type: "match-pairs"` (Match Pairs)
+### `type: "match-pairs"` (Match Pairs)
 
   * `question` (string, optional): **Rich Content.** Instructions.
   * `prompts` (string[], required): **Rich Content.** Left side (what is being matched) - array of strings. Must contain at least 2 items.
-  * `matches` (string[], required): **Rich Content.** Right side (target) - array of strings. Must have same length as `prompts`. Minimum length: 2 (at least 2 pairs). Maximum length: 100 items per [section 9.1](#91-length-and-size-constraints).
+  * `matches` (string[], required): **Rich Content.** Right side (target) - array of strings. Must have same length as `prompts`. Minimum length: 2 (at least 2 pairs). Maximum length: 100 items per [Length and Size Constraints](#length-and-size-constraints).
   * **Note:** `prompts[0]` belongs to `matches[0]`, etc. Application shuffles pairs before display.
 
 **Example:**
@@ -663,7 +663,7 @@ The specification in the current version defines **22 official item types**. Eac
 }
 ```
 
-### 6.10. `type: "match-complex"` (Advanced Matching)
+### `type: "match-complex"` (Advanced Matching)
 
   * `question` (string, optional): **Rich Content.** Instructions.
   * `leftItems` (string[], required): **Rich Content.** Items on left side.
@@ -712,7 +712,7 @@ The specification in the current version defines **22 official item types**. Eac
 ```
 In the example above, `Starship` has two correct connections (`Raptor` and `BE-4`), demonstrating the `1:N` matching capability. All four right-side items are referenced as correct answers — an item without any connection to the left side would be a distractor. Application MUST still maintain index order and ensure no index exceeds defined arrays.
 
-### 6.11. `type: "sort-items"` (Sorting)
+### `type: "sort-items"` (Sorting)
 
   * `question` (string, required): **Rich Content.** Instructions.
   * `items` (string[], required): **Rich Content.** Array of items in **correct** order. Must contain at least 2 items and application MUST shuffle them.
@@ -732,7 +732,7 @@ In the example above, `Starship` has two correct connections (`Raptor` and `BE-4
 }
 ```
 
-### 6.12. `type: "slider"` (Slider / Numeric Answer)
+### `type: "slider"` (Slider / Numeric Answer)
 
   * `question` (string, required): **Rich Content.** Question text.
   * `min` (number, required): Minimum value on slider.
@@ -758,11 +758,11 @@ In the example above, `Starship` has two correct connections (`Raptor` and `BE-4
 }
 ```
 
-### 6.13. `type: "pin-on-image"` (Pin on Image)
+### `type: "pin-on-image"` (Pin on Image)
 
   * `question` (string, required): **Rich Content.** Instructions.
   * `targetAsset` (string, required): **Key from `assets`**, which determines the image to be clicked on.
-  * `hotspots` (HotspotObject[], required): Array defining correct areas. Must contain at least 1 hotspot. [See section 7.2](#72-hotspotobject-for-pin-on-image).
+  * `hotspots` (HotspotObject[], required): Array defining correct areas. Must contain at least 1 hotspot. [See HotspotObject](#hotspotobject-for-pin-on-image).
   * `multipleCorrect` (boolean, optional): Determines whether user must mark more than one hotspot. Default: `false` (one click is enough).
   * `minCorrect` (number, optional): If `multipleCorrect: true`, determines minimum number of correct hotspots user must find. If `multipleCorrect: false` or missing, this field is ignored.
 
@@ -792,11 +792,11 @@ In the example above, `Starship` has two correct connections (`Raptor` and `BE-4
 }
 ```
 
-### 6.14. `type: "categorize"` (Categorization)
+### `type: "categorize"` (Categorization)
 
   * `question` (string, required): **Rich Content.** Instructions.
   * `categories` (string[], required): **Plain Text.** Array of category names. Must contain at least 2 items.
-  * `items` (CategorizeItem[], required): Items to sort. Each item references category using 0-based index. [See section 7.3](#73-categorizeitem-for-categorize).
+  * `items` (CategorizeItem[], required): Items to sort. Each item references category using 0-based index. [See CategorizeItem](#categorizeitem-for-categorize).
   * **Note:** User assigns each item to a category.
 
 **Example:**
@@ -831,10 +831,10 @@ In the example above, `Starship` has two correct connections (`Raptor` and `BE-4
 }
 ```
 
-### 6.15. `type: "timeline"` (Timeline)
+### `type: "timeline"` (Timeline)
 
   * `question` (string, required): **Rich Content.** Instructions.
-  * `events` (TimelineEvent[], required): Array of events in correct chronological order. Must contain at least 2 events. [See section 7.4](#74-timelineevent-for-timeline) for detail on date handling.
+  * `events` (TimelineEvent[], required): Array of events in correct chronological order. Must contain at least 2 events. [See TimelineEvent](#timelineevent-for-timeline) for detail on date handling.
   * `randomize` (boolean, optional): Determines whether application should shuffle events before displaying to user. Default: `true`. Set to `false` if you want to display events as study material in chronological order.
 
 **Example:**
@@ -866,7 +866,7 @@ In the example above, `Starship` has two correct connections (`Raptor` and `BE-4
 }
 ```
 
-### 6.16. `type: "matrix"` (Matrix / Table Answer)
+### `type: "matrix"` (Matrix / Table Answer)
 
   * `question` (string, required): **Rich Content.** Instructions.
   * `rows` (string[], required): **Plain Text.** Row labels. Must not be empty array.
@@ -893,7 +893,7 @@ In the example above, `Starship` has two correct connections (`Raptor` and `BE-4
 }
 ```
 
-### 6.17. `type: "math-input"` (Math Input)
+### `type: "math-input"` (Math Input)
 
   * `question` (string, required): **Rich Content.** Question text.
   * `correctAnswer` (string, required): Correct answer in LaTeX format (e.g., `$2x + 2$`).
@@ -916,14 +916,14 @@ In the example above, `Starship` has two correct connections (`Raptor` and `BE-4
 }
 ```
 
-### 6.18. `type: "diagram-label"` (Diagram Labeling)
+### `type: "diagram-label"` (Diagram Labeling)
 
   * `question` (string, required): **Rich Content.** Instructions.
   * `targetAsset` (string, required): **Key from `assets`**, which determines the diagram image.
   * `labels` (string[], required): **Rich Content.** Array of text labels for user to assign. Must contain all correct answers and may contain distractors (extra labels).
   * `caseSensitive` (boolean, optional): Distinguish letter case when comparing labels. Default: `false`. Applies globally to all zones in this item.
   * `requireTyping` (boolean, optional): Default `false`. If `true`, application MUST NOT display draggable labels; instead render text fields for each zone and compare user input with `labels[correctLabelIndex]` (respects `caseSensitive`, also recommended to trim whitespace). Value `true` therefore activates "type answer" mode without needing to change `labels` structure.
-  * `zones` (object[], required): Array of zones on image. Each zone is defined as extended `HotspotObject` ([see section 7.2](#72-hotspotobject-for-pin-on-image)) with added `correctLabelIndex` key.
+  * `zones` (object[], required): Array of zones on image. Each zone is defined as extended `HotspotObject` ([see HotspotObject](#hotspotobject-for-pin-on-image)) with added `correctLabelIndex` key.
 
 **Zone structure in `zones` array:**
   * All properties of `HotspotObject` (`type`, `x`, `y`...).
@@ -966,7 +966,7 @@ In the example above, `Starship` has two correct connections (`Raptor` and `BE-4
 ```
   If item should require independent writing of names instead of dragging, set `requireTyping: true`. In that case, application displays input field for each zone and answer is compared with text from `labels` array according to corresponding `correctLabelIndex`.
 
-### 6.19. `type: "open-ended"` (Open-Ended Answer)
+### `type: "open-ended"` (Open-Ended Answer)
 
 Intended for questions requiring free text answer that cannot be easily machine-compared (as with `short-answer`). Evaluation often requires teacher or advanced AI.
 
@@ -1011,7 +1011,7 @@ Intended for questions requiring free text answer that cannot be easily machine-
 }
 ```
 
-### 6.20. `type: "numeric-input"` (Numeric Input)
+### `type: "numeric-input"` (Numeric Input)
 
 Intended for physics, chemistry, statistics, or math problems where answer is specific number (integer or float), not algebraic expression (for that use `math-input`). This type ensures numeric keyboard display on mobile devices.
 
@@ -1041,7 +1041,7 @@ Applications **MUST** normalize user input before evaluation to handle localizat
 }
 ```
 
-### 6.21. `type: "pin-on-model"` (Pin on 3D Model)
+### `type: "pin-on-model"` (Pin on 3D Model)
 
   * `question` (string, required): **Rich Content.** Instructions.
   * `targetAsset` (string, required): **Key from `assets`**, which determines the 3D model to be used.
@@ -1051,7 +1051,7 @@ Applications **MUST** normalize user input before evaluation to handle localizat
     * `position` (object): `{x, y, z}` coordinates for the camera's location.
     * `target` (object): `{x, y, z}` coordinates of the point the camera is looking at and orbiting around.
   * **Note:** If `camera` is omitted, the application SHOULD automatically compute the bounding box of the model, set the target to its center, and position the camera to fit the entire model in the view.
-  * **Validation rules:** Referenced asset in `targetAsset` **MUST** be of type `model` ([see section 5.](#5-the-mediaobject-object)).
+  * **Validation rules:** Referenced asset in `targetAsset` **MUST** be of type `model` ([see The `MediaObject` Object](#the-mediaobject-object)).
 
 **Example:**
 ```json
@@ -1077,7 +1077,7 @@ Applications **MUST** normalize user input before evaluation to handle localizat
 }
 ```
 
-### 6.22. `type: "chess-puzzle"` (Chess Puzzle)
+### `type: "chess-puzzle"` (Chess Puzzle)
 
   * `question` (string, required): **Rich Content.** Instructions or puzzle description (e.g., "White to move and checkmate in 2").
   * `fen` (string, required): The board position in Forsyth–Edwards Notation (FEN).
@@ -1101,16 +1101,16 @@ Applications **MUST** normalize user input before evaluation to handle localizat
 
 -----
 
-## 7. Helper Data Structures
+## Helper Data Structures
 
-### 7.1. `SelectBlankObject` (for `fill-in-select`)
+### `SelectBlankObject` (for `fill-in-select`)
 
 | Key | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
 | `options` | string[] | Yes | **Rich Content.** Array of text options to choose from. Must not be empty array. |
 | `correctIndex` | number | Yes | Index of correct answer in `options` array (0-based). |
 
-### 7.2. `HotspotObject` (for `pin-on-image` and `pin-on-model`)
+### `HotspotObject` (for `pin-on-image` and `pin-on-model`)
 
 Defines clickable zone on image or named mesh in a 3D model. For `pin-on-image`, all coordinates and dimensions are in **percentages** (0.0 to 100.0) relative to the image. For `pin-on-model`, the `mesh` type is used instead (no coordinates).
 
@@ -1137,7 +1137,7 @@ Defines clickable zone on image or named mesh in a 3D model. For `pin-on-image`,
 **For `type: "mesh"` (3D model part):**
   * `targetName` (string): Name (or partial name) of the object/mesh in the 3D scene (glTF node name).
 
-### 7.3. `CategorizeItem` (for `categorize`)
+### `CategorizeItem` (for `categorize`)
 
 | Key | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
@@ -1167,13 +1167,13 @@ Defines clickable zone on image or named mesh in a 3D model. For `pin-on-image`,
 }
 ```
 
-### 7.4. `TimelineEvent` (for `timeline`)
+### `TimelineEvent` (for `timeline`)
 
 | Key | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
 | `id` | string | Recommended | **Plain Text.** Unique ID of event (within question, doesn't have to be UUIDv7). |
 | `text` | string | Yes | **Rich Content.** Event description. |
-| `date` | string | Yes | **Plain Text.** Event date in strict format per section 9.5. Field `date` MUST always contain full date in ISO 8601 format (e.g., `1969-01-01` or `1969-01-01T12:00:00Z`), even if `precision` is set to only `year` or `month`. Field `precision` determines only display format to user, but for internal sorting and machine processing, complete date is always required. MUST NOT be displayed to user before answering. Event without `date` is invalid and application MUST reject import. |
+| `date` | string | Yes | **Plain Text.** Event date in strict format per Date Handling Format. Field `date` MUST always contain full date in ISO 8601 format (e.g., `1969-01-01` or `1969-01-01T12:00:00Z`), even if `precision` is set to only `year` or `month`. Field `precision` determines only display format to user, but for internal sorting and machine processing, complete date is always required. MUST NOT be displayed to user before answering. Event without `date` is invalid and application MUST reject import. |
 | `precision` | string | No | **Plain Text.** Determines mask for displaying date to user. Possible values: `year`, `month`, `day`, `datetime`. If not specified, full precision defined in `date` field is used. This field is key for displaying "imprecise" historical dates (e.g., "year 1969" stored technically as `1969-01-01`).
 
 **Rules for sorting events:** (1) If two events have same date base corresponding to lower precision (e.g., both have year `1969`, one with `precision: "year"` and other with `precision: "month"` or more precise), both orders are considered correct. (2) Events with same precision and same date are considered simultaneous (any order is correct). (3) For comparison purposes, least precise value from pair is used. Example: `{"date": "1969-01-01", "precision": "year"}` and `{"date": "1969-07-20", "precision": "day"}` are considered concurrent (both in year 1969). |
@@ -1201,7 +1201,7 @@ Defines clickable zone on image or named mesh in a 3D model. For `pin-on-image`,
 }
 ```
 
-### 7.5. `TranslationObject` (for `meta.translations`)
+### `TranslationObject` (for `meta.translations`)
 
 Defines reference to translated version of this set.
 
@@ -1215,7 +1215,7 @@ Defines reference to translated version of this set.
 **Best practice:**
 - Recommended to create "sibling" relationship between translations (each translation references other translations in `translations` array)
 
-### 7.6. `LinkedSetObject` (for `meta.prerequisites` and `meta.relatedSets`)
+### `LinkedSetObject` (for `meta.prerequisites` and `meta.relatedSets`)
 
 | Key | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
@@ -1223,7 +1223,7 @@ Defines reference to translated version of this set.
 | `title` | string | Yes | **Plain Text.** Name of referenced set for UI display. |
 | `downloadUrl` | string | No | **URI (absolute URL).** Absolute address for downloading set if application doesn't have it available. |
 
-### 7.7. `SourceReference` (for `item.sources`)
+### `SourceReference` (for `item.sources`)
 
 | Key | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
@@ -1231,7 +1231,7 @@ Defines reference to translated version of this set.
 | `location` | string | No | **Plain Text.** Specification of place in source (e.g., "page 42", "time 12:30", "paragraph 3"). |
 | `quote` | string | No | **Rich Content.** Exact citation or text segment from source that directly supports correctness of answer. MAY contain formatting (bold text, italics) and mathematical formulas in LaTeX. This key is critical for automated fact-checking and AI systems like RAG (Retrieval Augmented Generation), so they can verify that generated question corresponds to source materials. |
 
-### 7.8. The `Pedagogy` Object (Adaptive Difficulty)
+### The `Pedagogy` Object (Adaptive Difficulty)
 
 This optional object (`item.pedagogy`) serves to store advanced metadata about didactic properties of item. It is key for adaptive testing (CAT) and data sharing between systems.
 
@@ -1260,7 +1260,7 @@ This optional object (`item.pedagogy`) serves to store advanced metadata about d
 
 -----
 
-## 8. Complete Example File
+## Complete Example File
 
 ```json
 {
@@ -1469,11 +1469,11 @@ This optional object (`item.pedagogy`) serves to store advanced metadata about d
 
 -----
 
-## 9. Validation Rules and Constraints
+## Validation Rules and Constraints
 
 To ensure consistency and practical implementability, the specification defines the following rules:
 
-### 9.1. Length and Size Constraints
+### Length and Size Constraints
 
 | Item | Maximum Value | Note |
 | :--- | :--- | :--- |
@@ -1487,12 +1487,12 @@ To ensure consistency and practical implementability, the specification defines 
 | `options[]` (options array) | 100 options | For MCQ types |
 | `prompts[]` / `matches[]` (match-pairs) | 100 items each | Both arrays must have equal length |
 | `hints[]` (hints array) | 20 hints | Per one item |
-| File in `assets/` (.oqse) | 25 MB | Host larger media externally (set fragmentation is not recommended and not supported, [see section 12.5](#125-performance)) |
+| File in `assets/` (.oqse) | 25 MB | Host larger media externally (set fragmentation is not recommended and not supported, [see Performance](#performance)) |
 | `customData` / `appSpecific` | 10 levels depth | Prevention of stack overflows |
 
 **Note:** Applications SHOULD support at least these limits. If specific environment doesn't allow same or higher values, it MUST be documented and user must be warned before import.
 
-### 9.2. Validation Rules for Indices and Arrays
+### Validation Rules for Indices and Arrays
 
 - All indices (`correctIndex`, `correctIndices[]`) must be 0-based
 - Indices must not be negative
@@ -1546,7 +1546,7 @@ To ensure consistency and practical implementability, the specification defines 
 **For `slider`:**
 - `correctAnswer` MUST lie in interval `<min, max>`.
 - Value MUST be reachable: `(correctAnswer - min) % step === 0`. Otherwise Application MUST reject import.
-- If `tolerance > 0`, it SHOULD also be a multiple of `step`, otherwise a warning about inconsistent evaluation is expected ([see section 6.12](#612-type-slider-slider--numeric-answer)).
+- If `tolerance > 0`, it SHOULD also be a multiple of `step`, otherwise a warning about inconsistent evaluation is expected ([see Type: Slider](#type-slider-slider--numeric-answer)).
 
 **For `range` in `numeric-input`:**
 - If `range` is present, `range.min < range.max` MUST hold. Application MUST reject import if `range.min >= range.max`.
@@ -1557,11 +1557,11 @@ To ensure consistency and practical implementability, the specification defines 
 - If `multiplePerRow: true`, rows can have multiple correct cells
 - Invalid when `multiplePerRow: false` and `correctCells` contains multiple cells from same row
 
-### 9.2a. Referential Integrity Validation
+### Referential Integrity Validation
 
 **References to other items:**
 - `relatedItems`, `dependencyItems`: Application MUST ignore non-existent IDs with warning
-- `sources[].id`: Application MUST ignore non-existent IDs with warning ([see section 7.7](#77-sourcereference-for-itemsources))
+- `sources[].id`: Application MUST ignore non-existent IDs with warning ([see SourceReference](#sourcereference-for-itemsources))
 - `meta.translations[].id`, `meta.prerequisites[].id`, `meta.relatedSets[].id`: External references, cannot validate locally
 
 **References to assets:**
@@ -1570,9 +1570,9 @@ To ensure consistency and practical implementability, the specification defines 
 
 **Field synchronization:**
 - `optionExplanations` vs `options`: Lengths MUST be same OR `optionExplanations` is empty/omitted
-- `blanks` tokens vs `text` tokens: Must match exactly ([see section 6.7](#67-type-fill-in-blanks-fill-in-the-blanks))
+- `blanks` tokens vs `text` tokens: Must match exactly ([see Type: Fill in Blanks](#type-fill-in-blanks-fill-in-the-blanks))
 
-### 9.3. UUID Validation Rules
+### UUID Validation Rules
 
 The standard for OQSE v0.1 is **UUIDv7**. For applications simplification, it is recommended to support only **UUIDv7** (preferred) and **UUIDv4** (fallback).
 
@@ -1585,7 +1585,7 @@ The standard for OQSE v0.1 is **UUIDv7**. For applications simplification, it is
 
 **Exception:** `SourceMaterial.id` MAY be alphanumeric string unique only within that file, and `id` within internal item objects such as `TimelineEvent` or `CategorizeItem` MAY also be alphanumeric string.
 
-### 9.4. URI and Path Security Validation Rules
+### URI and Path Security Validation Rules
 
 - All fields marked as URI for remote resources (e.g., `licenseUrl`, `SourceMaterial.value` with types `url|pdf|video|audio|image`, `MediaObject.value` referencing external media) MUST use absolute URI including protocol. `https://` is recommended, `http://` is acceptable only with warning to user.
 
@@ -1613,9 +1613,9 @@ The standard for OQSE v0.1 is **UUIDv7**. For applications simplification, it is
 **Asset key rules:**
 - Keys in `assets` (JSON) MUST consist only of lowercase letters, digits, underscores, and hyphens (regex: `^[a-z0-9_-]+$`).
 - Keys MUST NOT contain spaces or forbidden special characters. The Application MUST reject keys containing such invalid characters.
-- If a key contains uppercase letters (`A-Z`), the Application MUST NOT immediately reject it during import or render. Instead, it MUST automatically normalize the key to lowercase and handle any resulting collisions as defined in the global Case Sensitivity rules ([see section 1.](#1-global-rules-and-root-structure)).
+- If a key contains uppercase letters (`A-Z`), the Application MUST NOT immediately reject it during import or render. Instead, it MUST automatically normalize the key to lowercase and handle any resulting collisions as defined in the global Case Sensitivity rules ([see Global Rules and Root Structure](#global-rules-and-root-structure)).
 
-### 9.5. Date and Time Validation Rules
+### Date and Time Validation Rules
 To ensure maximum application compatibility and correct chronological ordering, specification **restricts** allowed formats to subset of ISO 8601 norm corresponding to **RFC 3339** (Internet Date/Time Format).
 
 * **Required format:** Must use so-called **Extended Format** (with separators `-` and `:`).
@@ -1633,7 +1633,7 @@ To ensure maximum application compatibility and correct chronological ordering, 
     * For years before Common Era (BC), use minus sign and year padded to 4 digits (e.g., Battle of Thermopylae: `-0480-08-01`).
     * Year 0 in this format corresponds to 1 BC (astronomical numbering). Application SHOULD account for this when displaying to user.
 
-### 9.6. Security Rules for OQSE Container (ZIP)
+### Security Rules for OQSE Container (ZIP)
 
 Applications processing `.oqse` packages (ZIP) MUST implement following protections against filesystem and availability attacks:
 
@@ -1647,7 +1647,7 @@ Applications processing `.oqse` packages (ZIP) MUST implement following protecti
 
 **File count limit:** Application SHOULD limit maximum number of files extracted from one archive (e.g., to 10,000) to prevent flooding inode table of filesystem.
 
-### 9.7. Prohibited Values and Duplication
+### Prohibited Values and Duplication
 
 **Empty/whitespace strings:**
 - `meta.title`, `meta.language`, `item.type` MUST NOT be empty or contain only whitespace
@@ -1662,7 +1662,7 @@ Applications processing `.oqse` packages (ZIP) MUST implement following protecti
 - Plain Text fields MUST NOT contain Media Tags `<asset:...>` (only in Rich Content)
 - Rich Content fields MAY contain Media Tags; HTML tags are sanitized
 
-### 9.8. Shuffling Rules
+### Shuffling Rules
 
 - Shuffling is performed on each new attempt, not per-session
 - Original order from JSON is "correct order" and MUST be preserved in application logic
@@ -1671,14 +1671,14 @@ Applications processing `.oqse` packages (ZIP) MUST implement following protecti
 - For `timeline`: Respect `randomize` flag (default: `true`)
 - For `match-pairs`: Application MUST shuffle both sides before display
 
-### 9.9. Rules for `lang` Override
+### Rules for `lang` Override
 
 - `item.lang` overrides `meta.language` only for this item
 - Application SHOULD use correct font and text direction (RTL for `ar`, `he`)
 - In fulltext search, application SHOULD use correct tokenizer for language
 - `item.lang` DOES NOT affect application UI language, only item content
 
-### 9.10. Clarification of `customData` vs `appSpecific`
+### Clarification of `customData` vs `appSpecific`
 
 **`customData`:**
 - For metadata from **set creator** (teacher, author)
@@ -1696,7 +1696,7 @@ Applications processing `.oqse` packages (ZIP) MUST implement following protecti
 - Recommended maximum size: 50 KB serialized JSON
 - MUST NOT contain sensitive data (passwords, tokens)
 
-### 9.11. Key Order for Optimization (Streaming)
+### Key Order for Optimization (Streaming)
 
 Although JSON standard doesn't require key order, for memory efficiency optimization when parsing large sets (High Performance Parsing), OQSE file generators MUST write root object in this order:
 
@@ -1720,23 +1720,23 @@ This order ensures that:
 }
 ```
 
-### 9.12. OQSEM Validation (Manifest)
+### OQSEM Validation (Manifest)
 
 To ensure interoperability, application manifests must be validated against strict rules. The normative definition of all validation constraints, ID formats, and handshake rules are located in a standalone document:
 
-👉 **[OQSEM Validation Rules](./oqse-manifest.md#4-oqsem-validation-rules)**
+👉 **[OQSEM Validation Rules](./oqse-manifest.md#oqsem-validation-rules)**
 
 -----
 
-## 10. Error Handling (Error Handling Policy)
+## Error Handling (Error Handling Policy)
 
 Application implementation MUST follow **"Best Effort"** strategy.
 
-### 10.1. Atomic Validation
+### Atomic Validation
 
 The validation unit is one item in the `items` array. A validation error within one item (e.g., missing required field, unknown type, invalid index value) is considered a local error.
 
-### 10.2. Error Recovery
+### Error Recovery
 
 When local error occurs, Application:
 
@@ -1744,21 +1744,21 @@ When local error occurs, Application:
 2. **MUST NOT** interrupt parsing of rest of file (if JSON is syntactically valid).
 3. **MUST** record this event in internal error log.
 
-### 10.3. Reporting
+### Reporting
 
 Application performing import **SHOULD** inform user about operation result, especially if some items were skipped (e.g., "Imported 48 of 50 items, 2 skipped due to errors").
 
-### 10.4. Error Handling and Fallback Strategies
+### Error Handling and Fallback Strategies
 
 To ensure consistent behavior across implementations, specification defines following error handling rules:
 
-### 10.4.1. Critical Errors (Application MUST abort loading)
+### Critical Errors (Application MUST abort loading)
 
 1. **Invalid JSON syntax:** Immediate failure with error message about error position.
 2. **Missing required field in `meta`:** Error with list of all missing fields (`id`, `title`, `language`, `createdAt`, `updatedAt`).
 3. **Invalid `version` value:** If version is not supported or missing.
 
-### 10.4.2. Recoverable Errors (Application continues with warning)
+### Recoverable Errors (Application continues with warning)
 
 1. **Unknown `item.type`:** 
    - Application MUST skip item
@@ -1778,7 +1778,7 @@ To ensure consistent behavior across implementations, specification defines foll
    - Application MUST ignore invalid reference
    - Record warning with item ID and non-existent reference
 
-5. **Exceeding limits (section 9.1):**
+5. **Exceeding limits (Length and Size Constraints):**
    - **Soft limit:** Warning on import, data preserved
    - **Hard limit:** Offer trimming or rejection
 
@@ -1787,7 +1787,7 @@ To ensure consistent behavior across implementations, specification defines foll
    - Application MUST load the set successfully and display an appropriate empty-state message
    - Record warning (e.g., "Set loaded with 0 items")
 
-### 10.4.3. Fallback Strategies
+### Fallback Strategies
 
 **For unknown fields:**
 - Application MUST ignore unknown keys (forward compatibility)
@@ -1801,7 +1801,7 @@ To ensure consistent behavior across implementations, specification defines foll
 - Higher MAJOR version: display warning and offer to continue in "best effort" mode
 - Higher MINOR version: safely ignore new keys
 
-### 10.4.4. Structured Error Log
+### Structured Error Log
 
 Application SHOULD provide structured log of errors and warnings:
 
@@ -1829,16 +1829,16 @@ Application SHOULD provide structured log of errors and warnings:
 
 -----
 
-## 11. Extensibility and Versioning
+## Extensibility and Versioning
 
-### 11.1. Adding Custom Item Types
+### Adding Custom Item Types
 
 Applications may define custom item types using `x-` prefix (e.g., `x-code-challenge`, `x-pronunciation`). These types:
   * MUST preserve all common properties from section 4
   * SHOULD be documented in `appSpecific` object in `meta`
   * MUST NOT collide with future official types
 
-### 11.2. Versioning and Compatibility
+### Versioning and Compatibility
 
 **Semantic Versioning:** OQSE uses format `MAJOR.MINOR` (e.g., `1.0`, `2.0`, `2.1`).
 
@@ -1847,21 +1847,21 @@ Applications may define custom item types using `x-` prefix (e.g., `x-code-chall
 
 **Rules for applications:**
   * Application MUST ignore unknown keys (forward compatibility)
-  * Application MUST check the `version` field and apply version-specific handling; the value MUST conform to `MAJOR.MINOR` format (see [OQSEM Root Constraints](./oqse-manifest.md#42-root-field-constraints) for format rules applied equally to OQSE file version and all manifest version fields)
+  * Application MUST check the `version` field and apply version-specific handling; the value MUST conform to `MAJOR.MINOR` format (see [OQSEM Root Field Constraints](./oqse-manifest.md#root-field-constraints) for format rules applied equally to OQSE file version and all manifest version fields)
   * When importing higher MAJOR version: display warning to user
   * When importing higher MINOR version: safely ignore new keys
 
 -----
 
-## 12. Best Practices for Set Creators
+## Best Practices for Set Creators
 
-### 12.1. Accessibility
+### Accessibility
   * Always fill `altText` for images in `assets`
   * For each audio/video asset, provide `transcript` or subtitles in at least one language, so content remains accessible to users with hearing impairments
   * Use clear and unambiguous language
   * Test with screen readers
 
-### 12.2. Optimization for AI Generation
+### Optimization for AI Generation
   * **Prefer simple structures**: AI models work better with flat arrays (`string[]`, `number[]`) than deep nesting. Conversion to JSON is then deterministic.
   * **Centralize media**: Define all media in `assets` (at item or `meta` level). Content should contain only text and Media Tags, never direct URLs.
   * **Use Media Tags**: Reference media exclusively using `<asset:key />`. AI prompt can explicitly request this format: "Add image as `<asset:diagram1 />`".
@@ -1869,12 +1869,12 @@ Applications may define custom item types using `x-` prefix (e.g., `x-code-chall
   * **Prompt minimally**: "Create 5 questions with options A, B, C, D" → AI returns `options: ["A...", "B...", "C...", "D..."]`. Fewer descriptive words, more consistent structures.
   * **Prepare asset dictionary**: If AI generates references to `<asset:img1 />`, pre-fill `assets` and let AI just add descriptions (`altText`, `caption`).
 
-### 12.3. Localization
+### Localization
   * Main set in one language (`meta.language`)
   * For translations create separate OQSE files with different `id` and reference in `meta.translations` (TranslationObject)
   * Use Unicode normalization (NFC) for consistency
 
-### 12.4. Security
+### Security
   * **Strict HTML Validation and Sanitization:** To ensure security and interoperability, applications MUST enforce the following processing policy:
     * **Tier 1 - Pure Markdown (Validation):** If the `html` feature is NOT declared in `meta.requirements`, the presence of any raw HTML tags in text fields (e.g., `<span>`, `<div>`) MUST cause a **Validation Error**. The set is considered non-compliant and MUST be rejected during import/save. Only structural HTML natively generated by the Markdown parser is permitted.
     * **Tier 2 - Extended HTML (Sanitization):** If the `html` feature IS declared, raw HTML is permitted. However, the application MUST sanitize the resulting HTML (e.g., via DOMPurify) against a strict whitelist of safe typographic, semantic, and tabular elements (e.g., `span`, `div`, `ruby`, `rt`, `rp`, `sub`, `sup`, `table`).
@@ -1884,42 +1884,42 @@ Applications may define custom item types using `x-` prefix (e.g., `x-code-chall
         3. **Event Handlers:** Any attribute starting with `on` (e.g., `onclick`, `onerror`).
         4. **Dangerous URIs:** Protocols like `javascript:`, `vbscript:`, or `data:` (for HTML/SVG) inside `href` or `src` attributes.
         5. **CSS Injection:** The `style` attribute (if permitted in Tier 2) MUST be strictly parsed to prevent UI redressing (Clickjacking).
-    * **Protection of OQSE Tags:** Internal placeholders (`<asset:key />` and `<blank:token />`) MUST be protected via the Tokenization/Detokenization pipeline (Section 5.1). Interactive elements (`<img>`, `<input>`) MUST be injected ONLY after all validation and sanitization steps are completely finished.
+    * **Protection of OQSE Tags:** Internal placeholders (`<asset:key />` and `<blank:token />`) MUST be protected via the Tokenization/Detokenization pipeline (Media Reference Syntax). Interactive elements (`<img>`, `<input>`) MUST be injected ONLY after all validation and sanitization steps are completely finished.
   * **Asset Sanitization:** The only HTML that gets into DOM is result of replacing `<asset:... />` tags. Application MUST ensure that attributes of generated elements (e.g., `src`, `alt`) are safe and don't contain injected code.
   * **NEVER** insert sensitive information (passwords, API keys)
   * When using external URLs, validate HTTPS
-  * Validate media checksums before use ([see section 5](#5-the-mediaobject-object))
+  * Validate media checksums before use ([see The `MediaObject` Object](#the-mediaobject-object))
 
-### 12.5. Performance
+### Performance
   * Host very large media externally (e.g., CDN) to keep `.oqse` packages small
   * For video longer than 1 minute, use external hosting (YouTube, Vimeo)
   * Compress JSON before distribution (gzip)
 
-### 12.6. Metadata for Search
+### Metadata for Search
   * Always fill `description`, `tags`, and `subject`
   * Use `tagDefinitions` with Wikidata ID for better discoverability
   * Keep `sourceMaterials` current
 
 -----
 
-## 13. Validation and Tools
+## Validation and Tools
 
-### 13.1. JSON Schema
+### JSON Schema
 Official JSON Schema is available at:
 
 [https://memizy.com/schemas/oqse/v0.1.json](https://memizy.com/schemas/oqse/v0.1.json)
 
-### 13.2. Recommended Tools
+### Recommended Tools
   * **Validators:** Ajv, JSON Schema Validator
   * **Editing:** VS Code with JSON Schema support
   * **Conversion:** Planned CLI tools for import from Quizlet, Anki, etc.
 
-### 13.3. Test Suite
+### Test Suite
 Reference test files including all item types are available at:
 
 [https://github.com/memizy/oqse-test-suite](https://github.com/memizy/oqse-test-suite)
 
-### 13.4. Common Pitfalls
+### Common Pitfalls
 
 #### **Error: Embedding HTML/Markdown media instead of Media Tag**
 ```json
@@ -2037,7 +2037,7 @@ No `europe_map` is defined in `item.assets` nor `meta.assets`.
 
 -----
 
-## 14. Contributing and Community
+## Contributing and Community
 
 OQSE is an open standard. Suggestions for improvements:
   * GitHub: [https://github.com/memizy/oqse-spec](https://github.com/memizy/oqse-spec)

@@ -5,7 +5,7 @@
  * Type-safe TypeScript definitions for the OQSE specification.
  * Uses Discriminated Unions to make invalid states unrepresentable.
  * 
- * @see /oqse.md
+ * @see ../oqse.md
  */
 
 // ============================================================================
@@ -269,7 +269,7 @@ export type TagDefinitionDictionary = Record<string, TagDefinition>;
  * It declares which features, LaTeX packages, and item/meta properties
  * an application supports (in Manifest) or requires (in Study Set).
  *
- * @see /oqse.md#2-feature-profile--official-registry
+ * @see ../oqse.md#feature-profile--official-registry
  */
 export interface FeatureProfile {
   /**

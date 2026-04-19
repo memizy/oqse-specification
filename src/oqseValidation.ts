@@ -4,8 +4,8 @@
  * Runtime validation schemas for OQSE (Open Quiz & Study Exchange) format.
  * Uses Zod for type-safe runtime validation with detailed error messages.
  * 
- * @see /oqse.md
- * @see /src/oqse.ts
+ * @see ../oqse.md
+ * @see ./oqse.ts
  */
 
 import { z } from 'zod';
