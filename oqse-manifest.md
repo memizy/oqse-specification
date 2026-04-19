@@ -84,9 +84,9 @@ Applications MUST declare their capabilities in a standardized JSON format, know
 | `minOqseVersion` | string | No | Minimum OQSE spec version this application requires. MUST follow `"MAJOR.MINOR"` format (e.g., `"1.0"`). Version comparison is performed numerically field-by-field. Host environments MAY use this for compatibility filtering. |
 | `maxOqseVersion` | string | No | Maximum OQSE spec version this application is compatible with. MUST follow `"MAJOR.MINOR"` format (e.g., `"1.99"`). Version comparison is performed numerically field-by-field. Host environments MAY use this to prevent loading a plugin with a newer, potentially incompatible OQSE version. If absent, no upper bound is assumed. |
 | `id` | string | Yes | Unique identifier for the application. MUST be either a controlled URL (preferred — MAY lead to the official page of the plugin, e.g., `"https://memizy.com/player"`) or a URN-format UUID (e.g., `"urn:uuid:019cba2f-7ea1-7607-8f16-be10714d790e"`). |
-| `appName` | string | Yes | Human-readable name of the application. |
-| `description` | string | No | **Plain Text.** Human-readable description of what the application does. Displayed in host environments and plugin catalogs. |
-| `author` | string | No | **Plain Text.** Name of the author or organization. |
+| `appName` | string | Yes | Human-readable name of the application. MUST NOT exceed 200 characters. |
+| `description` | string | No | **Plain Text.** Human-readable description of what the application does. Displayed in host environments and plugin catalogs. MUST NOT exceed 1000 characters. |
+| `author` | string | No | **Plain Text.** Name of the author or organization. MUST NOT exceed 200 characters. |
 | `authorUrl` | string | No | **URI (absolute URL).** URL of the author or organization. |
 | `locales` | string[] | No | BCP 47 locale codes for the application's supported UI languages (e.g., `["en", "cs"]`). Host environments MAY use this when choosing a plugin for a specific user locale. If absent or `[]`, the host SHOULD assume the application supports English. |
 | `tags` | string[] | No | Array of plain text keywords describing the application's purpose or focus area (e.g., `["flashcards", "spaced-repetition", "chess"]`). Used by host environments and catalogs for filtering and discovery. Uses the same convention as `meta.tags` in study sets. |

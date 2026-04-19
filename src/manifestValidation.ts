@@ -32,6 +32,11 @@ import { FeatureProfileSchema } from './oqseValidation';
 /** Non-empty plain-text string (no leading/trailing whitespace). */
 const NonEmptyStringSchema = z.string().min(1, 'Value must not be empty').trim();
 
+/** Pragmatic BCP 47 locale validation (e.g. "en", "cs", "en-US"). */
+const BCP47Schema = z
+  .string()
+  .regex(/^[a-zA-Z]{2,8}(-[a-zA-Z0-9\-]+)*$/, 'Must be a valid BCP 47 locale (e.g., "en", "cs")');
+
 /** Absolute URL (http/https). */
 const AbsoluteURLSchema = z
   .string()
@@ -49,6 +54,40 @@ const ManifestVersionSchema = z
 const SemVerSchema = z
   .string()
   .regex(/^\d+\.\d+\.\d+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$/, 'Version must be a valid SemVer string (e.g. "1.2.3" or "1.2.3-rc.1")');
+
+/** Official OQSE item types from v0.1. */
+const OFFICIAL_OQSE_ITEM_TYPES = [
+  'note',
+  'flashcard',
+  'true-false',
+  'mcq-single',
+  'mcq-multi',
+  'short-answer',
+  'fill-in-blanks',
+  'fill-in-select',
+  'match-pairs',
+  'match-complex',
+  'sort-items',
+  'slider',
+  'pin-on-image',
+  'categorize',
+  'timeline',
+  'matrix',
+  'math-input',
+  'diagram-label',
+  'open-ended',
+  'numeric-input',
+  'pin-on-model',
+  'chess-puzzle',
+] as const;
+
+const OQSEItemTypeSchema = NonEmptyStringSchema.refine(
+  (v) =>
+    (OFFICIAL_OQSE_ITEM_TYPES as ReadonlyArray<string>).includes(v) ||
+    v.startsWith('x-') ||
+    v === '*',
+  { message: 'Custom types MUST use the "x-" prefix' }
+);
 
 // ============================================================================
 // Actions
@@ -196,10 +235,21 @@ export const ManifestCapabilitiesSchema = FeatureProfileSchema.extend({
     .min(1, 'Application must support at least one action'),
 
   /** Item types supported by this application. Uses `['*']` for all types. */
-  types: wildcardOrExplicit(NonEmptyStringSchema).optional(),
+  types: wildcardOrExplicit(OQSEItemTypeSchema).optional(),
 
   /** Media asset categories and MIME types the application can handle. */
   assets: ManifestAssetsSchema.optional(),
+}).superRefine((data, ctx) => {
+  const needsTypes = data.actions.includes('render') || data.actions.includes('edit');
+  if (needsTypes) {
+    if (!Array.isArray(data.types) || data.types.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'types array MUST be declared and non-empty when actions include "render" or "edit"',
+        path: ['types'],
+      });
+    }
+  }
 });
 
 // ============================================================================
@@ -234,7 +284,7 @@ export const OQSEManifestSchema = z
     ),
 
     /** Human-readable display name of the application. */
-    appName: NonEmptyStringSchema.max(100, 'Name must not be longer than 100 characters'),
+    appName: NonEmptyStringSchema.max(200, 'Name must not be longer than 200 characters'),
 
     /**
      * Application version string. Follows MAJOR.MINOR format (manifest version
@@ -259,14 +309,14 @@ export const OQSEManifestSchema = z
 
     // --- Plugin / Embedding ---
 
-    author: z.string().max(100, 'Author name must not be longer than 100 characters').optional(),
+    author: z.string().max(200, 'Author name must not be longer than 200 characters').optional(),
 
     authorUrl: AbsoluteURLSchema.optional(),
 
-    locales: z.array(NonEmptyStringSchema).optional(),
+    locales: z.array(BCP47Schema).optional(),
 
-    /** Short human-readable description (plain text, <= 500 chars). */
-    description: z.string().max(500, 'Description must not be longer than 500 characters').optional(),
+    /** Short human-readable description (plain text, <= 1000 chars). */
+    description: z.string().max(1000, 'Description must not be longer than 1000 characters').optional(),
 
     emoji: z.string().optional(),
 

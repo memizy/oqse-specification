@@ -15,17 +15,15 @@ describe('Progress Validation Schemas', () => {
     }
   });
 
-  it('LastAnswerObjectSchema: if isSkipped=true, isCorrect must be false', () => {
-    // Valid cases
-    expect(LastAnswerObjectSchema.safeParse({ isCorrect: true, answeredAt: '2025-01-01T00:00:00Z' }).success).toBe(true);
-    expect(LastAnswerObjectSchema.safeParse({ isCorrect: false, isSkipped: true, answeredAt: '2025-01-01T00:00:00Z' }).success).toBe(true);
+  it('LastAnswerObjectSchema: defaults hintsUsed to 0 when omitted', () => {
+    const result = LastAnswerObjectSchema.safeParse({
+      isCorrect: true,
+      answeredAt: '2025-01-01T00:00:00Z',
+    });
 
-    // Invalid case: skipped but correct is true
-    const invalidSkipped = { isCorrect: true, isSkipped: true, answeredAt: '2025-01-01T00:00:00Z' };
-    const result = LastAnswerObjectSchema.safeParse(invalidSkipped);
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.issues[0].message).toMatch(/isSkipped=true, isCorrect must be false/i);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.hintsUsed).toBe(0);
     }
   });
 

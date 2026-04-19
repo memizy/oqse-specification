@@ -15,7 +15,7 @@ describe('Manifest Validation Schemas', () => {
   });
 
   it('ManifestCapabilitiesSchema: requires at least one action', () => {
-    const validManifest = { actions: ['render'], features: [] };
+    const validManifest = { actions: ['validate'], features: [] };
     expect(ManifestCapabilitiesSchema.safeParse(validManifest).success).toBe(true);
 
     const invalidManifest = { actions: [], features: [] };
@@ -33,7 +33,7 @@ describe('Manifest Validation Schemas', () => {
       appName: "Test App",
       minOqseVersion: "2.0",
       maxOqseVersion: "1.0",
-      capabilities: { actions: ["render"], features: [] }
+      capabilities: { actions: ["render"], features: [], types: ["*"] }
     };
     
     const result = OQSEManifestSchema.safeParse(invalidManifest);
@@ -50,7 +50,7 @@ describe('Manifest Validation Schemas', () => {
       appName: "Test App",
       minOqseVersion: "0.1",
       maxOqseVersion: "1.99",
-      capabilities: { actions: ["render"], features: [] }
+      capabilities: { actions: ["render"], features: [], types: ["*"] }
     };
     
     const result = OQSEManifestSchema.safeParse(validManifest);
@@ -61,7 +61,7 @@ describe('Manifest Validation Schemas', () => {
     const baseManifest = {
       version: '1.0',
       appName: 'Test App',
-      capabilities: { actions: ['render'], features: [] },
+      capabilities: { actions: ['render'], features: [], types: ['*'] },
     };
 
     expect(
@@ -84,8 +84,90 @@ describe('Manifest Validation Schemas', () => {
       version: '1.0',
       id: 'https://example.org/apps/test-app',
       appName: 'Test App',
-      capabilities: { actions: ['render'], features: [] },
+      capabilities: { actions: ['render'], features: [], types: ['*'] },
       pluginVersion: '1.2.3-rc.1',
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it('OQSEManifestSchema: enforces appName/description/author maximum lengths', () => {
+    const valid = OQSEManifestSchema.safeParse({
+      version: '1.0',
+      id: 'https://example.org/apps/test-app',
+      appName: 'A'.repeat(200),
+      description: 'D'.repeat(1000),
+      author: 'U'.repeat(200),
+      capabilities: { actions: ['validate'], features: [] },
+    });
+    expect(valid.success).toBe(true);
+
+    const invalid = OQSEManifestSchema.safeParse({
+      version: '1.0',
+      id: 'https://example.org/apps/test-app',
+      appName: 'A'.repeat(201),
+      description: 'D'.repeat(1001),
+      author: 'U'.repeat(201),
+      capabilities: { actions: ['validate'], features: [] },
+    });
+
+    expect(invalid.success).toBe(false);
+  });
+
+  it('OQSEManifestSchema: validates locales using BCP 47-style pattern', () => {
+    expect(
+      OQSEManifestSchema.safeParse({
+        version: '1.0',
+        id: 'https://example.org/apps/test-app',
+        appName: 'Test App',
+        locales: ['en-US', 'cs'],
+        capabilities: { actions: ['validate'], features: [] },
+      }).success
+    ).toBe(true);
+
+    const invalid = OQSEManifestSchema.safeParse({
+      version: '1.0',
+      id: 'https://example.org/apps/test-app',
+      appName: 'Test App',
+      locales: ['čeština'],
+      capabilities: { actions: ['validate'], features: [] },
+    });
+
+    expect(invalid.success).toBe(false);
+  });
+
+  it('ManifestCapabilitiesSchema: requires x- prefix for custom types', () => {
+    expect(
+      ManifestCapabilitiesSchema.safeParse({
+        actions: ['render'],
+        types: ['flashcard', 'x-custom-card'],
+      }).success
+    ).toBe(true);
+
+    const invalid = ManifestCapabilitiesSchema.safeParse({
+      actions: ['render'],
+      types: ['custom-card'],
+    });
+
+    expect(invalid.success).toBe(false);
+  });
+
+  it('ManifestCapabilitiesSchema: requires non-empty types for render action', () => {
+    const missingTypes = ManifestCapabilitiesSchema.safeParse({
+      actions: ['render'],
+    });
+    expect(missingTypes.success).toBe(false);
+
+    const emptyTypes = ManifestCapabilitiesSchema.safeParse({
+      actions: ['render'],
+      types: [],
+    });
+    expect(emptyTypes.success).toBe(false);
+  });
+
+  it('ManifestCapabilitiesSchema: allows missing types for validate-only action', () => {
+    const result = ManifestCapabilitiesSchema.safeParse({
+      actions: ['validate'],
     });
 
     expect(result.success).toBe(true);
