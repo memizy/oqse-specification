@@ -79,16 +79,56 @@ describe('Manifest Validation Schemas', () => {
     ).toBe(true);
   });
 
-  it('OQSEManifestSchema: accepts SemVer pre-release in pluginVersion', () => {
-    const result = OQSEManifestSchema.safeParse({
+  it('OQSEManifestSchema: strictly rejects invalid id formats', () => {
+    const baseManifest = {
+      version: '1.0',
+      appName: 'Test App',
+      capabilities: { actions: ['render'], features: [], types: ['*'] },
+    };
+
+    expect(
+      OQSEManifestSchema.safeParse({
+        ...baseManifest,
+        id: 'just-a-string',
+      }).success
+    ).toBe(false);
+
+    expect(
+      OQSEManifestSchema.safeParse({
+        ...baseManifest,
+        id: 'invalid-uuid',
+      }).success
+    ).toBe(false);
+  });
+
+  it('OQSEManifestSchema: allows non-SemVer pluginVersion values', () => {
+    const baseManifest = {
       version: '1.0',
       id: 'https://example.org/apps/test-app',
       appName: 'Test App',
       capabilities: { actions: ['render'], features: [], types: ['*'] },
-      pluginVersion: '1.2.3-rc.1',
-    });
+    };
 
-    expect(result.success).toBe(true);
+    expect(
+      OQSEManifestSchema.safeParse({
+        ...baseManifest,
+        pluginVersion: 'v2.0',
+      }).success
+    ).toBe(true);
+
+    expect(
+      OQSEManifestSchema.safeParse({
+        ...baseManifest,
+        pluginVersion: 'build-123',
+      }).success
+    ).toBe(true);
+
+    expect(
+      OQSEManifestSchema.safeParse({
+        ...baseManifest,
+        pluginVersion: 'beta',
+      }).success
+    ).toBe(true);
   });
 
   it('OQSEManifestSchema: enforces appName/description/author maximum lengths', () => {
@@ -150,6 +190,20 @@ describe('Manifest Validation Schemas', () => {
     });
 
     expect(invalid.success).toBe(false);
+  });
+
+  it('ManifestCapabilitiesSchema: rejects mixed wildcard and explicit item types', () => {
+    const ambiguous = ManifestCapabilitiesSchema.safeParse({
+      actions: ['render'],
+      types: ['flashcard', '*'],
+    });
+    expect(ambiguous.success).toBe(false);
+
+    const wildcardOnly = ManifestCapabilitiesSchema.safeParse({
+      actions: ['render'],
+      types: ['*'],
+    });
+    expect(wildcardOnly.success).toBe(true);
   });
 
   it('ManifestCapabilitiesSchema: requires non-empty types for render action', () => {

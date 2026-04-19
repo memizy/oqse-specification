@@ -194,7 +194,7 @@ This section is the single reference for all constraints on OQSEM fields. For th
 
 **`id`:**
 - MUST be either a controlled absolute URL (e.g., `"https://memizy.com/player"`) or a URN-format UUID (e.g., `"urn:uuid:019aa600-abc1-7234-b678-c0ffee000001"`).
-- A value that is neither a valid absolute URL nor a valid URN UUID SHOULD trigger a warning.
+- A value that is neither a valid absolute URL nor a valid URN UUID MUST cause manifest rejection.
 
 **`appName`:**
 - MUST NOT be empty or contain only whitespace.

@@ -7,8 +7,16 @@
       "format": "uri"
     },
     "id": {
-      "type": "string",
-      "minLength": 1
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri"
+        },
+        {
+          "type": "string",
+          "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        }
+      ]
     },
     "appName": {
       "type": "string",
@@ -20,8 +28,7 @@
       "pattern": "^\\d+\\.\\d+$"
     },
     "pluginVersion": {
-      "type": "string",
-      "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+      "type": "string"
     },
     "minOqseVersion": {
       "type": "string",

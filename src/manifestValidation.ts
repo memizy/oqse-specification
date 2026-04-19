@@ -15,13 +15,7 @@ import {
   OFFICIAL_FEATURE_KEYS,
   OFFICIAL_ITEM_PROPERTIES,
   OFFICIAL_META_PROPERTIES,
-  type FeatureFlag,
-  type ManifestAssets,
-  type ManifestCapabilities,
-  type OQSEAction,
   type OQSEManifest,
-  type OQSEQuestionDensity,
-  type OQSEStudyMode,
 } from './manifest';
 import { FeatureProfileSchema, PersonObjectSchema } from './oqseValidation';
 
@@ -45,15 +39,18 @@ const AbsoluteURLSchema = z
     message: 'URL must use http or https scheme',
   });
 
+/** URN UUID format (e.g. "urn:uuid:123e4567-e89b-12d3-a456-426614174000"). */
+const URNUUIDSchema = z
+  .string()
+  .regex(
+    /^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    'Must be a valid URN UUID (urn:uuid:...)'
+  );
+
 /** Semver version string in MAJOR.MINOR format (e.g. "0.1", "2.3"). */
 const ManifestVersionSchema = z
   .string()
   .regex(/^\d+\.\d+$/, 'Version must be in MAJOR.MINOR format (e.g. "0.1")');
-
-/** Full semver version string MAJOR.MINOR.PATCH with optional pre-release/build metadata (e.g. "1.2.3-rc.1"). */
-const SemVerSchema = z
-  .string()
-  .regex(/^\d+\.\d+\.\d+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$/, 'Version must be a valid SemVer string (e.g. "1.2.3" or "1.2.3-rc.1")');
 
 /** Official OQSE item types from v0.1. */
 const OFFICIAL_OQSE_ITEM_TYPES = [
@@ -84,8 +81,7 @@ const OFFICIAL_OQSE_ITEM_TYPES = [
 const OQSEItemTypeSchema = NonEmptyStringSchema.refine(
   (v) =>
     (OFFICIAL_OQSE_ITEM_TYPES as ReadonlyArray<string>).includes(v) ||
-    v.startsWith('x-') ||
-    v === '*',
+    v.startsWith('x-'),
   { message: 'Custom types MUST use the "x-" prefix' }
 );
 
@@ -271,17 +267,7 @@ export const OQSEManifestSchema = z
     // --- Identity ---
 
     /** Unique manifest identifier as absolute URL or URN UUID. */
-    id: NonEmptyStringSchema.refine(
-      (v) => {
-        try {
-          new URL(v);
-          return true;
-        } catch {
-          return v.startsWith('urn:uuid:');
-        }
-      },
-      { message: 'ID must be an absolute URL or a URN-format UUID (urn:uuid:...)' }
-    ),
+    id: z.union([AbsoluteURLSchema, URNUUIDSchema]),
 
     /** Human-readable display name of the application. */
     appName: NonEmptyStringSchema.max(200, 'Name must not be longer than 200 characters'),
@@ -292,7 +278,7 @@ export const OQSEManifestSchema = z
      */
     version: ManifestVersionSchema,
 
-    pluginVersion: SemVerSchema.optional(),
+    pluginVersion: z.string().optional(),
 
     // --- OQSE Compatibility ---
 
@@ -433,27 +419,3 @@ export function formatManifestErrors(error: z.ZodError): string {
 export function isValidOQSEManifest(data: unknown): data is OQSEManifest {
   return OQSEManifestSchema.safeParse(data).success;
 }
-
-// ============================================================================
-// Schema Type Contracts
-// ============================================================================
-
-const manifestSchemaContracts: {
-  OQSEActionSchema: z.ZodType<OQSEAction>;
-  OQSEStudyModeSchema: z.ZodType<OQSEStudyMode>;
-  OQSEQuestionDensitySchema: z.ZodType<OQSEQuestionDensity>;
-  FeatureFlagSchema: z.ZodType<FeatureFlag>;
-  ManifestAssetsSchema: z.ZodType<ManifestAssets>;
-  ManifestCapabilitiesSchema: z.ZodType<ManifestCapabilities>;
-  OQSEManifestSchema: z.ZodType<OQSEManifest>;
-} = {
-  OQSEActionSchema: OQSEActionSchema as unknown as z.ZodType<OQSEAction>,
-  OQSEStudyModeSchema,
-  OQSEQuestionDensitySchema,
-  FeatureFlagSchema: FeatureFlagSchema as unknown as z.ZodType<FeatureFlag>,
-  ManifestAssetsSchema: ManifestAssetsSchema as unknown as z.ZodType<ManifestAssets>,
-  ManifestCapabilitiesSchema: ManifestCapabilitiesSchema as unknown as z.ZodType<ManifestCapabilities>,
-  OQSEManifestSchema: OQSEManifestSchema as unknown as z.ZodType<OQSEManifest>,
-};
-
-void manifestSchemaContracts;
