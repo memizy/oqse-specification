@@ -10,6 +10,7 @@ import {
   TimelineEventSchema,
   FillInBlanksItemSchema,
 } from './oqseValidation';
+import { formatOQSEErrors } from './utils';
 
 describe('OQSE Validation Schemas', () => {
   it('LanguageCodeSchema: enforces standard BCP 47 locales', () => {
@@ -238,6 +239,20 @@ describe('Complex Constraints & Referential Integrity', () => {
           i => i.message.includes('Token must be alphanumeric') || i.message.includes('Invalid key in record')
         )
       ).toBe(true);
+    }
+  });
+
+  it('formatOQSEErrors: formats OQSEFileSchema validation errors into flat list', () => {
+    const result = OQSEFileSchema.safeParse({
+      version: '0.1',
+      items: [],
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const errors = formatOQSEErrors(result.error);
+      expect(errors.length).toBeGreaterThan(0);
+      expect(errors.some((e) => e.includes('meta'))).toBe(true);
     }
   });
 });

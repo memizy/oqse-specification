@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { StatsObjectSchema, LastAnswerObjectSchema, OQSEPFileSchema } from './progressValidation';
+import { StatsObjectSchema, LastAnswerObjectSchema, OQSEProgressSchema, safeValidateOQSEProgress } from './progressValidation';
+import { formatOQSEErrors } from './utils';
 
 describe('Progress Validation Schemas', () => {
   it('StatsObjectSchema: incorrect cannot be higher than attempts', () => {
@@ -27,7 +28,7 @@ describe('Progress Validation Schemas', () => {
     }
   });
 
-  it('OQSEPFileSchema: rejects non-UUID record keys', () => {
+  it('OQSEProgressSchema: rejects non-UUID record keys', () => {
     const invalidFile = {
       version: "0.1",
       meta: {
@@ -46,7 +47,7 @@ describe('Progress Validation Schemas', () => {
       }
     };
     
-    const result = OQSEPFileSchema.safeParse(invalidFile);
+    const result = OQSEProgressSchema.safeParse(invalidFile);
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(
@@ -54,6 +55,23 @@ describe('Progress Validation Schemas', () => {
           issue.message.includes('UUID') || issue.message.includes('Invalid')
         )
       ).toBe(true);
+    }
+  });
+
+  it('safeValidateOQSEProgress + formatOQSEErrors: returns readable issue list', () => {
+    const result = safeValidateOQSEProgress({
+      version: '0.1',
+      meta: {
+        setId: '123e4567-e89b-12d3-a456-426614174000',
+      },
+      records: {},
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const errors = formatOQSEErrors(result.error);
+      expect(errors.length).toBeGreaterThan(0);
+      expect(errors.some((e) => e.includes('meta.exportedAt'))).toBe(true);
     }
   });
 });

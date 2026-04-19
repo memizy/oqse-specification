@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { OQSEActionSchema, FeatureFlagSchema, ManifestCapabilitiesSchema, OQSEManifestSchema } from './manifestValidation';
+import { OQSEActionSchema, FeatureFlagSchema, ManifestCapabilitiesSchema, OQSEManifestSchema, safeValidateOQSEManifest, validateOQSEManifest } from './manifestValidation';
+import { formatOQSEErrors } from './utils';
 
 describe('Manifest Validation Schemas', () => {
   it('OQSEActionSchema: allows official actions and x- prefixes', () => {
@@ -225,6 +226,32 @@ describe('Manifest Validation Schemas', () => {
     });
 
     expect(result.success).toBe(true);
+  });
+
+  it('validateOQSEManifest: returns strongly typed manifest for valid payload', () => {
+    const manifest = validateOQSEManifest({
+      version: '1.0',
+      id: 'https://example.org/apps/test-app',
+      appName: 'Test App',
+      capabilities: { actions: ['validate'], features: [] },
+    });
+
+    expect(manifest.appName).toBe('Test App');
+  });
+
+  it('safeValidateOQSEManifest + formatOQSEErrors: produces flat readable issues', () => {
+    const result = safeValidateOQSEManifest({
+      version: '1.0',
+      appName: 'Missing ID App',
+      capabilities: { actions: [] },
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const errors = formatOQSEErrors(result.error);
+      expect(errors.length).toBeGreaterThan(0);
+      expect(errors.some((e) => e.includes('id'))).toBe(true);
+    }
   });
 });
 

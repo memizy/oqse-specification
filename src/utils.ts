@@ -1,3 +1,4 @@
+import type { ZodError } from 'zod';
 import { v7 as uuidv7, validate as uuidValidate } from 'uuid';
 
 export type UUID = string;
@@ -40,4 +41,23 @@ export function validateJsonDepth(
       validateJsonDepth(value, maxDepth, currentDepth + 1);
     }
   }
+}
+
+/**
+ * Formats a ZodError into a flat array of human-readable string messages.
+ * Useful for displaying validation issues in UI lists or console logs.
+ */
+export function formatOQSEErrors(error: ZodError): string[] {
+  return error.issues.map(err => {
+    let pathStr = '';
+    err.path.forEach((part, index) => {
+      if (typeof part === 'number') {
+        pathStr += `[${part}]`;
+      } else {
+        const isFirstOrAfterNumber = index === 0 || typeof err.path[index - 1] === 'number';
+        pathStr += (isFirstOrAfterNumber ? '' : '.') + String(part);
+      }
+    });
+    return pathStr ? `${pathStr}: ${err.message}` : err.message;
+  });
 }

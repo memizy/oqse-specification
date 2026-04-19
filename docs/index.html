@@ -8,7 +8,6 @@
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <style type="text/tailwindcss">
         @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
-        @import "tailwindcss";
         
         @theme {
             --color-primary-blue: #1E88E5;
@@ -138,7 +137,7 @@
     <!-- Ensure module matches library export syntax -->
     <script type="module">
         // Import from unpkg to support local development and browser environments immediately
-        import { safeValidateOQSEFile, safeValidateManifest, safeValidateOQSEPFile, safeValidateOQSEHeader, formatValidationErrors } from 'https://esm.sh/@memizy/oqse@latest';
+        import { safeValidateOQSEFile, safeValidateOQSEManifest, safeValidateOQSEProgress, safeValidateOQSEHeader, formatOQSEErrors } from 'https://esm.sh/@memizy/oqse@latest';
 
         const tabs = document.querySelectorAll('.tab');
         const tabContents = document.querySelectorAll('.tab-content');
@@ -309,10 +308,10 @@
                     result = safeValidateOQSEFile(parsed);
                     typeName = 'OQSE Dataset';
                 } else if (type === 'manifest') {
-                    result = safeValidateManifest(parsed);
+                    result = safeValidateOQSEManifest(parsed);
                     typeName = 'OQSE Manifest';
                 } else if (type === 'progress') {
-                    result = safeValidateOQSEPFile(parsed);
+                    result = safeValidateOQSEProgress(parsed);
                     typeName = 'OQSEP Progress';
                 } else if (type === 'header') {
                     typeName = 'OQSE Header';
@@ -323,7 +322,7 @@
                         parsed.forEach((entry, index) => {
                             const itemResult = safeValidateOQSEHeader(entry);
                             if (!itemResult.success) {
-                                const itemErrors = formatValidationErrors(itemResult.error);
+                                const itemErrors = formatOQSEErrors(itemResult.error);
                                 itemErrors.forEach(err => arrayErrors.push(`[${index}] ${err}`));
                             }
                         });
@@ -342,7 +341,7 @@
                 if (result.success) {
                     showResult(true, `JSON is fully valid according to the ${typeName} specification.`);
                 } else {
-                    const formattedErrors = formatValidationErrors(result.error);
+                    const formattedErrors = formatOQSEErrors(result.error);
                     showResult(false, `Found ${formattedErrors.length} validation error(s) in the ${typeName} structure:`, formattedErrors);
                 }
             } catch (e) {

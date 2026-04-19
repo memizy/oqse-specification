@@ -355,11 +355,11 @@ export const OQSEManifestSchema = z
  *
  * @example
  * ```ts
- * const manifest = validateManifest(JSON.parse(rawJson));
+ * const manifest = validateOQSEManifest(JSON.parse(rawJson));
  * manifest.capabilities.actions; // string[]
  * ```
  */
-export function validateManifest(data: unknown): OQSEManifest {
+export function validateOQSEManifest(data: unknown): OQSEManifest {
   return OQSEManifestSchema.parse(data) as OQSEManifest;
 }
 
@@ -371,47 +371,22 @@ export function validateManifest(data: unknown): OQSEManifest {
  *
  * @example
  * ```ts
- * const result = safeValidateManifest(raw);
+ * const result = safeValidateOQSEManifest(raw);
  * if (result.success) {
  *   console.log(result.data.id);
- * } else {
- *   console.error(formatManifestErrors(result.error));
  * }
  * ```
  */
-export function safeValidateManifest(
+export function safeValidateOQSEManifest(
   data: unknown
 ): ReturnType<typeof OQSEManifestSchema.safeParse> {
   return OQSEManifestSchema.safeParse(data);
 }
 
 /**
- * Formats a `ZodError` from manifest validation into a human-readable string.
- *
- * @param error - A `ZodError` returned by `safeValidateManifest`.
- * @returns A newline-separated string listing each validation issue with its path.
- *
- * @example
- * ```ts
- * console.error(formatManifestErrors(result.error));
- * // Example output:
- * // "id: ID must be an absolute URL or a URN-format UUID (urn:uuid:...)"
- * // "capabilities.actions: Application must support at least one action"
- * ```
- */
-export function formatManifestErrors(error: z.ZodError): string {
-  return error.issues
-    .map((issue) => {
-      const pathStr = issue.path.map((p) => String(p)).join('.');
-      return pathStr ? `${pathStr}: ${issue.message}` : issue.message;
-    })
-    .join('\n');
-}
-
-/**
  * Checks whether a plain object looks like an OQSE Manifest (duck-typing).
  *
- * This is a fast pre-check - use `validateManifest` for full validation.
+ * This is a fast pre-check - use `validateOQSEManifest` for full validation.
  *
  * @param data - Any value.
  * @returns `true` if `data` has the minimum required shape.

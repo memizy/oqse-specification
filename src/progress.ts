@@ -39,7 +39,7 @@ export interface ProgressMeta {
 }
 
 /** Root OQSEP payload for one user and one study set. */
-export interface OQSEPFile {
+export interface OQSEProgress {
 	$schema?: string;
 	version: string;
 	meta: ProgressMeta;

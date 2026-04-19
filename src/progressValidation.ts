@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import type {
     LastAnswerObject,
-    OQSEPFile,
+    OQSEProgress,
     ProgressMeta,
     ProgressRecord,
     StatsObject,
@@ -46,17 +46,17 @@ export const ProgressMetaSchema: z.ZodType<ProgressMeta> = z.object({
         .optional(),
 });
 
-export const OQSEPFileSchema: z.ZodType<OQSEPFile> = z.object({
+export const OQSEProgressSchema: z.ZodType<OQSEProgress> = z.object({
     $schema: z.url().optional(), 
     version: z.string().regex(/^\d+\.\d+$/, 'Version must be in MAJOR.MINOR format'),
     meta: ProgressMetaSchema,
     records: z.record(UUIDSchema, ProgressRecordSchema),
 });
 
-export function validateOQSEPFile(data: unknown): OQSEPFile {
-    return OQSEPFileSchema.parse(data);
+export function validateOQSEProgress(data: unknown): OQSEProgress {
+    return OQSEProgressSchema.parse(data);
 }
 
-export function safeValidateOQSEPFile(data: unknown): ReturnType<typeof OQSEPFileSchema.safeParse> {
-    return OQSEPFileSchema.safeParse(data);
+export function safeValidateOQSEProgress(data: unknown): ReturnType<typeof OQSEProgressSchema.safeParse> {
+    return OQSEProgressSchema.safeParse(data);
 }
