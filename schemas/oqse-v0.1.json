@@ -2561,7 +2561,8 @@
                 "additionalProperties": {}
               },
               "question": {
-                "type": "string"
+                "type": "string",
+                "maxLength": 10000
               },
               "text": {
                 "type": "string",
@@ -2869,7 +2870,8 @@
                 "additionalProperties": {}
               },
               "question": {
-                "type": "string"
+                "type": "string",
+                "maxLength": 10000
               },
               "text": {
                 "type": "string",
@@ -3186,10 +3188,12 @@
                 "additionalProperties": {}
               },
               "question": {
-                "type": "string"
+                "type": "string",
+                "maxLength": 10000
               },
               "prompts": {
                 "minItems": 2,
+                "maxItems": 100,
                 "type": "array",
                 "items": {
                   "type": "string",
@@ -3198,6 +3202,7 @@
               },
               "matches": {
                 "minItems": 2,
+                "maxItems": 100,
                 "type": "array",
                 "items": {
                   "type": "string",
@@ -3484,7 +3489,8 @@
                 "additionalProperties": {}
               },
               "question": {
-                "type": "string"
+                "type": "string",
+                "maxLength": 10000
               },
               "leftItems": {
                 "minItems": 1,
@@ -4532,27 +4538,6 @@
                       "required": [
                         "type",
                         "points"
-                      ],
-                      "additionalProperties": false
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string",
-                          "const": "mesh"
-                        },
-                        "label": {
-                          "type": "string"
-                        },
-                        "targetName": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      },
-                      "required": [
-                        "type",
-                        "targetName"
                       ],
                       "additionalProperties": false
                     }

@@ -636,6 +636,11 @@ export interface MeshHotspot extends BaseHotspot {
  */
 export type HotspotObject = RectHotspot | CircleHotspot | PolygonHotspot | MeshHotspot;
 
+/**
+ * 2D hotspots for image-based interactions.
+ */
+export type Hotspot2D = RectHotspot | CircleHotspot | PolygonHotspot;
+
 // ============================================================================
 // 3D / Spatial Helper Structures
 // ============================================================================
@@ -1032,7 +1037,7 @@ export interface PinOnImageItem extends BaseItem {
   targetAsset: string;
   
   /** Array defining correct areas. Min 1 hotspot. */
-  hotspots: HotspotObject[];
+  hotspots: Hotspot2D[];
   
   /** Whether user must mark more than one hotspot. Default: false */
   multipleCorrect?: boolean;

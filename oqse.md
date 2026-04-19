@@ -96,7 +96,7 @@ The root object of an OQSE file consists of 4 keys:
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/memizy/oqse-specification/main/schemas/oqse-v0.1.json",
+  "$schema": "https://cdn.jsdelivr.net/gh/memizy/oqse-specification@main/schemas/oqse-v0.1.json",
   "version": "0.1",
   "meta": { ... },
   "items": [ ... ]
@@ -1264,7 +1264,7 @@ This optional object (`item.pedagogy`) serves to store advanced metadata about d
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/memizy/oqse-specification/main/schemas/oqse-v0.1.json",
+  "$schema": "https://cdn.jsdelivr.net/gh/memizy/oqse-specification@main/schemas/oqse-v0.1.json",
   "version": "0.1",
   "meta": {
     "id": "019aa606-cbb5-7b2e-9e61-ac335db1eb4b",
@@ -1549,7 +1549,7 @@ To ensure consistency and practical implementability, the specification defines 
 - If `tolerance > 0`, it SHOULD also be a multiple of `step`, otherwise a warning about inconsistent evaluation is expected ([see Type: Slider](#type-slider-slider--numeric-answer)).
 
 **For `range` in `numeric-input`:**
-- If `range` is present, `range.min < range.max` MUST hold. Application MUST reject import if `range.min >= range.max`.
+- If `range` is present, `range.min <= range.max` MUST hold. Application MUST reject import if `range.min > range.max`.
 - If `range` is present, `value` SHOULD lie within `<range.min, range.max>` (consistency recommendation).
 
 **For `correctCells` in `matrix`:**
@@ -1713,7 +1713,7 @@ This order ensures that:
 **Example of correct order:**
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/memizy/oqse-specification/main/schemas/oqse-v0.1.json",
+  "$schema": "https://cdn.jsdelivr.net/gh/memizy/oqse-specification@main/schemas/oqse-v0.1.json",
   "version": "0.1",
   "meta": { ... },
   "items": [ ... ]
@@ -1907,7 +1907,7 @@ Applications may define custom item types using `x-` prefix (e.g., `x-code-chall
 ### JSON Schema
 Official JSON Schema is available at:
 
-[https://raw.githubusercontent.com/memizy/oqse-specification/main/schemas/oqse-v0.1.json](https://raw.githubusercontent.com/memizy/oqse-specification/main/schemas/oqse-v0.1.json)
+[https://cdn.jsdelivr.net/gh/memizy/oqse-specification@main/schemas/oqse-v0.1.json](https://cdn.jsdelivr.net/gh/memizy/oqse-specification@main/schemas/oqse-v0.1.json)
 
 ### Recommended Tools
   * **Validators:** Ajv, JSON Schema Validator

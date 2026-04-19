@@ -108,7 +108,7 @@ A minimal but complete OQSEP document with two item records:
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/memizy/oqse-specification/main/schemas/oqse-progress-v0.1.json",
+  "$schema": "https://cdn.jsdelivr.net/gh/memizy/oqse-specification@main/schemas/oqse-progress-v0.1.json",
   "version": "0.1",
   "meta": {
     "setId": "019cb880-acf3-7bb1-a717-96bb05e220c1",

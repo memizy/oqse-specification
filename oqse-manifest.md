@@ -20,7 +20,7 @@ Applications MUST declare their capabilities in a standardized JSON format, know
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/memizy/oqse-specification/main/schemas/oqse-manifest-v0.1.json",
+  "$schema": "https://cdn.jsdelivr.net/gh/memizy/oqse-specification@main/schemas/oqse-manifest-v0.1.json",
   "version": "0.1",
   "pluginVersion": "2.1.0",
   "minOqseVersion": "0.1",

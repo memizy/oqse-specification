@@ -124,7 +124,7 @@ export const RichContentSchema = z.string().min(1, 'Content must not be empty');
 /**
  * Optional rich content
  */
-export const OptionalRichContentSchema = z.string().optional();
+export const OptionalRichContentSchema = z.string().max(10000, 'Question must not be longer than 10000 characters').optional();
 
 /**
  * Blank token identifier
@@ -483,6 +483,12 @@ export const HotspotObjectSchema = z.discriminatedUnion('type', [
   MeshHotspotSchema,
 ]);
 
+export const Hotspot2DSchema = z.discriminatedUnion('type', [
+  RectHotspotSchema,
+  CircleHotspotSchema,
+  PolygonHotspotSchema,
+]);
+
 /**
  * 3D vector / point (used by CameraSetup)
  */
@@ -625,6 +631,12 @@ export const MCQSingleItemSchema = BaseItemSchema.extend({
     message: 'Number of option explanations must match number of options',
     path: ['optionExplanations'],
   }
+).refine(
+  (data) => {
+    const uniqueOptions = new Set(data.options.map(opt => opt.toLowerCase()));
+    return uniqueOptions.size === data.options.length;
+  },
+  { message: 'Options must not contain duplicates (case-insensitive)', path: ['options'] }
 );
 
 /**
@@ -691,6 +703,12 @@ export const MCQMultiItemSchema = BaseItemSchema.extend({
     message: 'Number of option explanations must match number of options',
     path: ['optionExplanations'],
   }
+).refine(
+  (data) => {
+    const uniqueOptions = new Set(data.options.map(opt => opt.toLowerCase()));
+    return uniqueOptions.size === data.options.length;
+  },
+  { message: 'Options must not contain duplicates (case-insensitive)', path: ['options'] }
 );
 
 /**
@@ -812,8 +830,8 @@ export const FillInSelectItemSchema = BaseItemSchema.extend({
 export const MatchPairsItemSchema = BaseItemSchema.extend({
   type: z.literal('match-pairs'),
   question: OptionalRichContentSchema,
-  prompts: z.array(RichContentSchema).min(2, 'Must have at least 2 pairs to match'),
-  matches: z.array(RichContentSchema).min(2, 'Must have at least 2 pairs to match'),
+  prompts: z.array(RichContentSchema).min(2, 'Must have at least 2 pairs to match').max(100, 'Maximum 100 pairs'),
+  matches: z.array(RichContentSchema).min(2, 'Must have at least 2 pairs to match').max(100, 'Maximum 100 pairs'),
 }).refine(
   (data) => data.prompts.length === data.matches.length,
   {
@@ -924,7 +942,7 @@ export const PinOnImageItemSchema = BaseItemSchema.extend({
   type: z.literal('pin-on-image'),
   question: RichContentSchema.max(10000, 'Question must not be longer than 10000 characters'),
   targetAsset: AssetKeySchema,
-  hotspots: z.array(HotspotObjectSchema).min(1, 'Must have at least 1 hotspot'),
+  hotspots: z.array(Hotspot2DSchema).min(1, 'Must have at least 1 hotspot'),
   multipleCorrect: z.boolean().optional(),
   minCorrect: z.number().int().positive().optional(),
 }).refine(
@@ -949,6 +967,12 @@ export const CategorizeItemSchema = BaseItemSchema.extend({
   categories: z.array(PlainTextSchema).min(2, 'Must have at least 2 categories'),
   items: z.array(CategorizeItemObjectSchema).min(1, 'Must have at least 1 item to categorize'),
 }).refine(
+  (data) => {
+    const uniqueCategories = new Set(data.categories.map(cat => cat.toLowerCase()));
+    return uniqueCategories.size === data.categories.length;
+  },
+  { message: 'Categories must not contain duplicates (case-insensitive)', path: ['categories'] }
+).refine(
   (data) => {
     // Validate all correctCategoryIndex values
     return data.items.every(item => item.correctCategoryIndex < data.categories.length);
@@ -1171,7 +1195,7 @@ export const OQSEItemSchema = z.discriminatedUnion('type', [
  * OQSE File Schema (Root Structure)
  */
 export const OQSEFileSchema = z.object({
-  // Recommended schema URL for draft v0.1: https://raw.githubusercontent.com/memizy/oqse-specification/main/schemas/oqse-v0.1.json
+  // Recommended schema URL for draft v0.1: https://cdn.jsdelivr.net/gh/memizy/oqse-specification@main/schemas/oqse-v0.1.json
   $schema: z.string().url().optional(),
   version: z.string().regex(/^\d+\.\d+$/, 'Version must be in MAJOR.MINOR format (e.g. "0.1")'),
   meta: OQSEMetaSchema,
@@ -1184,7 +1208,7 @@ export const OQSEFileSchema = z.object({
     for (const item of data.items) {
       if (item.relatedItems) {
         for (const relatedId of item.relatedItems) {
-          if (!itemIds.has(relatedId)) {
+          if (!itemIds.has(relatedId) || item.id === relatedId) {
             return false;
           }
         }
@@ -1192,7 +1216,7 @@ export const OQSEFileSchema = z.object({
       
       if (item.dependencyItems) {
         for (const depId of item.dependencyItems) {
-          if (!itemIds.has(depId)) {
+          if (!itemIds.has(depId) || item.id === depId) {
             return false;
           }
         }
@@ -1202,7 +1226,7 @@ export const OQSEFileSchema = z.object({
     return true;
   },
   {
-    message: 'Some item references non-existent relatedItems or dependencyItems',
+    message: 'Some item references non-existent relatedItems, dependencyItems, or references itself',
     path: ['items'],
   }
 ).refine(
