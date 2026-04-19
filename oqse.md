@@ -221,7 +221,7 @@ Contains all information describing the entire set.
 | `assets` | object | No | Dictionary (map) of media for the entire set. Used for: 1) set metadata (e.g., cover image), 2) **shared media** used in multiple items (e.g., a map that appears in 20 questions). The key is a local identifier, the value is a `MediaObject` object. Application when replacing `<asset:key />` uses fallback: first `item.assets`, then `meta.assets`. |
 | `ageMin` | number | No | Minimum recommended age (0 = preschool, but recommended >= 3). |
 | `ageMax` | number | No | Maximum recommended age. |
-| `subject` | string | No | **Plain Text.** Subject/field in the set's language (e.g., `mathematics`, `biology`, `history`). |
+| `subject` | string | No | **Plain Text.** Subject/field in the set's language (e.g., `Mathematics`, `History`, `Dějepis`, `Geschichte`). |
 | `createdAt` | string | Yes | Date and time of creation in ISO 8601 format (UTC recommended). |
 | `updatedAt` | string | Yes | Date and time of last modification in ISO 8601 format. (UTC recommended)|
 | `author` | PersonObject | No | Information about the main author of the set. [See The `PersonObject` Object](#the-personobject-object-in-metaauthor-and-metacontributors). |

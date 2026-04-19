@@ -9,7 +9,7 @@
  * @see ../oqse-manifest.md#oqsem-application-manifest
  */
 
-import type { FeatureProfile } from './oqse';
+import type { FeatureProfile, PersonObject } from './oqse';
 
 // Re-export FeatureProfile so consumers can import everything from this module.
 export type { FeatureProfile } from './oqse';
@@ -467,25 +467,26 @@ export interface OQSEManifest {
   /**
    * Human-readable description of what the application does.
    * Displayed in host environments and plugin catalogs.
-  * **Plain Text** - no Markdown or HTML.
+  * **Rich Content** (Markdown/LaTeX supported by host capabilities).
    */
   description?: string;
 
   /**
-   * Name of the author or organization.
-   * **Plain Text.**
-   *
-   * @example `"Memizy Team"`
+   * Information about the main author or organization.
+   * Uses the standard `PersonObject` structure.
    */
-  author?: string;
+  author?: PersonObject;
 
   /**
-   * URL of the author or organization.
-   * MUST be an absolute URL.
-   *
-   * @example `"https://memizy.com"`
+   * Array of information about other contributors.
    */
-  authorUrl?: string;
+  contributors?: PersonObject[];
+
+  /** SPDX license identifier (e.g., "MIT", "GPL-3.0"). */
+  license?: string;
+
+  /** URI to the full text of the license. */
+  licenseUrl?: string;
 
   /**
    * BCP 47 locale codes for the application's supported UI languages.
@@ -609,12 +610,14 @@ export function compareManifestVersions(a: string, b: string): number {
 export function isOQSEManifest(value: unknown): value is OQSEManifest {
   if (typeof value !== 'object' || value === null) return false;
   const m = value as Record<string, unknown>;
+  const author = m['author'];
 
   return (
     typeof m['version'] === 'string' &&
     typeof m['id'] === 'string' &&
     typeof m['appName'] === 'string' &&
     m['appName'] !== '' &&
+    (author === undefined || (typeof author === 'object' && author !== null)) &&
     typeof m['capabilities'] === 'object' &&
     m['capabilities'] !== null &&
     Array.isArray((m['capabilities'] as Record<string, unknown>)['actions'])

@@ -23,7 +23,7 @@ import {
   type OQSEQuestionDensity,
   type OQSEStudyMode,
 } from './manifest';
-import { FeatureProfileSchema } from './oqseValidation';
+import { FeatureProfileSchema, PersonObjectSchema } from './oqseValidation';
 
 // ============================================================================
 // Primitive helpers
@@ -309,14 +309,18 @@ export const OQSEManifestSchema = z
 
     // --- Plugin / Embedding ---
 
-    author: z.string().max(200, 'Author name must not be longer than 200 characters').optional(),
+    author: PersonObjectSchema.optional(),
 
-    authorUrl: AbsoluteURLSchema.optional(),
+    contributors: z.array(PersonObjectSchema).optional(),
+
+    license: z.string().max(100, 'License must not be longer than 100 characters').optional(),
+
+    licenseUrl: AbsoluteURLSchema.optional(),
 
     locales: z.array(BCP47Schema).optional(),
 
-    /** Short human-readable description (plain text, <= 1000 chars). */
-    description: z.string().max(1000, 'Description must not be longer than 1000 characters').optional(),
+    /** Short human-readable description (Rich Content, <= 5000 chars). */
+    description: z.string().max(5000, 'Description must not be longer than 5000 characters').optional(),
 
     emoji: z.string().optional(),
 

@@ -96,8 +96,8 @@ describe('Manifest Validation Schemas', () => {
       version: '1.0',
       id: 'https://example.org/apps/test-app',
       appName: 'A'.repeat(200),
-      description: 'D'.repeat(1000),
-      author: 'U'.repeat(200),
+      description: 'D'.repeat(5000),
+      author: { name: 'Memizy Team', url: 'https://memizy.com' },
       capabilities: { actions: ['validate'], features: [] },
     });
     expect(valid.success).toBe(true);
@@ -106,8 +106,8 @@ describe('Manifest Validation Schemas', () => {
       version: '1.0',
       id: 'https://example.org/apps/test-app',
       appName: 'A'.repeat(201),
-      description: 'D'.repeat(1001),
-      author: 'U'.repeat(201),
+      description: 'D'.repeat(5001),
+      author: { name: 'Memizy Team' },
       capabilities: { actions: ['validate'], features: [] },
     });
 

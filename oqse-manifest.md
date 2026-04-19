@@ -28,8 +28,11 @@ Applications MUST declare their capabilities in a standardized JSON format, know
   "id": "https://memizy.com/universal-player",
   "appName": "Memizy Universal Player",
   "description": "A universal flashcard and quiz player with spaced repetition.",
-  "author": "Memizy Team",
-  "authorUrl": "https://memizy.com",
+  "author": {
+    "name": "Memizy Team",
+    "url": "https://memizy.com"
+  },
+  "license": "MIT",
   "locales": ["en", "cs"],
   "tags": ["flashcards", "spaced-repetition", "quiz"],
   "emoji": "🧠",
@@ -85,9 +88,11 @@ Applications MUST declare their capabilities in a standardized JSON format, know
 | `maxOqseVersion` | string | No | Maximum OQSE spec version this application is compatible with. MUST follow `"MAJOR.MINOR"` format (e.g., `"1.99"`). Version comparison is performed numerically field-by-field. Host environments MAY use this to prevent loading a plugin with a newer, potentially incompatible OQSE version. If absent, no upper bound is assumed. |
 | `id` | string | Yes | Unique identifier for the application. MUST be either a controlled URL (preferred — MAY lead to the official page of the plugin, e.g., `"https://memizy.com/player"`) or a URN-format UUID (e.g., `"urn:uuid:019cba2f-7ea1-7607-8f16-be10714d790e"`). |
 | `appName` | string | Yes | Human-readable name of the application. MUST NOT exceed 200 characters. |
-| `description` | string | No | **Plain Text.** Human-readable description of what the application does. Displayed in host environments and plugin catalogs. MUST NOT exceed 1000 characters. |
-| `author` | string | No | **Plain Text.** Name of the author or organization. MUST NOT exceed 200 characters. |
-| `authorUrl` | string | No | **URI (absolute URL).** URL of the author or organization. |
+| `description` | string | No | **Rich Content.** Human-readable description of what the application does. Displayed in host environments and plugin catalogs. MUST NOT exceed 5000 characters. |
+| `author` | object | No | Information about the main author or organization. Uses the standard `PersonObject` structure. |
+| `contributors` | PersonObject[] | No | Array of information about other contributors. |
+| `license` | string | No | SPDX license identifier (e.g., `MIT`, `GPL-3.0`). |
+| `licenseUrl` | string | No | **URI (absolute URL).** Link to the full text of the license. |
 | `locales` | string[] | No | BCP 47 locale codes for the application's supported UI languages (e.g., `["en", "cs"]`). Host environments MAY use this when choosing a plugin for a specific user locale. If absent or `[]`, the host SHOULD assume the application supports English. |
 | `tags` | string[] | No | Array of plain text keywords describing the application's purpose or focus area (e.g., `["flashcards", "spaced-repetition", "chess"]`). Used by host environments and catalogs for filtering and discovery. Uses the same convention as `meta.tags` in study sets. |
 | `emoji` | string | No | A single emoji character used as the application's visual identity in catalogs and host UIs where loading a full icon image is impractical (e.g., `"🧠"`, `"🚀"`, `"🎮"`). SHOULD contain a single visually-rendered emoji glyph (note: some emoji such as flags or family sequences are composed of multiple Unicode code points — this is acceptable). If a future `iconUrl` field is also declared in an extension, hosts SHOULD prefer that over `emoji`. |
