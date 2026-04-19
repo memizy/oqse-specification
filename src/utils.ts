@@ -18,3 +18,26 @@ export function isValidUUID(id: string): boolean {
 export function generateUUID(): UUID {
   return uuidv7();
 }
+
+/**
+ * Checks if an object exceeds the maximum allowed nesting depth.
+ * OQSE specification requires a limit of 10 levels for customData and appSpecific.
+ */
+export function validateJsonDepth(
+  data: unknown,
+  maxDepth: number = 10,
+  currentDepth: number = 0
+): void {
+  if (currentDepth > maxDepth) {
+    throw new Error(
+      `OQSE Security Error: Maximum nesting depth exceeded limit of ${maxDepth} levels.`
+    );
+  }
+
+  if (data !== null && typeof data === 'object') {
+    const values = Array.isArray(data) ? data : Object.values(data);
+    for (const value of values) {
+      validateJsonDepth(value, maxDepth, currentDepth + 1);
+    }
+  }
+}

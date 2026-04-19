@@ -106,7 +106,8 @@
                     },
                     "value": {
                       "type": "string",
-                      "minLength": 1
+                      "minLength": 1,
+                      "pattern": "\\.(vtt|srt)(\\?.*)?$"
                     },
                     "label": {
                       "type": "string"
@@ -552,7 +553,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -843,7 +845,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -1132,7 +1135,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -1419,7 +1423,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -1736,7 +1741,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -2067,7 +2073,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -2371,7 +2378,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -2680,7 +2688,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -2998,7 +3007,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -3299,7 +3309,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -3623,7 +3634,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -3915,7 +3927,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -4223,7 +4236,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -4643,7 +4657,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -4964,7 +4979,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -5287,7 +5303,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -5611,7 +5628,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -5910,7 +5928,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -6355,7 +6374,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -6687,7 +6707,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -6997,7 +7018,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"
@@ -7365,7 +7387,8 @@
                           },
                           "value": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "pattern": "\\.(vtt|srt)(\\?.*)?$"
                           },
                           "label": {
                             "type": "string"

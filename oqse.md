@@ -1047,6 +1047,7 @@ Applications **MUST** normalize user input before evaluation to handle localizat
   * `targetAsset` (string, required): **Key from `assets`**, which determines the 3D model to be used.
   * `hotspots` (HotspotObject[], required): Array defining correct meshes/parts of the model.
   * `multipleCorrect` (boolean, optional): Determines whether user must find more than one target. Default: `false`.
+  * `minCorrect` (number, optional): If `multipleCorrect: true`, determines the minimum number of correct targets the user must find. Ignored otherwise.
   * `camera` (object, optional): Recommended initial camera setup.
     * `position` (object): `{x, y, z}` coordinates for the camera's location.
     * `target` (object): `{x, y, z}` coordinates of the point the camera is looking at and orbiting around.
@@ -1141,7 +1142,7 @@ Defines clickable zone on image or named mesh in a 3D model. For `pin-on-image`,
 
 | Key | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
-| `id` | string | Recommended | **Plain Text.** Unique ID of item (within question, doesn't have to be UUIDv7). |
+| `id` | string | Yes | **Plain Text.** Unique ID of item (within question, doesn't have to be UUIDv7). |
 | `text` | string | Yes | **Rich Content.** Item text. |
 | `correctCategoryIndex` | number | Yes | 0-based index into `categories` array in parent item. |
 
@@ -1171,7 +1172,7 @@ Defines clickable zone on image or named mesh in a 3D model. For `pin-on-image`,
 
 | Key | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
-| `id` | string | Recommended | **Plain Text.** Unique ID of event (within question, doesn't have to be UUIDv7). |
+| `id` | string | Yes | **Plain Text.** Unique ID of event (within question, doesn't have to be UUIDv7). |
 | `text` | string | Yes | **Rich Content.** Event description. |
 | `date` | string | Yes | **Plain Text.** Event date in strict format per Date Handling Format. Field `date` MUST always contain full date in ISO 8601 format (e.g., `1969-01-01` or `1969-01-01T12:00:00Z`), even if `precision` is set to only `year` or `month`. Field `precision` determines only display format to user, but for internal sorting and machine processing, complete date is always required. MUST NOT be displayed to user before answering. Event without `date` is invalid and application MUST reject import. |
 | `precision` | string | No | **Plain Text.** Determines mask for displaying date to user. Possible values: `year`, `month`, `day`, `datetime`. If not specified, full precision defined in `date` field is used. This field is key for displaying "imprecise" historical dates (e.g., "year 1969" stored technically as `1969-01-01`).

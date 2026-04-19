@@ -14,6 +14,7 @@ import {
   OFFICIAL_ITEM_PROPERTIES,
   OFFICIAL_META_PROPERTIES,
 } from './manifest';
+import { validateJsonDepth } from './utils';
 import type {
   BaseItem,
   CameraSetup,
@@ -140,7 +141,7 @@ export const BlankTokenSchema = z.string().regex(/^[a-zA-Z0-9_-]{1,64}$/, 'Token
  */
 export const SubtitleTrackSchema = z.object({
   lang: LanguageCodeSchema,
-  value: z.string().min(1, 'Subtitle URI must not be empty'),
+  value: z.string().min(1, 'Subtitle URI must not be empty').regex(/\.(vtt|srt)(\?.*)?$/i, 'Subtitle URI must end with .vtt or .srt'),
   label: z.string().optional(),
   kind: z.enum(['captions', 'subtitles', 'descriptions']).optional(),
 });
@@ -691,6 +692,17 @@ export const MCQMultiItemSchema = BaseItemSchema.extend({
   {
     message: 'Maximum number of selections must not exceed number of options',
     path: ['maxSelections'],
+  }
+).refine(
+  (data) => {
+    if (data.minSelections) {
+      return data.minSelections <= data.options.length;
+    }
+    return true;
+  },
+  {
+    message: 'minSelections cannot be greater than the number of options',
+    path: ['minSelections'],
   }
 ).refine(
   (data) => {
@@ -1382,10 +1394,26 @@ void schemaTypeContracts;
 // Validation Helper Functions
 // ============================================================================
 
+function createSecurityZodError(error: unknown): z.ZodError {
+  const message =
+    error instanceof Error
+      ? error.message
+      : 'OQSE Security Error: Maximum nesting depth exceeded limit of 10 levels.';
+
+  return new z.ZodError([
+    {
+      code: z.ZodIssueCode.custom,
+      message,
+      path: [],
+    },
+  ]);
+}
+
 /**
  * Validates OQSE file and returns parsed result or throws ZodError
  */
 export function validateOQSEFile(data: unknown): OQSEFile {
+  validateJsonDepth(data, 10);
   return OQSEFileSchema.parse(data);
 }
 
@@ -1397,6 +1425,12 @@ export function safeValidateOQSEFile(data: unknown): {
   data?: OQSEFile;
   error?: z.ZodError;
 } {
+  try {
+    validateJsonDepth(data, 10);
+  } catch (error) {
+    return { success: false, error: createSecurityZodError(error) };
+  }
+
   const result = OQSEFileSchema.safeParse(data);
   if (result.success) {
     return { success: true, data: result.data };
@@ -1408,6 +1442,7 @@ export function safeValidateOQSEFile(data: unknown): {
  * Validates individual OQSE item
  */
 export function validateOQSEItem(data: unknown): OQSEItem {
+  validateJsonDepth(data, 10);
   return OQSEItemSchema.parse(data);
 }
 
@@ -1419,6 +1454,12 @@ export function safeValidateOQSEItem(data: unknown): {
   data?: OQSEItem;
   error?: z.ZodError;
 } {
+  try {
+    validateJsonDepth(data, 10);
+  } catch (error) {
+    return { success: false, error: createSecurityZodError(error) };
+  }
+
   const result = OQSEItemSchema.safeParse(data);
   if (result.success) {
     return { success: true, data: result.data };

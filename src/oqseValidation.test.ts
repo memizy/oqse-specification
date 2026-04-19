@@ -1,5 +1,15 @@
 import { describe, it, expect } from 'vitest';
-import { LanguageCodeSchema, ISO8601DateTimeSchema, MediaObjectSchema, OQSEFileSchema, MCQSingleItemSchema, FillInBlanksItemSchema } from './oqseValidation';
+import {
+  LanguageCodeSchema,
+  ISO8601DateTimeSchema,
+  MediaObjectSchema,
+  OQSEFileSchema,
+  MCQSingleItemSchema,
+  MCQMultiItemSchema,
+  CategorizeItemSchema,
+  TimelineEventSchema,
+  FillInBlanksItemSchema,
+} from './oqseValidation';
 
 describe('OQSE Validation Schemas', () => {
   it('LanguageCodeSchema: enforces standard BCP 47 locales', () => {
@@ -38,6 +48,20 @@ describe('OQSE Validation Schemas', () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.issues[0].path).toContain('end');
+    }
+  });
+
+  it('MediaObjectSchema: subtitles must use .vtt or .srt files', () => {
+    const invalidSubtitles = {
+      type: 'video',
+      value: 'https://example.com/video.mp4',
+      subtitles: [{ lang: 'en', value: 'https://example.com/subtitles.docx' }],
+    };
+
+    const result = MediaObjectSchema.safeParse(invalidSubtitles);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.some(i => i.message.includes('Subtitle URI must end with .vtt or .srt'))).toBe(true);
     }
   });
 });
@@ -137,6 +161,50 @@ describe('Complex Constraints & Referential Integrity', () => {
     if (!result.success) {
       expect(result.error.issues.some(i => i.message.includes('non-existent option'))).toBe(true);
     }
+  });
+
+  it('MCQMultiItemSchema: minSelections must not exceed number of options', () => {
+    const invalidItem = {
+      id: '123e4567-e89b-12d3-a456-426614174001',
+      type: 'mcq-multi',
+      question: 'Q?',
+      options: ['A', 'B'],
+      correctIndices: [0],
+      minSelections: 3,
+    };
+
+    const result = MCQMultiItemSchema.safeParse(invalidItem);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.some(i => i.message.includes('minSelections cannot be greater than the number of options'))).toBe(true);
+    }
+  });
+
+  it('CategorizeItemSchema: rejects nested items missing id', () => {
+    const invalidItem = {
+      id: '123e4567-e89b-12d3-a456-426614174001',
+      type: 'categorize',
+      question: 'Sort items',
+      categories: ['A', 'B'],
+      items: [
+        {
+          text: 'Alpha',
+          correctCategoryIndex: 0,
+        },
+      ],
+    };
+
+    expect(CategorizeItemSchema.safeParse(invalidItem).success).toBe(false);
+  });
+
+  it('TimelineEventSchema: rejects event missing id', () => {
+    const invalidEvent = {
+      text: 'Moon landing',
+      date: '1969-07-20T00:00:00Z',
+      precision: 'day',
+    };
+
+    expect(TimelineEventSchema.safeParse(invalidEvent).success).toBe(false);
   });
 
   it('FillInBlanksItemSchema: token matching (missing key in blanks)', () => {
