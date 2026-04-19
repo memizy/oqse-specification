@@ -13,7 +13,7 @@
     "appName": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 100
+      "maxLength": 200
     },
     "version": {
       "type": "string",
@@ -191,7 +191,7 @@
     },
     "author": {
       "type": "string",
-      "maxLength": 100
+      "maxLength": 200
     },
     "authorUrl": {
       "type": "string",
@@ -201,12 +201,12 @@
       "type": "array",
       "items": {
         "type": "string",
-        "minLength": 1
+        "pattern": "^[a-zA-Z]{2,8}(-[a-zA-Z0-9\\-]+)*$"
       }
     },
     "description": {
       "type": "string",
-      "maxLength": 500
+      "maxLength": 1000
     },
     "emoji": {
       "type": "string"

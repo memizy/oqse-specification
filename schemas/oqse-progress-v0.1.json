@@ -133,6 +133,7 @@
                 "maximum": 9007199254740991
               },
               "hintsUsed": {
+                "default": 0,
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 9007199254740991
@@ -143,7 +144,8 @@
             },
             "required": [
               "isCorrect",
-              "answeredAt"
+              "answeredAt",
+              "hintsUsed"
             ],
             "additionalProperties": false
           },
