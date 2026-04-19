@@ -18,6 +18,14 @@ This repository contains:
 - Name: @memizy/oqse
 - Purpose: validate, parse, and type OQSE, OQSEM (Application Manifest), and OQSEP (User Progress) data.
 
+## Schemas
+
+The auto-generated JSON Schemas are published with this repository and are available at the following URLs:
+
+- Core OQSE Schema: https://cdn.jsdelivr.net/gh/memizy/oqse-specification@main/schemas/oqse-v0.1.json
+- Manifest Schema: https://cdn.jsdelivr.net/gh/memizy/oqse-specification@main/schemas/oqse-manifest-v0.1.json
+- Progress Schema: https://cdn.jsdelivr.net/gh/memizy/oqse-specification@main/schemas/oqse-progress-v0.1.json
+
 ## Architecture & Single Source of Truth
 
 The human-readable Markdown specifications are the **absolute single source of truth** for the OQSE ecosystem.
@@ -63,11 +71,3 @@ npm test
 ## Contributing Rule
 
 Never edit files in schemas/ by hand. Always regenerate via npm run generate:schemas.
-
-## Schemas
-
-The auto-generated JSON Schemas are published with this repository and are available at the following URLs:
-
-- Core OQSE Schema: https://cdn.jsdelivr.net/gh/memizy/oqse-specification@main/schemas/oqse-v0.1.json
-- Manifest Schema: https://cdn.jsdelivr.net/gh/memizy/oqse-specification@main/schemas/oqse-manifest-v0.1.json
-- Progress Schema: https://cdn.jsdelivr.net/gh/memizy/oqse-specification@main/schemas/oqse-progress-v0.1.json
