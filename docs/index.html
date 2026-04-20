@@ -88,6 +88,12 @@
                 <option value="progress">📈 OQSEP</option>
                 <option value="header">🪪 OQSEH</option>
             </select>
+            <div id="oqseSampleAction" class="mt-4">
+                <button id="loadSampleSetBtn" class="w-full sm:w-auto px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 text-primary-blue-dark font-semibold hover:bg-blue-100 transition-colors">
+                    Try OQSE Sample Set
+                </button>
+                <p id="sampleSetStatus" class="mt-2 text-sm text-text-gray"></p>
+            </div>
         </div>
 
         <div class="flex gap-6 mb-6 border-b border-gray-200">
@@ -155,8 +161,14 @@
         const validationType = document.getElementById('validationType');
         const jsonInputLabel = document.getElementById('jsonInputLabel');
         const urlInputLabel = document.getElementById('urlInputLabel');
+        const oqseSampleAction = document.getElementById('oqseSampleAction');
+        const loadSampleSetBtn = document.getElementById('loadSampleSetBtn');
+        const sampleSetStatus = document.getElementById('sampleSetStatus');
+
+        const OQSE_SAMPLE_SET_URL = 'https://cdn.jsdelivr.net/gh/memizy/set-test-suite@main/data.oqse.json';
 
         let currentValidationErrors = [];
+        let lastSetState = '';
 
         const validatorLabels = {
             oqse: {
@@ -192,20 +204,67 @@
             jsonInput.placeholder = labels.jsonPlaceholder;
             urlInputLabel.textContent = labels.urlLabel;
             urlInput.placeholder = labels.urlPlaceholder;
+
+            if (type === 'oqse') {
+                oqseSampleAction.classList.remove('hidden');
+            } else {
+                oqseSampleAction.classList.add('hidden');
+                sampleSetStatus.textContent = '';
+            }
         }
 
         syncValidationLabels();
         validationType.addEventListener('change', syncValidationLabels);
 
+        function activateTab(targetId) {
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+
+            const tabButton = document.querySelector(`.tab[data-target="${targetId}"]`);
+            if (tabButton) {
+                tabButton.classList.add('active');
+            }
+
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                targetElement.classList.add('active');
+            }
+
+            resultArea.className = 'hidden';
+        }
+
         tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                tabContents.forEach(c => c.classList.remove('active'));
-                
-                tab.classList.add('active');
-                document.getElementById(tab.dataset.target).classList.add('active');
-                resultArea.className = 'hidden';
-            });
+            tab.addEventListener('click', () => activateTab(tab.dataset.target));
+        });
+
+        loadSampleSetBtn.addEventListener('click', async () => {
+            sampleSetStatus.textContent = 'Loading sample set...';
+            loadSampleSetBtn.disabled = true;
+
+            try {
+                const response = await fetch(OQSE_SAMPLE_SET_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status} ${response.statusText}`);
+                }
+
+                const rawText = await response.text();
+                let formatted = rawText;
+
+                try {
+                    formatted = JSON.stringify(JSON.parse(rawText), null, 2);
+                } catch {
+                    // Keep original text if not parseable.
+                }
+
+                activateTab('json-tab');
+                jsonInput.value = formatted;
+                validateData(formatted);
+                sampleSetStatus.textContent = 'Sample set loaded and validated.';
+            } catch (error) {
+                sampleSetStatus.textContent = `Failed to load sample set: ${error.message}`;
+            } finally {
+                loadSampleSetBtn.disabled = false;
+            }
         });
 
         function showResult(success, message, errors = []) {
@@ -257,6 +316,12 @@
             promptText += `Here are the strict Zod validation errors my file is producing:\n\n`;
             promptText += currentValidationErrors.map(e => '- ' + e).join('\n') + '\n\n';
 
+            const currentSetState = (jsonInput.value && jsonInput.value.trim()) || lastSetState;
+            if (currentSetState) {
+                promptText += `Current JSON state (exact content):\n\n`;
+                promptText += `\`\`\`json\n${currentSetState}\n\`\`\`\n\n`;
+            }
+
             if (includeSpecCheckbox.checked) {
                 try {
                     let mdFile = 'oqse.md';
@@ -276,7 +341,10 @@
                 }
             }
 
-            promptText += `Please analyze these specific constraint violations and correct my JSON so it fully conforms to the expected schema without breaking any of the rules above.`;
+            promptText += `Please analyze these specific constraint violations and produce ONE of the following outputs:\n`;
+            promptText += `1) The full corrected JSON (complete final state, valid and ready to use), or\n`;
+            promptText += `2) An exact list of minimal corrections (path + what to change).\n\n`;
+            promptText += `Do not provide generic advice without concrete corrections.`;
             
             try {
                 await navigator.clipboard.writeText(promptText);
@@ -299,6 +367,7 @@
 
         function validateData(dataStr) {
             try {
+                lastSetState = dataStr;
                 const parsed = JSON.parse(dataStr);
                 const type = validationType.value;
                 
